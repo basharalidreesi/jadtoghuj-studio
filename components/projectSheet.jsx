@@ -94,8 +94,8 @@ export const projectSheet = ({document}) => {
 		<div className="jt-pS-wrapper">
 			<Card padding={2} borderBottom={1} style={{ position: "sticky", top: "0", zIndex: "10", textAlign: "right" }}>
 				<Inline space={2}>
-					<Button mode="ghost" text="Generate" onClick={() => generateProjectSheet(document)} />
-					<Button icon={DownloadIcon} tone="primary" text="Download" />
+					<Button id="jt-pS-generateButton" mode="ghost" text="Generate" onClick={() => generateProjectSheet(document)} />
+					<Button id="jt-pS-downloadButton" icon={DownloadIcon} tone="primary" text="Download" disabled="true" />
 				</Inline>
 			</Card>
 			<div className="jt-pS-container" id="jt-pS-container"></div>
@@ -130,14 +130,27 @@ const renderProjectSheet = (data) => {
 		</div>
 		<div className="jt-pS-pageBreak"></div>
 		<div className="jt-pS-page">
-			<div className="jt-pS-pageContents">
-				<h1>Page 2</h1>
-			</div>
+			<div className="jt-pS-pageContents"></div>
+		</div>
+		<div className="jt-pS-pageBreak"></div>
+		<div className="jt-pS-page">
+			<div className="jt-pS-pageContents"></div>
+		</div>
+		<div className="jt-pS-pageBreak"></div>
+		<div className="jt-pS-page">
+			<div className="jt-pS-pageContents"></div>
+		</div>
+		<div className="jt-pS-pageBreak"></div>
+		<div className="jt-pS-page">
+			<div className="jt-pS-pageContents"></div>
 		</div>
 		<div className="jt-pS-pageBreak"></div>
 	</>
 	const container = document.getElementById("jt-pS-container")
 	const root = ReactDOM.createRoot(container)
-	container.innerHTML = ""
+	document.getElementById("jt-pS-generateButton").setAttribute("data-disabled", "true")
+	document.getElementById("jt-pS-generateButton").style.pointerEvents = "none"
+	document.getElementById("jt-pS-downloadButton").removeAttribute("disabled")
+	document.getElementById("jt-pS-downloadButton").setAttribute("data-disabled", "false")
 	root.render(sheet)
 }
