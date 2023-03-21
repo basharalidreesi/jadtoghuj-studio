@@ -59,12 +59,8 @@ export const projectSheet = ({document}) => {
 				--jt-pS-backgroundBottomColour: #91a3b0;
 			}
 			.jt-pS-container {
-				width: calc(100% - (2 * var(--jt-pS-spacerHeight)));
-				margin-inline: var(--jt-pS-spacerHeight);
-			}
-			.jt-pS-container {
 				width: var(--jt-pS-containerWidth);
-				max-width: 100%;
+				max-width: calc(100% - (2 * var(--jt-pS-spacerHeight)));
 				min-width: 10%;
 				margin-inline: auto;
 			}
