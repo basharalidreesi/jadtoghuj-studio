@@ -1,7 +1,10 @@
 import { supportedWebsites } from "./lib/websites"
 
+const singletonActions = new Set(["publish", "discardChanges", "restore"])
+const singletonTypes = new Set(["settings"])
+
 export const templates = (prev) => [
-	...prev,
+	...prev.filter(({ schemaType }) => !singletonTypes.has(schemaType)),
 	...supportedWebsites.map(website => {
 		return {
 			id: `page-for-${website.value}`,
@@ -23,3 +26,8 @@ export const templates = (prev) => [
 		}
 	}),
 ]
+
+export const actions = (input, context) =>
+	singletonTypes.has(context.schemaType)
+		? input.filter(({ action }) => action && singletonActions.has(action))
+		: input
