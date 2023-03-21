@@ -24,4 +24,16 @@ export default {
 			],
 		},
 	],
+	preview: {
+		select: {
+			title: "title",
+		},
+		prepare(selection) {
+			const { title } = selection
+			return {
+				title: title,
+				media: HeartIcon,
+			}
+		},
+	},
 }
