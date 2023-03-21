@@ -1,7 +1,7 @@
 import { Button, Card, Inline } from "@sanity/ui"
 import { createClient } from "@sanity/client"
 import * as ReactDOM from "react-dom/client"
-import { AddIcon, DownloadIcon } from "@sanity/icons"
+import { DownloadIcon } from "@sanity/icons"
 
 const client = createClient({
 	projectId: "nhelboup",
@@ -94,7 +94,7 @@ export const projectSheet = ({document}) => {
 		<div className="jt-pS-wrapper">
 			<Card padding={2} borderBottom={1} style={{ position: "sticky", top: "0", zIndex: "10", textAlign: "right" }}>
 				<Inline space={2}>
-					<Button icon={AddIcon} mode="ghost" text="Generate" onClick={() => generateProjectSheet(document)} />
+					<Button mode="ghost" text="Generate" onClick={() => generateProjectSheet(document)} />
 					<Button icon={DownloadIcon} tone="primary" text="Download" />
 				</Inline>
 			</Card>
