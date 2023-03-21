@@ -1,0 +1,5 @@
+- products as new schema? or as category?
+- "looks" should be optional?
+- look specifications?
+- tags for projects?
+- filter by campaign
