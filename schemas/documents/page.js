@@ -1,4 +1,4 @@
-import { BookIcon, DocumentTextIcon, EditIcon, HeartIcon, ImageIcon, TagIcon } from "@sanity/icons"
+import { BookIcon, DocumentTextIcon, EditIcon, HeartIcon, HomeIcon, ImageIcon, TagIcon } from "@sanity/icons"
 import { pageIsUniqueLocally } from "../../lib/pageIsUniqueLocally"
 import { filterAlreadyReferencedDocuments } from "../../lib/filterAlreadyReferencedDocuments"
 import { portableTextPreview } from "../../lib/portableTextPreview"
@@ -213,4 +213,19 @@ export default {
 			],
 		},
 	],
+	preview: {
+		select: {
+			title: "title",
+			address: "address.current",
+			website: "website",
+		},
+		prepare(selection) {
+			const { title, address, website } = selection
+			return {
+				title: title,
+				subtitle: website + (address === "/" ? "" : "/") + address + (address === "/" ? "" : "/"),
+				media: address === "/" ? HomeIcon : DocumentTextIcon,
+			}
+		},
+	},
 }

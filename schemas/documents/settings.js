@@ -19,9 +19,9 @@ export default {
 	],
 	preview: {
 		select: {
-			website: "website"
+			website: "website",
 		},
-		prepare() {
+		prepare(selection) {
 			const { website } = selection
 			return {
 				title: "Settings",
