@@ -1,5 +1,6 @@
 {
-  "name": "jad-toghuj",
+  "name": "jadtoghuj-studio",
+  "author": "Bashar al-Idreesi <basharalidreesi@gmail.com>",
   "private": true,
   "version": "1.0.0",
   "main": "package.json",
