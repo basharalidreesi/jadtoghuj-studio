@@ -1,7 +1,10 @@
+import { CogIcon } from "@sanity/icons"
+
 export default {
 	name: "settings",
 	type: "document",
 	title: "Settings",
+	icon: CogIcon,
 	fields: [
 		{
 			name: "title",
@@ -14,4 +17,17 @@ export default {
 			title: "Website",
 		},
 	],
+	preview: {
+		select: {
+			website: "website"
+		},
+		prepare() {
+			const { website } = selection
+			return {
+				title: "Settings",
+				subtitle: website,
+				media: CogIcon,
+			}
+		},
+	},
 }
