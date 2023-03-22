@@ -2,6 +2,7 @@ import { Button, Card, Inline } from "@sanity/ui"
 import { createClient } from "@sanity/client"
 import * as ReactDOM from "react-dom/client"
 import { DownloadIcon } from "@sanity/icons"
+import React, { useEffect } from "react"
 
 const client = createClient({
 	projectId: "nhelboup",
@@ -10,13 +11,20 @@ const client = createClient({
 	apiVersion: "2022-03-21",
 })
 
+const context = document
+
 export const projectSheet = ({document}) => {
+	useEffect(() => {
+		switchButtonState(context.getElementById("jt-pS-downloadButton"))
+	}, [])
 	return (<>
 		<style>{`
-			.jt-pS-container {
+			.jt-pS-wrapper {
 				position: relative;
 				top: 0;
 				left: 0;
+			}
+			.jt-pS-container {
 				font-size: 16px;
 				font-weight: 400;
 				font-style: normal;
@@ -91,7 +99,7 @@ export const projectSheet = ({document}) => {
 			<Card paddingX={3} paddingY={2} borderBottom={1} style={{ position: "sticky", top: "0", zIndex: "10", textAlign: "right" }}>
 				<Inline space={2}>
 					<Button id="jt-pS-generateButton" mode="ghost" text="Generate" onClick={() => generateProjectSheet(document)} />
-					<Button id="jt-pS-downloadButton" icon={DownloadIcon} tone="primary" text="Download" disabled="true" />
+					<Button id="jt-pS-downloadButton" icon={DownloadIcon} tone="primary" text="Download" onClick={() => downloadProjectSheet()} />
 				</Inline>
 			</Card>
 			<div className="jt-pS-container" id="jt-pS-container"></div>
@@ -105,9 +113,35 @@ const generateProjectSheet = (sanityDocument) => {
 	)
 }
 
+const switchButtonState = (target) => {
+	if (target?.getAttribute("data-disabled") === "true" || target?.getAttribute("disabled") === "true") {
+		target.removeAttribute("data-disabled")
+		target.removeAttribute("disabled")
+		target.style.removeProperty("pointer-events")
+	} else {
+		target.setAttribute("data-disabled", "true")
+		target.setAttribute("disabled", "true")
+		target.style.setProperty("pointer-events", "none")
+	}
+} 
+
+const downloadProjectSheet = () => {
+	console.log("hi")
+}
+
 async function fetchSanityData(sanityDocument) {
 	const query = `
-		*[_id == $id][0]{title}
+		*[_id == $id][0] {
+			title,
+			looks[] {
+				_key,
+				...@->{title},
+			},
+			lookbook[] {
+				_key,
+				"asset": asset->{originalFilename},
+			},
+		}
 	`
 	const params = {
 		id: sanityDocument.displayed._id,
@@ -125,28 +159,34 @@ const renderProjectSheet = (data) => {
 			</div>
 		</div>
 		<div className="jt-pS-pageBreak"></div>
-		<div className="jt-pS-page">
-			<div className="jt-pS-pageContents"></div>
-		</div>
-		<div className="jt-pS-pageBreak"></div>
-		<div className="jt-pS-page">
-			<div className="jt-pS-pageContents"></div>
-		</div>
-		<div className="jt-pS-pageBreak"></div>
-		<div className="jt-pS-page">
-			<div className="jt-pS-pageContents"></div>
-		</div>
-		<div className="jt-pS-pageBreak"></div>
-		<div className="jt-pS-page">
-			<div className="jt-pS-pageContents"></div>
-		</div>
-		<div className="jt-pS-pageBreak"></div>
+		{data.looks.map(look => {
+			return (
+				<React.Fragment key={look._key}>
+					<div className="jt-pS-page">
+						<div className="jt-pS-pageContents">
+							<h1>{look.title}</h1>
+						</div>
+					</div>
+					<div className="jt-pS-pageBreak"></div>
+				</React.Fragment>
+			)
+		})}
+		{data.lookbook.map(image => {
+			return (
+				<React.Fragment key={image._key}>
+					<div className="jt-pS-page">
+						<div className="jt-pS-pageContents">
+							<h1>{image.asset.originalFilename}</h1>
+						</div>
+					</div>
+					<div className="jt-pS-pageBreak"></div>
+				</React.Fragment>
+			)
+		})}
 	</>
 	const container = document.getElementById("jt-pS-container")
 	const root = ReactDOM.createRoot(container)
-	document.getElementById("jt-pS-generateButton").setAttribute("data-disabled", "true")
-	document.getElementById("jt-pS-generateButton").style.pointerEvents = "none"
-	document.getElementById("jt-pS-downloadButton").removeAttribute("disabled")
-	document.getElementById("jt-pS-downloadButton").setAttribute("data-disabled", "false")
+	switchButtonState(document.getElementById("jt-pS-generateButton"))
+	switchButtonState(document.getElementById("jt-pS-downloadButton"))
 	root.render(sheet)
 }
