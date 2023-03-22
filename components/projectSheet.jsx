@@ -88,7 +88,7 @@ export const projectSheet = ({document}) => {
 			}
 		`}</style>
 		<div className="jt-pS-wrapper">
-			<Card paddingX={2} paddingY={3} borderBottom={1} style={{ position: "sticky", top: "0", zIndex: "10", textAlign: "right" }}>
+			<Card paddingX={3} paddingY={2} borderBottom={1} style={{ position: "sticky", top: "0", zIndex: "10", textAlign: "right" }}>
 				<Inline space={2}>
 					<Button id="jt-pS-generateButton" mode="ghost" text="Generate" onClick={() => generateProjectSheet(document)} />
 					<Button id="jt-pS-downloadButton" icon={DownloadIcon} tone="primary" text="Download" disabled="true" />
