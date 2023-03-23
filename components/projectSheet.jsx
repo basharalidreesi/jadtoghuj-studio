@@ -25,7 +25,7 @@ export const projectSheet = ({document}) => {
 				left: 0;
 			}
 			.jt-pS-container {
-				font-size: 16px;
+				font-size: calc(var(--jt-pS-pageWidth) / 21);
 				font-weight: 400;
 				font-style: normal;
 				line-height: 1.0;
@@ -57,10 +57,9 @@ export const projectSheet = ({document}) => {
 				touch-action: manipulation;
 			}
 			.jt-pS-container {
+				--jt-pS-pageWidth: 100vw;
 				--jt-pS-containerWidth: 50%;
-				--jt-pS-pageAspectRatio: var(--jt-pS-portraitAspectRatio);
-				--jt-pS-portraitAspectRatio: 141.4%;
-				--jt-pS-landscapeAspectRatio: 70.7%;
+				--jt-pS-pageAspectRatio: 141.27%;
 				--jt-pS-spacerHeight: 2rem;
 				--jt-pS-textColour: #000000;
 				--jt-pS-backgroundTopColour: #ffffff;
@@ -69,21 +68,20 @@ export const projectSheet = ({document}) => {
 			.jt-pS-container {
 				width: var(--jt-pS-containerWidth);
 				max-width: calc(100% - (2 * var(--jt-pS-spacerHeight)));
-				min-width: 10%;
 				margin-inline: auto;
 			}
 			.jt-pS-page {
 				position: relative;
 				width: 100%;
 				padding-top: var(--jt-pS-pageAspectRatio);
-				box-shadow: 0 0 5px 1px #ccc;
+				// box-shadow: 0 0 5px 1px #ccc;
 				background: linear-gradient(to bottom, var(--jt-pS-backgroundTopColour) 10%, var(--jt-pS-backgroundBottomColour) 100%);
 				background-repeat: no-repeat;
 			}
 			.jt-pS-page:first-child {
 				margin-block-start: var(--jt-pS-spacerHeight);
 			}
-			.jt-pS-pageBreak {
+			.jt-pS-spacer {
 				width: 100%;
 				height: var(--jt-pS-spacerHeight);
 			}
@@ -93,6 +91,17 @@ export const projectSheet = ({document}) => {
 				left: 0;
 				width: 100%;
 				height: 100%;
+			}
+			@page {
+				margin: 0 !important;
+			}
+			@media print {
+				html, body {
+					margin: 0 !important;
+				}
+				.jt-pS-spacer {
+					display: none;
+				}
 			}
 		`}</style>
 		<div className="jt-pS-wrapper">
@@ -127,6 +136,18 @@ const switchButtonState = (target) => {
 
 const downloadProjectSheet = () => {
 	console.log("hi")
+	const container = document.getElementById("jt-pS-container")
+	const sanity = document.getElementById("sanity")
+	const clone = container.cloneNode(true)
+	clone.removeAttribute("id")
+	clone.style.setProperty("--jt-pS-containerWidth", "100%")
+	clone.style.setProperty("--jt-pS-spacerHeight", "0")
+	clone.style.setProperty("min-width", "210mm")
+	sanity.style.setProperty("display", "none")
+	document.body.appendChild(clone)
+	window.print()
+	// sanity.style.setProperty("display", "block")
+	// clone.remove()
 }
 
 async function fetchSanityData(sanityDocument) {
@@ -158,7 +179,7 @@ const renderProjectSheet = (data) => {
 				<h1>{data.title}</h1>
 			</div>
 		</div>
-		<div className="jt-pS-pageBreak"></div>
+		<div className="jt-pS-spacer"></div>
 		{data.looks.map(look => {
 			return (
 				<React.Fragment key={look._key}>
@@ -167,7 +188,7 @@ const renderProjectSheet = (data) => {
 							<h1>{look.title}</h1>
 						</div>
 					</div>
-					<div className="jt-pS-pageBreak"></div>
+					<div className="jt-pS-spacer"></div>
 				</React.Fragment>
 			)
 		})}
@@ -179,7 +200,7 @@ const renderProjectSheet = (data) => {
 							<h1>{image.asset.originalFilename}</h1>
 						</div>
 					</div>
-					<div className="jt-pS-pageBreak"></div>
+					<div className="jt-pS-spacer"></div>
 				</React.Fragment>
 			)
 		})}
