@@ -25,7 +25,7 @@ export const projectSheet = ({document}) => {
 				left: 0;
 			}
 			.jt-pS-container {
-				font-size: calc(var(--jt-pS-pageWidth) / 21);
+				font-size: calc(var(--jt-pS-pageWidth) / 37.207654146);
 				font-weight: 400;
 				font-style: normal;
 				line-height: 1.0;
