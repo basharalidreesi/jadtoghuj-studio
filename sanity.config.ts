@@ -1,11 +1,12 @@
 import { defineConfig } from "sanity"
 import { deskTool } from "sanity/desk"
+import { structure } from "./structure"
+import { defaultDocumentNode } from "./defaultDocumentNode"
 import { visionTool } from "@sanity/vision"
 import { schemaTypes } from "./schemas"
 import { templates } from "./templatesAndActions"
+import { newDocumentOptions } from "./newDocumentOptions"
 import { actions } from "./templatesAndActions"
-import { structure } from "./structure"
-import { defaultDocumentNode } from "./defaultDocumentNode"
 import { logo } from "./components/logo"
 import { hideElementUsingCssSelector } from "./components/css"
 
@@ -27,17 +28,13 @@ export default defineConfig({
 		templates: templates,
 	},
 	document: {
+		newDocumentOptions: newDocumentOptions,
 		actions: actions,
 	},
 	studio: {
 		components: {
 			logo: logo,
 			layout: (props) => hideElementUsingCssSelector(props, '[id^="noCreate-"] [data-ui="Button"][data-testid="action-intent-button"]'),
-			navbar: (props) => hideElementUsingCssSelector(props, `
-				#new-document-dialog [data-ui="Button"][href="/intent/create/template=page;type=page/"],
-				#new-document-dialog [data-ui="Button"][href="/intent/create/template=settings;type=settings/"],
-				#new-document-dialog [data-ui="Button"][href="/intent/create/template=settings-for-jadtoghuj.com;type=settings/"]
-			`),
 		},
 	},
 })
