@@ -24,6 +24,10 @@ export const structure = (S, context) =>
 						.title("Projects")
 						.menuItems([])
 						.defaultLayout("detail")
+						.defaultOrdering([
+							{ field: "year", direction: "desc" },
+							{ field: "title", direction: "asc" },
+						])
 				),
 			S.listItem()
 				.title("Categories")
@@ -32,6 +36,7 @@ export const structure = (S, context) =>
 					S.documentTypeList("category")
 						.title("Categories")
 						.menuItems([])
+						.defaultOrdering([{ field: "title", direction: "asc" }])
 				),
 			S.listItem()
 				.title("Campaigns")
@@ -40,6 +45,7 @@ export const structure = (S, context) =>
 					S.documentTypeList("campaign")
 						.title("Campaigns")
 						.menuItems([])
+						.defaultOrdering([{ field: "title", direction: "asc" }])
 				),
 			S.listItem()
 				.title("People")
@@ -48,6 +54,7 @@ export const structure = (S, context) =>
 					S.documentTypeList("person")
 						.title("People")
 						.menuItems([])
+						.defaultOrdering([{ field: "name", direction: "asc" }])
 				),
 			S.divider(),
 			...supportedWebsites.map(website => {
@@ -66,6 +73,7 @@ export const structure = (S, context) =>
 											.title(supportedWebsites.length === 1 ? "Pages" : `Pages for ${website.title}`)
 											.filter(`_type == "page" && website == "${website.value}"`)
 											.menuItems([])
+											.defaultOrdering([{field: "title", direction: "asc"}])
 											.initialValueTemplates([
 												S.initialValueTemplateItem(`page-for-${website.value}`)
 											])
@@ -105,6 +113,10 @@ export const structure = (S, context) =>
 														.filter('_type == "project" && !(_id in path("drafts.**"))')
 														.menuItems([])
 														.defaultLayout("detail")
+														.defaultOrdering([
+															{ field: "year", direction: "desc" },
+															{ field: "title", direction: "asc" },
+														])
 												),
 											S.listItem()
 												.title("Modified projects")
@@ -115,6 +127,10 @@ export const structure = (S, context) =>
 														.filter('_type == "project" && (count(*[_id in [^._id, "drafts." + ^._id]]) > 1)')
 														.menuItems([])
 														.defaultLayout("detail")
+														.defaultOrdering([
+															{ field: "year", direction: "desc" },
+															{ field: "title", direction: "asc" },
+														])
 												),
 											S.listItem()
 												.title("Unpublished projects")
@@ -125,6 +141,10 @@ export const structure = (S, context) =>
 														.filter('_type == "project" && (_id in path("drafts.**") && count(*[^._id == "drafts." + _id]) == 0)')
 														.menuItems([])
 														.defaultLayout("detail")
+														.defaultOrdering([
+															{ field: "year", direction: "desc" },
+															{ field: "title", direction: "asc" },
+														])
 												),
 										])
 								),
@@ -153,6 +173,7 @@ export const structure = (S, context) =>
 																.filter('_type == "project" && year == $year')
 																.params({ year: year })
 																.defaultLayout("detail")
+																.defaultOrdering([{ field: "title", direction: "asc" }])
 														)
 												}),
 											)
@@ -178,6 +199,7 @@ export const structure = (S, context) =>
 																.filter('_type == "project" && $categoryId in categories[]._ref')
 																.params({ categoryId: categoryId })
 																.defaultLayout("detail")
+																.defaultOrdering([{ field: "title", direction: "asc" }])
 														)
 												}),
 											)
@@ -210,6 +232,7 @@ export const structure = (S, context) =>
 																.filter('(_type == "project" && references($personId)) || (_type == "project" && references($referencedLooks))')
 																.params({ personId: personId, referencedLooks: doc.referencedLooks })
 																.defaultLayout("detail")
+																.defaultOrdering([{ field: "name", direction: "asc" }])
 														)
 												})
 											)
