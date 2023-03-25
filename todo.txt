@@ -3,3 +3,5 @@
 - look specifications?
 - tags for projects?
 - filter by campaign
+- external links in nav
+- customise projects in url
