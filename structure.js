@@ -1,5 +1,6 @@
-import { BookIcon, CogIcon, DocumentsIcon, EarthGlobeIcon, FilterIcon, HeartIcon, HomeIcon, TagIcon, UsersIcon } from "@sanity/icons"
+import { BookIcon, CogIcon, DocumentsIcon, EarthGlobeIcon, FilterIcon, HeartIcon, TagIcon, UsersIcon } from "@sanity/icons"
 import { supportedWebsites } from "./lib/websites"
+import { apiVersion } from "./sanity.client"
 
 const hiddenDocumentTypes = listItem => ![
 	"campaign",
@@ -132,7 +133,7 @@ export const structure = (S, context) =>
 								.child(() => {
 									const query = `*[_type == "project"] | order(year desc) { year }`
 									const params = {}
-									return context.getClient({apiVersion: "2023-03-20"}).fetch(query, params).then(docs => {
+									return context.getClient({apiVersion}).fetch(query, params).then(docs => {
 										const years = []
 										docs.forEach(doc => {
 											const year = doc?.year
@@ -162,7 +163,7 @@ export const structure = (S, context) =>
 								.child(() => {
 									const query = `*[_type == "category"] | order(title asc) { _id, title }`
 									const params = {}
-									return context.getClient({apiVersion: "2023-03-19"}).fetch(query, params).then(docs => {
+									return context.getClient({apiVersion}).fetch(query, params).then(docs => {
 										return S.list()
 											.title("Projects by category")
 											.items(
@@ -194,7 +195,7 @@ export const structure = (S, context) =>
 										}
 									`
 									const params = {}
-									return context.getClient({apiVersion: "2023-03-19"}).fetch(query, params).then(docs => {
+									return context.getClient({apiVersion}).fetch(query, params).then(docs => {
 										return S.list()
 											.title("Projects by person(s)")
 											.items(

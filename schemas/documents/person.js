@@ -1,4 +1,4 @@
-import { UserIcon } from "@sanity/icons";
+import { UserIcon } from "@sanity/icons"
 
 export default {
 	name: "person",
@@ -10,11 +10,13 @@ export default {
 			name: "name",
 			type: "string",
 			title: "Name",
+			description: "",
 		},
 		{
 			name: "url",
 			type: "url",
 			title: "URL",
+			description: "",
 		},
 	],
 	orderings: [

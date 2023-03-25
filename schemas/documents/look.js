@@ -1,5 +1,5 @@
 import { ImageIcon } from "@sanity/icons"
-import { portableTextPreview } from "../../lib/portableTextPreview"
+import { previewPortableText } from "../../lib/previewPortableText"
 
 export default {
     name: "look",
@@ -11,11 +11,13 @@ export default {
 			name: "title",
 			type: "string",
 			title: "Title",
+			description: "",
 		},
 		{
 			name: "display",
 			type: "image",
 			title: "Display",
+			description: "",
 			options: {
 				metadata: [
 					"lqip",
@@ -40,7 +42,7 @@ export default {
 			const { title, description, display } = selection
 			return {
 				title: title,
-				subtitle: portableTextPreview(description),
+				subtitle: previewPortableText(description),
 				media: display ? display : ImageIcon,
 			}
 		},

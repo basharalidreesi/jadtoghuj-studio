@@ -1,21 +1,14 @@
 import { Button, Card, Inline } from "@sanity/ui"
-import { createClient } from "@sanity/client"
-import * as ReactDOM from "react-dom/client"
 import { DownloadIcon } from "@sanity/icons"
-import React, { useEffect } from "react"
+import * as ReactDOM from "react-dom/client"
+import { Fragment, useEffect } from "react"
+import { client } from "../sanity.client"
 
-const client = createClient({
-	projectId: "nhelboup",
-	dataset: "production",
-	useCdn: true,
-	apiVersion: "2022-03-21",
-})
-
-const context = document
+const htmlDocument = document
 
 export const projectSheet = ({document}) => {
 	useEffect(() => {
-		switchButtonState(context.getElementById("jt-pS-downloadButton"))
+		switchButtonState(htmlDocument.getElementById("jt-pS-downloadButton"))
 	}, [])
 	return (<>
 		<style>{`
@@ -67,14 +60,14 @@ export const projectSheet = ({document}) => {
 			}
 			.jt-pS-container {
 				width: var(--jt-pS-containerWidth);
-				max-width: calc(100% - (2 * var(--jt-pS-spacerHeight)));
+				// max-width: calc(100% - (2 * var(--jt-pS-spacerHeight)));
 				margin-inline: auto;
 			}
 			.jt-pS-page {
 				position: relative;
 				width: 100%;
 				padding-top: var(--jt-pS-pageAspectRatio);
-				// box-shadow: 0 0 5px 1px #ccc;
+				box-shadow: 0 0 5px 1px var(--card-hairline-soft-color);
 				background: linear-gradient(to bottom, var(--jt-pS-backgroundTopColour) 10%, var(--jt-pS-backgroundBottomColour) 100%);
 				background-repeat: no-repeat;
 			}
@@ -140,9 +133,10 @@ const downloadProjectSheet = () => {
 	const sanity = document.getElementById("sanity")
 	const clone = container.cloneNode(true)
 	clone.removeAttribute("id")
-	clone.style.setProperty("--jt-pS-containerWidth", "100%")
+	clone.style.setProperty("--card-hairline-soft-color", "transparent")
+	clone.style.setProperty("--jt-pS-containerWidth", "210mm")
 	clone.style.setProperty("--jt-pS-spacerHeight", "0")
-	clone.style.setProperty("min-width", "210mm")
+	clone.style.setProperty("font-size", "16pt")
 	sanity.style.setProperty("display", "none")
 	document.body.appendChild(clone)
 	window.print()
@@ -182,26 +176,26 @@ const renderProjectSheet = (data) => {
 		<div className="jt-pS-spacer"></div>
 		{data.looks.map(look => {
 			return (
-				<React.Fragment key={look._key}>
+				<Fragment key={look._key}>
 					<div className="jt-pS-page">
 						<div className="jt-pS-pageContents">
 							<h1>{look.title}</h1>
 						</div>
 					</div>
 					<div className="jt-pS-spacer"></div>
-				</React.Fragment>
+				</Fragment>
 			)
 		})}
 		{data.lookbook.map(image => {
 			return (
-				<React.Fragment key={image._key}>
+				<Fragment key={image._key}>
 					<div className="jt-pS-page">
 						<div className="jt-pS-pageContents">
 							<h1>{image.asset.originalFilename}</h1>
 						</div>
 					</div>
 					<div className="jt-pS-spacer"></div>
-				</React.Fragment>
+				</Fragment>
 			)
 		})}
 	</>

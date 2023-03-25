@@ -1,7 +1,8 @@
 import { BookIcon, DocumentTextIcon, EditIcon, HeartIcon, HomeIcon, ImageIcon, TagIcon } from "@sanity/icons"
-import { pageIsUniqueLocally } from "../../lib/pageIsUniqueLocally"
 import { filterAlreadyReferencedDocuments } from "../../lib/filterAlreadyReferencedDocuments"
-import { portableTextPreview } from "../../lib/portableTextPreview"
+import { isLocallyUnique } from "../../lib/isLocallyUnique"
+import { previewArrayValues } from "../../lib/previewArrayValues"
+import { previewPortableText } from "../../lib/previewPortableText"
 
 export default {
 	name: "page",
@@ -13,25 +14,29 @@ export default {
 			name: "title",
 			type: "string",
 			title: "Title",
+			description: "",
 		},
 		{
 			name: "website",
 			type: "website",
 			title: "Website",
+			description: "",
 		},
 		{
 			name: "address",
 			type: "slug",
 			title: "Address",
+			description: "",
 			options: {
 				source: "title",
-				isUnique: pageIsUniqueLocally,
+				isUnique: isLocallyUnique,
 			},
 		},
 		{
 			name: "contents",
 			type: "array",
 			title: "Contents",
+			description: "",
 			of: [
 				{
 					name: "textBlock",
@@ -43,6 +48,7 @@ export default {
 							name: "text",
 							type: "portableText",
 							title: "Text",
+							description: "",
 						},
 					],
 					preview: {
@@ -52,7 +58,7 @@ export default {
 						prepare(selection) {
 							const { text } = selection
 							return {
-								title: portableTextPreview(text),
+								title: previewPortableText(text),
 								subtitle: "Text Block"
 							}
 						},
@@ -62,6 +68,7 @@ export default {
 					name: "imageBlock",
 					type: "image",
 					title: "Image Block",
+					description: "",
 					icon: ImageIcon,
 					preview: {
 						select: {
@@ -88,6 +95,7 @@ export default {
 							name: "projects",
 							type: "array",
 							title: "Projects",
+							description: "",
 							of: [
 								{
 									type: "reference",
@@ -110,9 +118,8 @@ export default {
 						},
 						prepare(selection) {
 							const { project0, project1, project2, project3 } = selection
-							const projects = [project0, project1, project2]?.filter(Boolean)?.join(", ") || ""
 							return {
-								title: project3 ? (projects + ", ...") : projects,
+								title: previewArrayValues(project0, project1, project2, project3),
 								subtitle: "Project Feature",
 							}
 						},
@@ -128,6 +135,7 @@ export default {
 							name: "categories",
 							type: "array",
 							title: "Categories",
+							description: "",
 							of: [
 								{
 									type: "reference",
@@ -150,9 +158,8 @@ export default {
 						},
 						prepare(selection) {
 							const { category0, category1, category2, category3 } = selection
-							const categories = [category0, category1, category2]?.filter(Boolean)?.join(", ") || ""
 							return {
-								title: category3 ? (categories + ", ...") : categories,
+								title: previewArrayValues(category0, category1, category2, category3),
 								subtitle: "Category Feature",
 							}
 						},
@@ -168,6 +175,7 @@ export default {
 							name: "campaigns",
 							type: "array",
 							title: "Campaigns",
+							description: "",
 							of: [
 								{
 									type: "reference",
@@ -190,9 +198,8 @@ export default {
 						},
 						prepare(selection) {
 							const { campaign0, campaign1, campaign2, campaign3 } = selection
-							const campaigns = [campaign0, campaign1, campaign2]?.filter(Boolean)?.join(", ") || ""
 							return {
-								title: campaign3 ? (campaigns + ", ...") : campaigns,
+								title: previewArrayValues(campaign0, campaign1, campaign2, campaign3),
 								subtitle: "Campaign Feature",
 							}
 						},
