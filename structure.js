@@ -76,7 +76,7 @@ export const structure = (S, context) =>
 									.child(
 										S.document()
 											.schemaType("settings")
-											.id(`settings-for-${website.value}`)
+											.id("d5ca9e8b-c1e1-49f3-b0ea-0e7666d124f1")
 											.initialValueTemplate(`settings-for-${website.value}`)
 									),
 							])
