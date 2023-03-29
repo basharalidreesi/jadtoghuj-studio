@@ -1,4 +1,4 @@
-import { BookIcon, EditIcon, ImageIcon } from "@sanity/icons"
+import { EditIcon, ImageIcon } from "@sanity/icons"
 import { filterAlreadyReferencedDocuments } from "../../lib/filterAlreadyReferencedDocuments"
 import { previewPortableText } from "../../lib/previewPortableText"
 import { previewArrayValues } from "../../lib/previewArrayValues"
@@ -8,7 +8,7 @@ export default {
 	name: "project",
 	type: "document",
 	title: "Project",
-	icon: BookIcon,
+	icon: ImageIcon,
 	fields: [
 		{
 			name: "title",
@@ -240,7 +240,7 @@ export default {
 			return {
 				title: title,
 				subtitle: previewPortableText(description),
-				media: asset0 ? asset0 : BookIcon,
+				media: asset0 ? asset0 : ImageIcon,
 			}
 		},
 	},
