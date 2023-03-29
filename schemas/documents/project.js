@@ -99,7 +99,7 @@ export default {
 						prepare(selection) {
 							const { role, person0, person1, person2, person3 } = selection
 							return {
-								title: previewArrayValues(person0, person1, person2, person3, { prefix: role, }),
+								title: previewArrayValues(person0, person1, person2, person3, { prefix: role }),
 								media: EditIcon,
 							}
 						},
@@ -193,21 +193,17 @@ export default {
 					preview: {
 						select: {
 							originalFilename: "asset.originalFilename",
-							look0Title: "looks.0.title",
-							look0Asset: "looks.0.display.asset",
-							look1Title: "looks.1.title",
-							look1Asset: "looks.1.display.asset",
-							look2Title: "looks.2.title",
-							look2Asset: "looks.2.display.asset",
-							look3Asset: "looks.3.display.asset",
+							look0: "looks.0.title",
+							look1: "looks.1.title",
+							look2: "looks.2.title",
+							look3: "looks.3.title",
 							caption: "caption",
 							asset: "asset",
 						},
 						prepare(selection) {
-							const { originalFilename, look0Title, look0Asset, look1Title, look1Asset, look2Title, look2Asset, look3Asset, caption, asset } = selection
-							const looks = [look0Asset ? (look0Title ? look0Title : "Untitled") : "", look1Asset ? (look1Title ? look1Title : "untitled") : "", look2Asset ? (look2Title ? look2Title : "untitled") : ""]?.filter(Boolean)?.join(", ") || ""
+							const { originalFilename, look0, look1, look2, look3, caption, asset } = selection
 							return {
-								title: originalFilename + (looks ? (" (" + (look3Asset ? looks + ", ..." : looks) + ")") : ""),
+								title: previewArrayValues(look0, look1, look2, look3, { prefix: originalFilename, begin: " (", end: ")" }),
 								subtitle: previewPortableText(caption),
 								media: asset ? asset : ImageIcon,
 							}
