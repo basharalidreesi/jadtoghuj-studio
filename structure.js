@@ -99,53 +99,31 @@ export const structure = (S, context) =>
 						.title("Filters")
 						.items([
 							S.listItem()
-								.title("Projects by publishing status")
+								.title("Public projects")
 								.child(
-									S.list()
-										.title("Projects by publishing status")
-										.items([
-											S.listItem()
-												.title("Published projects")
-												.child(
-													S.documentTypeList("project")
-														.title("Published projecs")
-														.id("noCreate-publishedProjects")
-														.filter('_type == "project" && !(_id in path("drafts.**"))')
-														.menuItems([])
-														.defaultLayout("detail")
-														.defaultOrdering([
-															{ field: "year", direction: "desc" },
-															{ field: "title", direction: "asc" },
-														])
-												),
-											S.listItem()
-												.title("Modified projects")
-												.child(
-													S.documentTypeList("project")
-														.title("Modified projects")
-														.id("noCreate-modifiedProjects")
-														.filter('_type == "project" && (count(*[_id in [^._id, "drafts." + ^._id]]) > 1)')
-														.menuItems([])
-														.defaultLayout("detail")
-														.defaultOrdering([
-															{ field: "year", direction: "desc" },
-															{ field: "title", direction: "asc" },
-														])
-												),
-											S.listItem()
-												.title("Unpublished projects")
-												.child(
-													S.documentTypeList("project")
-														.title("Unpublished projects")
-														.id("noCreate-unpublishedProjects")
-														.filter('_type == "project" && (_id in path("drafts.**") && count(*[^._id == "drafts." + _id]) == 0)')
-														.menuItems([])
-														.defaultLayout("detail")
-														.defaultOrdering([
-															{ field: "year", direction: "desc" },
-															{ field: "title", direction: "asc" },
-														])
-												),
+									S.documentTypeList("project")
+										.title("Public projecs")
+										.id("noCreate-publicProjects")
+										.filter('_type == "project" && isPublic == true')
+										.menuItems([])
+										.defaultLayout("detail")
+										.defaultOrdering([
+											{ field: "year", direction: "desc" },
+											{ field: "title", direction: "asc" },
+										])
+								),
+							S.listItem()
+								.title("Private projects")
+								.child(
+									S.documentTypeList("project")
+										.title("Private projects")
+										.id("noCreate-privateProjects")
+										.filter('_type == "project" && isPublic != true')
+										.menuItems([])
+										.defaultLayout("detail")
+										.defaultOrdering([
+											{ field: "year", direction: "desc" },
+											{ field: "title", direction: "asc" },
 										])
 								),
 							S.listItem()

@@ -1,4 +1,4 @@
-import { CogIcon, DocumentsIcon } from "@sanity/icons"
+import { CheckmarkCircleIcon, CogIcon, DocumentsIcon } from "@sanity/icons"
 import { previewArrayValues } from "../../lib/previewArrayValues"
 
 export default {
@@ -99,6 +99,27 @@ export default {
 										},
 									},
 								},
+								{
+									name: "currentPage",
+									type: "object",
+									title: "Current Page",
+									fields: [
+										{
+											name: "title",
+											type: "string",
+											initialValue: "Current Page",
+										}
+									],
+									preview: {
+										prepare() {
+											return {
+												title: "Current Page",
+												subtitle: "Placeholder",
+												media: CheckmarkCircleIcon,
+											}
+										},
+									},
+								},
 							],
 						},
 					],
@@ -132,7 +153,14 @@ export default {
 			name: "baseUrl",
 			type: "string",
 			title: "Base URL",
-			description: "The subdirectory of this website. The base URL Must begin with a forward slash, and mustn't end with a trailing one.",
+			description: "The subdirectory under which this website exists. The base URL Must begin with a forward slash, and mustn't end with a trailing one.",
+			group: "configuration",
+		},
+		{
+			name: "projectPath",
+			type: "string",
+			title: "Project path",
+			description: "",
 			group: "configuration",
 		},
 		{

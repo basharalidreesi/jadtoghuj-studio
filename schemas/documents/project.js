@@ -38,6 +38,13 @@ export default {
 			},
 		},
 		{
+			name: "isPublic",
+			type: "boolean",
+			title: "Public",
+			description: "Controls whether to publish this project and its contents.",
+			initialValue: true,
+		},
+		{
 			name: "categories",
 			type: "array",
 			title: "Categories",
@@ -125,8 +132,8 @@ export default {
 									"refs": count(*[references(^._id)])
 								} [refs == 0]._id
 							`)
-							const usedLooks = document?.lookbook?.map(image => image?.looks?.map(look => look?._ref))?.filter(Boolean)?.flat()
-							const existingLooks = parent?.map(look => look._ref)?.filter(Boolean)
+							const usedLooks = document?.lookbook?.map(image => image?.looks?.map(look => look?._ref))?.filter(Boolean)?.flat() || ""
+							const existingLooks = parent?.map(look => look._ref)?.filter(Boolean) | ""
 							return Promise.resolve({
 								filter: '((_id in $usedLooks) && !(_id in $existingLooks)) || _id in $unreferencedLooks',
 								params: {
@@ -169,8 +176,8 @@ export default {
 									options: {
 										disableNew: true,
 										filter: ({document, parent}) => {
-											const listedLooks = document?.looks.map(look => look._ref)?.filter(Boolean)
-											const existingLooks = parent?.map(look => look._ref)?.filter(Boolean)
+											const listedLooks = document?.looks.map(look => look._ref)?.filter(Boolean) || ""
+											const existingLooks = parent?.map(look => look._ref)?.filter(Boolean) || ""
 											return {
 												filter: '(_id in $listedLooks) && !(_id in $existingLooks)',
 												params: {
@@ -197,13 +204,26 @@ export default {
 							look1: "looks.1.title",
 							look2: "looks.2.title",
 							look3: "looks.3.title",
+							ref0: "looks.0._ref",
+							ref1: "looks.1._ref",
+							ref2: "looks.2._ref",
+							ref3: "looks.3._ref",
 							caption: "caption",
 							asset: "asset",
 						},
 						prepare(selection) {
-							const { originalFilename, look0, look1, look2, look3, caption, asset } = selection
+							const { originalFilename, look0, look1, look2, look3, ref0, ref1, ref2, ref3, caption, asset } = selection
 							return {
-								title: previewArrayValues(look0, look1, look2, look3, { prefix: originalFilename, begin: " (", end: ")" }),
+								title: previewArrayValues(look0, look1, look2, look3, {
+									prefix: originalFilename,
+									begin: " (",
+									end: ")",
+									ref0: ref0,
+									ref1: ref1,
+									ref2: ref2,
+									ref3: ref3,
+									untitled: "Untitled Look",
+								}),
 								subtitle: previewPortableText(caption),
 								media: asset ? asset : ImageIcon,
 							}
@@ -233,12 +253,13 @@ export default {
 		select: {
 			title: "title",
 			description: "description",
+			isPublic: "isPublic",
 			asset0: "lookbook.0.asset"
 		},
 		prepare(selection) {
-			const { title, description, asset0 } = selection
+			const { title, description, isPublic, asset0 } = selection
 			return {
-				title: title,
+				title: isPublic ? title : (title ? ("🔒 " + title) : ""),
 				subtitle: previewPortableText(description),
 				media: asset0 ? asset0 : ImageIcon,
 			}

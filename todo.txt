@@ -4,4 +4,6 @@
 - tags for projects?
 - filter by campaign
 - external links in nav
-- customise projects in url
+- portable text reference to project
+- footer
+- validation for person names

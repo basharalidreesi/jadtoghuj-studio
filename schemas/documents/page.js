@@ -230,7 +230,7 @@ export default {
 			const { title, address, website } = selection
 			return {
 				title: title,
-				subtitle: website + (address === "/" ? "" : "/") + address + (address === "/" ? "" : "/"),
+				subtitle: website + "/..." + (address === "/" ? "" : "/") + address + (address === "/" ? "" : "/"),
 				media: address === "/" ? HomeIcon : DocumentTextIcon,
 			}
 		},
