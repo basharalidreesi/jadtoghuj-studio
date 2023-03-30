@@ -41,7 +41,7 @@ export default {
 				{
 					name: "textBlock",
 					type: "object",
-					title: "Text Block",
+					title: "Text",
 					icon: EditIcon,
 					fields: [
 						{
@@ -67,7 +67,7 @@ export default {
 				{
 					name: "imageBlock",
 					type: "image",
-					title: "Image Block",
+					title: "Image",
 					description: "",
 					icon: ImageIcon,
 					preview: {
@@ -86,9 +86,9 @@ export default {
 					}
 				},
 				{
-					name: "projectFeature",
+					name: "projectBlock",
 					type: "object",
-					title: "Project Feature",
+					title: "Project",
 					icon: BookIcon,
 					fields: [
 						{
@@ -128,15 +128,15 @@ export default {
 							const { project0, project1, project2, project3 } = selection
 							return {
 								title: previewArrayValues(project0, project1, project2, project3),
-								subtitle: "Project Feature",
+								subtitle: "Project Block",
 							}
 						},
 					},
 				},
 				{
-					name: "categoryFeature",
+					name: "categoryBlock",
 					type: "object",
-					title: "Category Feature",
+					title: "Category",
 					icon: TagIcon,
 					fields: [
 						{
@@ -168,15 +168,15 @@ export default {
 							const { category0, category1, category2, category3 } = selection
 							return {
 								title: previewArrayValues(category0, category1, category2, category3),
-								subtitle: "Category Feature",
+								subtitle: "Category Block",
 							}
 						},
 					},
 				},
 				{
-					name: "campaignFeature",
+					name: "campaignBlock",
 					type: "object",
-					title: "Campaign Feature",
+					title: "Campaign",
 					icon: HeartIcon,
 					fields: [
 						{
@@ -208,7 +208,7 @@ export default {
 							const { campaign0, campaign1, campaign2, campaign3 } = selection
 							return {
 								title: previewArrayValues(campaign0, campaign1, campaign2, campaign3),
-								subtitle: "Campaign Feature",
+								subtitle: "Campaign Block",
 							}
 						},
 					},

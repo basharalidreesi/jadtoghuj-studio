@@ -3,7 +3,6 @@
 - look specifications?
 - tags for projects?
 - filter by campaign
-- external links in nav
 - portable text reference to project
 - footer
 - validation for person names
