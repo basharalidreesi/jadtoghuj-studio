@@ -1,4 +1,4 @@
-import { CheckmarkCircleIcon, CogIcon, DocumentsIcon } from "@sanity/icons"
+import { CogIcon, DocumentsIcon, DocumentTextIcon, LeaveIcon } from "@sanity/icons"
 import { previewArrayValues } from "../../lib/previewArrayValues"
 
 export default {
@@ -83,7 +83,8 @@ export default {
 								{
 									name: "page",
 									type: "reference",
-									title: "Page",
+									title: "Internal Page",
+									icon: DocumentTextIcon,
 									to: [{ type: "page" }],
 									options: {
 										disableNew: true,
@@ -100,22 +101,35 @@ export default {
 									},
 								},
 								{
-									name: "currentPage",
+									name: "external",
 									type: "object",
-									title: "Current Page",
+									title: "External Page",
+									icon: LeaveIcon,
 									fields: [
 										{
 											name: "title",
 											type: "string",
-											initialValue: "Current Page",
-										}
+											title: "Title",
+											description: "",
+										},
+										{
+											name: "address",
+											type: "url",
+											title: "Address",
+											description: "",
+										},
 									],
 									preview: {
-										prepare() {
+										select: {
+											title: "title",
+											address: "address",
+										},
+										prepare(selection) {
+											const { title, address } = selection
 											return {
-												title: "Current Page",
-												subtitle: "Placeholder",
-												media: CheckmarkCircleIcon,
+												title: title,
+												subtitle: address,
+												media: LeaveIcon,
 											}
 										},
 									},
@@ -159,7 +173,7 @@ export default {
 		{
 			name: "projectPath",
 			type: "string",
-			title: "Project path",
+			title: "Project Path",
 			description: "",
 			group: "configuration",
 		},

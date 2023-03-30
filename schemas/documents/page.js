@@ -103,7 +103,15 @@ export default {
 									to: [{ type: "project" }],
 									options: {
 										disableNew: true,
-										filter: ({parent}) => filterAlreadyReferencedDocuments(parent),
+										filter: async ({parent}) => {
+											const referencedProjects = parent?.map(doc => doc._ref)?.filter(Boolean) || ""
+											return {
+												filter: '!(_id in $referencedProjects) && isPublic == true',
+												params: {
+													referencedProjects,
+												}
+											}
+										},
 									},
 								},
 							],
@@ -224,13 +232,12 @@ export default {
 		select: {
 			title: "title",
 			address: "address.current",
-			website: "website",
 		},
 		prepare(selection) {
-			const { title, address, website } = selection
+			const { title, address } = selection
 			return {
 				title: title,
-				subtitle: website + "/..." + (address === "/" ? "" : "/") + address + (address === "/" ? "" : "/"),
+				subtitle: "..." + (address === "/" ? "" : "/") + address + (address === "/" ? "" : "/"),
 				media: address === "/" ? HomeIcon : DocumentTextIcon,
 			}
 		},
