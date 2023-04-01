@@ -30,14 +30,6 @@ export default {
 						title: "Emphasis",
 						value: "em",
 					},
-					{
-						title: "Underline",
-						value: "underline",
-					},
-					{
-						title: "Strike",
-						value: "strike-through",
-					},
 				],
 				annotations: [
 					{
