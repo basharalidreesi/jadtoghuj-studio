@@ -1,4 +1,4 @@
-import { CogIcon, DocumentsIcon, DocumentTextIcon, LeaveIcon } from "@sanity/icons"
+import { CogIcon, DocumentsIcon, DocumentTextIcon, IceCreamIcon, InfoOutlineIcon, LeaveIcon } from "@sanity/icons"
 import { previewArrayValues } from "../../lib/previewArrayValues"
 
 export default {
@@ -10,14 +10,18 @@ export default {
 		{
 			name: "information",
 			title: "Information",
+			icon: InfoOutlineIcon,
+			default: true,
 		},
 		{
 			name: "presentation",
 			title: "Presentation",
+			icon: IceCreamIcon,
 		},
 		{
 			name: "configuration",
 			title: "Configuration",
+			icon: CogIcon,
 		},
 	],
 	fields: [
@@ -154,6 +158,13 @@ export default {
 					},
 				},
 			],
+			group: "presentation",
+		},
+		{
+			name: "footer",
+			type: "portableText",
+			title: "Footer",
+			description: "",
 			group: "presentation",
 		},
 		{

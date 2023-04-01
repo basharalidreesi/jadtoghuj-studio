@@ -1,8 +1,4 @@
 - products as new schema? or as category?
-- "looks" should be optional?
-- look specifications?
-- tags for projects?
+- campaigns
 - filter by campaign
-- portable text reference to project
-- footer
-- validation for person names
+- portable text reference to project?

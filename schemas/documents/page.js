@@ -103,8 +103,8 @@ export default {
 									to: [{ type: "project" }],
 									options: {
 										disableNew: true,
-										filter: async ({parent}) => {
-											const referencedProjects = parent?.map(doc => doc._ref)?.filter(Boolean) || ""
+										filter: async ({document}) => {
+											const referencedProjects = document?.contents?.filter(block => block._type === "projectBlock")?.map(doc => doc?.projects?.map(project => project?._ref))?.filter(Boolean)?.flat() || ""
 											return {
 												filter: '!(_id in $referencedProjects) && isPublic == true',
 												params: {
@@ -151,7 +151,15 @@ export default {
 									to: [{ type: "category" }],
 									options: {
 										disableNew: true,
-										filter: ({parent}) => filterAlreadyReferencedDocuments(parent),
+										filter: async ({document}) => {
+											const referencedCategories = document?.contents?.filter(block => block._type === "categoryBlock")?.map(doc => doc?.categories?.map(category => category?._ref))?.filter(Boolean)?.flat() || ""
+											return {
+												filter: '!(_id in $referencedCategories)',
+												params: {
+													referencedCategories,
+												}
+											}
+										},
 									},
 								},
 							],

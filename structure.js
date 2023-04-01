@@ -160,7 +160,7 @@ export const structure = (S, context) =>
 							S.listItem()
 								.title("Projects by category")
 								.child(() => {
-									const query = `*[_type == "category"] | order(title asc) { _id, title }`
+									const query = `*[_type == "category"] | order(lower(title) asc) { _id, title }`
 									const params = {}
 									return context.getClient({apiVersion}).fetch(query, params).then(docs => {
 										return S.list()
@@ -188,7 +188,7 @@ export const structure = (S, context) =>
 								.id("projectsByPersons")
 								.child(() => {
 									const query = `
-										*[_type == "person"] | order(name asc) {
+										*[_type == "person"] | order(lower(name) asc) {
 											_id,
 											name,
 											"referencedLooks": *[_type == "look" && references(^._id)]._id,
