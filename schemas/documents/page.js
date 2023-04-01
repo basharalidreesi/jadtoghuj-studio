@@ -106,7 +106,7 @@ export default {
 										filter: async ({document}) => {
 											const referencedProjects = document?.contents?.filter(block => block._type === "projectBlock")?.map(doc => doc?.projects?.map(project => project?._ref))?.filter(Boolean)?.flat() || ""
 											return {
-												filter: '!(_id in $referencedProjects) && isPublic == true',
+												filter: '!(_id in $referencedProjects) && isPublic == true && defined(address.current)',
 												params: {
 													referencedProjects,
 												}
