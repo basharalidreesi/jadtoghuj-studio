@@ -190,31 +190,24 @@ export default {
 								},
 							],
 						},
-						{
-							name: "caption",
-							type: "portableText",
-							title: "Caption",
-							description: "",
-						},
 					],
 					preview: {
 						select: {
 							originalFilename: "asset.originalFilename",
-							look0: "looks.0.title",
-							look1: "looks.1.title",
-							look2: "looks.2.title",
-							look3: "looks.3.title",
+							title0: "looks.0.title",
+							title1: "looks.1.title",
+							title2: "looks.2.title",
+							title3: "looks.3.title",
 							ref0: "looks.0._ref",
 							ref1: "looks.1._ref",
 							ref2: "looks.2._ref",
 							ref3: "looks.3._ref",
-							caption: "caption",
 							asset: "asset",
 						},
 						prepare(selection) {
-							const { originalFilename, look0, look1, look2, look3, ref0, ref1, ref2, ref3, caption, asset } = selection
+							const { originalFilename, title0, title1, title2, title3, ref0, ref1, ref2, ref3, asset } = selection
 							return {
-								title: previewArrayValues(look0, look1, look2, look3, {
+								title: previewArrayValues(title0, title1, title2, title3, {
 									prefix: originalFilename,
 									begin: " (",
 									end: ")",
@@ -224,7 +217,6 @@ export default {
 									ref3: ref3,
 									untitled: "Untitled Look",
 								}),
-								subtitle: previewPortableText(caption),
 								media: asset ? asset : ImageIcon,
 							}
 						},
