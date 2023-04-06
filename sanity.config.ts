@@ -9,7 +9,6 @@ import { newDocumentOptions } from "./newDocumentOptions"
 import { actions } from "./templatesAndActions"
 import { logo } from "./components/logo"
 import { hideElementUsingCssSelector } from "./components/css"
-import { colorInput } from "@sanity/color-input"
 
 export default defineConfig({
 	name: "default",
@@ -23,7 +22,6 @@ export default defineConfig({
 			defaultDocumentNode,
 		}),
 		visionTool(),
-		colorInput(),
 	],
 	schema: {
 		types: schemaTypes,
