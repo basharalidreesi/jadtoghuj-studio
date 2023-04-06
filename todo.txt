@@ -3,3 +3,5 @@
 - filter by campaign
 - portable text reference to project?
 - filter by projects used on website
+- better slugify
+- colour override
