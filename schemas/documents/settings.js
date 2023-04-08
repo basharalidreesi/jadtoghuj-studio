@@ -76,7 +76,7 @@ export default {
 			description: "",
 			fields: [
 				{
-					name: "topColour",
+					name: "top",
 					type: "string",
 					title: "Top",
 					description: "",
@@ -85,7 +85,7 @@ export default {
 					},
 				},
 				{
-					name: "bottomColour",
+					name: "bottom",
 					type: "string",
 					title: "Bottom",
 					description: "",
@@ -94,7 +94,7 @@ export default {
 					},
 				},
 				{
-					name: "textColour",
+					name: "text",
 					type: "string",
 					title: "Text",
 					description: "",
@@ -177,6 +177,35 @@ export default {
 											}
 										},
 									},
+								},
+							],
+						},
+						{
+							name: "truncation",
+							type: "object",
+							title: "Truncation",
+							description: "",
+							fields: [
+								{
+									name: "isTruncated",
+									type: "boolean",
+									title: "Truncate",
+									description: "",
+									initialValue: false,
+								},
+								{
+									name: "limit",
+									type: "number",
+									title: "Limit",
+									description: "",
+									hidden: ({parent}) => !parent?.isTruncated,
+								},
+								{
+									name: "label",
+									type: "string",
+									title: "Label",
+									description: "",
+									hidden: ({parent}) => !parent?.isTruncated,
 								},
 							],
 						},
