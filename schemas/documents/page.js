@@ -1,8 +1,5 @@
-import { BookIcon, DocumentTextIcon, EditIcon, HeartIcon, HomeIcon, ImageIcon, TagIcon } from "@sanity/icons"
-import { filterAlreadyReferencedDocuments } from "../../lib/filterAlreadyReferencedDocuments"
+import { DocumentTextIcon, HomeIcon } from "@sanity/icons"
 import { isLocallyUnique } from "../../lib/isLocallyUnique"
-import { previewArrayValues } from "../../lib/previewArrayValues"
-import { previewPortableText } from "../../lib/previewPortableText"
 
 export default {
 	name: "page",
@@ -40,186 +37,33 @@ export default {
 			of: [
 				{
 					name: "textBlock",
-					type: "object",
+					type: "textBlock",
 					title: "Text",
-					icon: EditIcon,
-					fields: [
-						{
-							name: "text",
-							type: "portableText",
-							title: "Text",
-							description: "",
-						},
-					],
-					preview: {
-						select: {
-							text: "text",
-						},
-						prepare(selection) {
-							const { text } = selection
-							return {
-								title: previewPortableText(text),
-								subtitle: "Text Block"
-							}
-						},
-					},
 				},
 				{
 					name: "imageBlock",
-					type: "image",
+					type: "imageBlock",
 					title: "Image",
-					description: "",
-					icon: ImageIcon,
-					preview: {
-						select: {
-							originalFilename: "asset.originalFilename",
-							asset: "asset",
-						},
-						prepare(selection) {
-							const { originalFilename, asset } = selection
-							return {
-								title: originalFilename,
-								subtitle: "Image Block",
-								media: asset ? asset : ImageIcon
-							}
-						},
-					}
+				},
+				{
+					name: "lookBlock",
+					type: "lookBlock",
+					title: "Look",
 				},
 				{
 					name: "projectBlock",
-					type: "object",
+					type: "projectBlock",
 					title: "Project",
-					icon: BookIcon,
-					fields: [
-						{
-							name: "projects",
-							type: "array",
-							title: "Projects",
-							description: "",
-							of: [
-								{
-									type: "reference",
-									title: "Project",
-									to: [{ type: "project" }],
-									options: {
-										disableNew: true,
-										filter: async ({document}) => {
-											const referencedProjects = document?.contents?.filter(block => block._type === "projectBlock")?.map(doc => doc?.projects?.map(project => project?._ref))?.filter(Boolean)?.flat() || ""
-											return {
-												filter: '!(_id in $referencedProjects) && isPublic == true && defined(address.current)',
-												params: {
-													referencedProjects,
-												}
-											}
-										},
-									},
-								},
-							],
-						},
-					],
-					preview: {
-						select: {
-							project0: "projects.0.title",
-							project1: "projects.1.title",
-							project2: "projects.2.title",
-							project3: "projects.3.title",
-						},
-						prepare(selection) {
-							const { project0, project1, project2, project3 } = selection
-							return {
-								title: previewArrayValues(project0, project1, project2, project3),
-								subtitle: "Project Block",
-							}
-						},
-					},
 				},
 				{
 					name: "categoryBlock",
-					type: "object",
+					type: "categoryBlock",
 					title: "Category",
-					icon: TagIcon,
-					fields: [
-						{
-							name: "categories",
-							type: "array",
-							title: "Categories",
-							description: "",
-							of: [
-								{
-									type: "reference",
-									title: "Category",
-									to: [{ type: "category" }],
-									options: {
-										disableNew: true,
-										filter: async ({document}) => {
-											const referencedCategories = document?.contents?.filter(block => block._type === "categoryBlock")?.map(doc => doc?.categories?.map(category => category?._ref))?.filter(Boolean)?.flat() || ""
-											return {
-												filter: '!(_id in $referencedCategories)',
-												params: {
-													referencedCategories,
-												}
-											}
-										},
-									},
-								},
-							],
-						},
-					],
-					preview: {
-						select: {
-							category0: "categories.0.title",
-							category1: "categories.1.title",
-							category2: "categories.2.title",
-							category3: "categories.3.title",
-						},
-						prepare(selection) {
-							const { category0, category1, category2, category3 } = selection
-							return {
-								title: previewArrayValues(category0, category1, category2, category3),
-								subtitle: "Category Block",
-							}
-						},
-					},
 				},
 				{
 					name: "campaignBlock",
-					type: "object",
+					type: "campaignBlock",
 					title: "Campaign",
-					icon: HeartIcon,
-					fields: [
-						{
-							name: "campaigns",
-							type: "array",
-							title: "Campaigns",
-							description: "",
-							of: [
-								{
-									type: "reference",
-									title: "Campaign",
-									to: [{ type: "campaign" }],
-									options: {
-										disableNew: true,
-										filter: ({parent}) => filterAlreadyReferencedDocuments(parent),
-									},
-								},
-							],
-						},
-					],
-					preview: {
-						select: {
-							campaign0: "campaigns.0.title",
-							campaign1: "campaigns.1.title",
-							campaign2: "campaigns.2.title",
-							campaign3: "campaigns.3.title",
-						},
-						prepare(selection) {
-							const { campaign0, campaign1, campaign2, campaign3 } = selection
-							return {
-								title: previewArrayValues(campaign0, campaign1, campaign2, campaign3),
-								subtitle: "Campaign Block",
-							}
-						},
-					},
 				},
 			],
 		},

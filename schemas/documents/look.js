@@ -1,11 +1,11 @@
-import { ImageIcon } from "@sanity/icons"
+import { StarIcon } from "@sanity/icons"
 import { previewPortableText } from "../../lib/previewPortableText"
 
 export default {
     name: "look",
 	type: "document",
 	title: "Look",
-	icon: ImageIcon,
+	icon: StarIcon,
 	fields: [
 		{
 			name: "title",
@@ -43,7 +43,7 @@ export default {
 			return {
 				title: title,
 				subtitle: previewPortableText(description),
-				media: display ? display : ImageIcon,
+				media: display ? display : StarIcon,
 			}
 		},
 	},

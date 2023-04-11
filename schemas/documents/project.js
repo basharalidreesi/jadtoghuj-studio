@@ -1,4 +1,4 @@
-import { EditIcon, ImageIcon } from "@sanity/icons"
+import { ImageIcon, UserIcon, UsersIcon } from "@sanity/icons"
 import { filterAlreadyReferencedDocuments } from "../../lib/filterAlreadyReferencedDocuments"
 import { previewPortableText } from "../../lib/previewPortableText"
 import { previewArrayValues } from "../../lib/previewArrayValues"
@@ -70,7 +70,7 @@ export default {
 					name: "contributors",
 					type: "object",
 					title: "Contributors",
-					icon: EditIcon,
+					icon: UserIcon,
 					fields: [
 						{
 							name: "role",
@@ -107,7 +107,7 @@ export default {
 							const { role, person0, person1, person2, person3 } = selection
 							return {
 								title: previewArrayValues(person0, person1, person2, person3, { prefix: role }),
-								media: EditIcon,
+								media: person1 ? UsersIcon : UserIcon,
 							}
 						},
 					},

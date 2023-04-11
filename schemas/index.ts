@@ -8,7 +8,13 @@ import project from "./documents/project"
 import settings from "./documents/settings"
 
 // Objects
+import campaignBlock from "./objects/campaignBlock"
+import categoryBlock from "./objects/categoryBlock"
+import imageBlock from "./objects/imageBlock"
+import lookBlock from "./objects/lookBlock"
 import portableText from "./objects/portableText"
+import projectBlock from "./objects/projectBlock"
+import textBlock from "./objects/textBlock"
 import website from "./objects/website"
 
 export const schemaTypes = [
@@ -23,7 +29,13 @@ export const schemaTypes = [
 	settings,
 
 	// Objects
+	campaignBlock,
+	categoryBlock,
+	imageBlock,
+	lookBlock,
 	portableText,
+	projectBlock,
+	textBlock,
 	website,
 
 ]
