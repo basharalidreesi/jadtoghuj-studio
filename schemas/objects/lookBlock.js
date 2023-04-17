@@ -24,7 +24,7 @@ export default {
 			type: "boolean",
 			title: "Include All Looks",
 			description: "",
-			initialValue: false,
+			initialValue: true,
 		},
 		{
 			name: "looks",
@@ -73,6 +73,7 @@ export default {
 					}),
 				},
 			],
+			hidden: ({parent}) => parent?.includeAllLooks,
 		},
 	],
 	preview: {

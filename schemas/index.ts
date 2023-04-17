@@ -12,6 +12,7 @@ import campaignBlock from "./objects/campaignBlock"
 import categoryBlock from "./objects/categoryBlock"
 import imageBlock from "./objects/imageBlock"
 import lookBlock from "./objects/lookBlock"
+import looks from "./objects/looks"
 import portableText from "./objects/portableText"
 import projectBlock from "./objects/projectBlock"
 import textBlock from "./objects/textBlock"
@@ -33,6 +34,7 @@ export const schemaTypes = [
 	categoryBlock,
 	imageBlock,
 	lookBlock,
+	looks,
 	portableText,
 	projectBlock,
 	textBlock,

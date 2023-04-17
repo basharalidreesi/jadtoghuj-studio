@@ -1,4 +1,4 @@
-import { ImageIcon, UserIcon, UsersIcon } from "@sanity/icons"
+import { ImageIcon, PlayIcon, UserIcon, UsersIcon } from "@sanity/icons"
 import { filterAlreadyReferencedDocuments } from "../../lib/filterAlreadyReferencedDocuments"
 import { previewPortableText } from "../../lib/previewPortableText"
 import { previewArrayValues } from "../../lib/previewArrayValues"
@@ -157,6 +157,7 @@ export default {
 					type: "image",
 					title: "Image",
 					description: "",
+					icon: ImageIcon,
 					options: {
 						metadata: [
 							"lqip",
@@ -165,30 +166,9 @@ export default {
 					fields: [
 						{
 							name: "looks",
-							type: "array",
+							type: "looks",
 							title: "Looks in this image",
 							description: "",
-							of: [
-								{
-									type: "reference",
-									title: "Look",
-									to: [{ type: "look" }],
-									options: {
-										disableNew: true,
-										filter: ({document, parent}) => {
-											const listedLooks = document?.looks.map(look => look._ref)?.filter(Boolean) || ""
-											const existingLooks = parent?.map(look => look._ref)?.filter(Boolean) || ""
-											return {
-												filter: '(_id in $listedLooks) && !(_id in $existingLooks)',
-												params: {
-													listedLooks,
-													existingLooks,
-												}
-											}
-										},
-									},
-								},
-							],
 						},
 					],
 					preview: {
@@ -222,6 +202,55 @@ export default {
 						},
 					},
 				},
+				{
+					name: "video",
+					type: "object",
+					title: "Video",
+					icon: PlayIcon,
+					fields: [
+						{
+							name: "url",
+							type: "url",
+							title: "URL",
+							description: "",
+						},
+						{
+							name: "looks",
+							type: "looks",
+							title: "Looks in this video",
+							description: "",
+						},
+					],
+					preview: {
+						select: {
+							url: "url",
+							title0: "looks.0.title",
+							title1: "looks.1.title",
+							title2: "looks.2.title",
+							title3: "looks.3.title",
+							ref0: "looks.0._ref",
+							ref1: "looks.1._ref",
+							ref2: "looks.2._ref",
+							ref3: "looks.3._ref",
+						},
+						prepare(selection) {
+							const { url, title0, title1, title2, title3, ref0, ref1, ref2, ref3 } = selection
+							return {
+								title: previewArrayValues(title0, title1, title2, title3, {
+									prefix: url,
+									begin: " (",
+									end: ")",
+									ref0: ref0,
+									ref1: ref1,
+									ref2: ref2,
+									ref3: ref3,
+									untitled: "Untitled Look",
+								}),
+								media: PlayIcon,
+							}
+						},
+					},
+				},
 			],
 		},
 	],
@@ -246,14 +275,15 @@ export default {
 			title: "title",
 			description: "description",
 			isPublic: "isPublic",
-			asset0: "lookbook.0.asset"
+			image0: "lookbook.0.asset",
+			video0: "lookbook.0.url",
 		},
 		prepare(selection) {
-			const { title, description, isPublic, asset0 } = selection
+			const { title, description, isPublic, image0, video0 } = selection
 			return {
 				title: isPublic ? title : (title ? ("🔒 " + title) : ""),
 				subtitle: previewPortableText(description),
-				media: asset0 ? asset0 : ImageIcon,
+				media: image0 ? image0 : (video0 ? PlayIcon : ImageIcon),
 			}
 		},
 	},
