@@ -10,6 +10,7 @@ import settings from "./documents/settings"
 // Objects
 import campaignBlock from "./objects/campaignBlock"
 import categoryBlock from "./objects/categoryBlock"
+import gradient from "./objects/gradient"
 import imageBlock from "./objects/imageBlock"
 import lookBlock from "./objects/lookBlock"
 import looks from "./objects/looks"
@@ -23,6 +24,7 @@ export const schemaTypes = [
 	// Documents
 	campaign,
 	category,
+	gradient,
 	look,
 	page,
 	person,

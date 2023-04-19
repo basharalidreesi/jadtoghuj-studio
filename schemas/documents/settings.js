@@ -1,7 +1,5 @@
 import { CogIcon, DocumentsIcon, DocumentTextIcon, IceCreamIcon, InfoOutlineIcon, LeaveIcon } from "@sanity/icons"
 import { previewArrayValues } from "../../lib/previewArrayValues"
-import { gradientPreview } from "../../components/gradientPreview"
-import { colourPreview } from "../../components/colourPreview"
 
 export default {
 	name: "settings",
@@ -71,41 +69,9 @@ export default {
 		},
 		{
 			name: "colours",
-			type: "object",
+			type: "gradient",
 			title: "Colours",
 			description: "",
-			fields: [
-				{
-					name: "top",
-					type: "string",
-					title: "Top",
-					description: "",
-					components: {
-						input: colourPreview,
-					},
-				},
-				{
-					name: "bottom",
-					type: "string",
-					title: "Bottom",
-					description: "",
-					components: {
-						input: colourPreview,
-					},
-				},
-				{
-					name: "text",
-					type: "string",
-					title: "Text",
-					description: "",
-					components: {
-						input: colourPreview,
-					},
-				},
-			],
-			components: {
-				input: gradientPreview,
-			},
 			group: "presentation",
 		},
 		{
