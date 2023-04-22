@@ -158,11 +158,6 @@ export default {
 					title: "Image",
 					description: "",
 					icon: ImageIcon,
-					options: {
-						metadata: [
-							"lqip",
-						],
-					},
 					fields: [
 						{
 							name: "looks",

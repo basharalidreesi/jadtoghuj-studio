@@ -16,15 +16,8 @@ export default {
 			to: [{ type: "project" }],
 			options: {
 				disableNew: true,
-				filter: 'isPublic == true && defined(address.current) && count(array::compact(looks[]->display.asset._ref)) >= 1'
+				filter: 'isPublic == true && defined(address.current) && count(array::compact(looks[]->image.asset._ref)) >= 1'
 			},
-		},
-		{
-			name: "includeAllLooks",
-			type: "boolean",
-			title: "Include All Looks",
-			description: "",
-			initialValue: true,
 		},
 		{
 			name: "looks",
@@ -46,7 +39,7 @@ export default {
 							})
 							const referencedDocuments = parent?.map(doc => doc?._ref)?.filter(Boolean) || ""
 							return Promise.resolve({
-								filter: '_id in $looksInReferencedProject && defined(display.asset._ref) && !(_id in $referencedDocuments)',
+								filter: '_id in $looksInReferencedProject && defined(image.asset._ref) && !(_id in $referencedDocuments)',
 								params: {
 									looksInReferencedProject,
 									referencedDocuments,
@@ -73,7 +66,6 @@ export default {
 					}),
 				},
 			],
-			hidden: ({parent}) => parent?.includeAllLooks,
 		},
 	],
 	preview: {

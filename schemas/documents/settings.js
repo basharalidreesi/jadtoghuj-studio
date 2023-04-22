@@ -46,17 +46,6 @@ export default {
 			group: "information",
 		},
 		{
-			name: "keywords",
-			type: "array",
-			title: "Keywords",
-			description: "A list of tags that best describe this website and its content.",
-			of: [{ type: "string" }],
-			options: {
-				layout: "tags", 
-			},
-			group: "information",
-		},
-		{
 			name: "logo",
 			type: "image",
 			title: "Logo",

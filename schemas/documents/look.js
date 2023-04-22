@@ -2,7 +2,7 @@ import { StarIcon } from "@sanity/icons"
 import { previewPortableText } from "../../lib/previewPortableText"
 
 export default {
-    name: "look",
+	name: "look",
 	type: "document",
 	title: "Look",
 	icon: StarIcon,
@@ -14,14 +14,11 @@ export default {
 			description: "",
 		},
 		{
-			name: "display",
+			name: "image",
 			type: "image",
-			title: "Display",
+			title: "Image",
 			description: "",
 			options: {
-				metadata: [
-					"lqip",
-				],
 				storeOriginalFilename: false,
 			},
 		},
@@ -36,14 +33,14 @@ export default {
 		select: {
 			title: "title",
 			description: "description",
-			display: "display",
+			image: "image",
 		},
 		prepare(selection) {
-			const { title, description, display } = selection
+			const { title, description, image } = selection
 			return {
 				title: title,
 				subtitle: previewPortableText(description),
-				media: display ? display : StarIcon,
+				media: image ? image : StarIcon,
 			}
 		},
 	},
