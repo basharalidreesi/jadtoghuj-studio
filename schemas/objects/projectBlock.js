@@ -4,7 +4,7 @@ import { previewArrayValues } from "../../lib/previewArrayValues"
 export default {
 	name: "projectBlock",
 	type: "object",
-	title: "Project",
+	title: "Projects",
 	icon: BookIcon,
 	fields: [
 		{
@@ -44,7 +44,7 @@ export default {
 			const { project0, project1, project2, project3 } = selection
 			return {
 				title: previewArrayValues(project0, project1, project2, project3),
-				subtitle: "Project Block",
+				subtitle: project1 ? "Projects" : "Project",
 			}
 		},
 	},

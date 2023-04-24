@@ -15,7 +15,7 @@ export default {
 			const { originalFilename, asset } = selection
 			return {
 				title: originalFilename,
-				subtitle: "Image Block",
+				subtitle: "Image",
 				media: asset ? asset : ImageIcon
 			}
 		},

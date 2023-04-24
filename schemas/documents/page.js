@@ -48,17 +48,22 @@ export default {
 				{
 					name: "lookBlock",
 					type: "lookBlock",
-					title: "Look",
+					title: "Looks",
 				},
 				{
 					name: "projectBlock",
 					type: "projectBlock",
-					title: "Project",
+					title: "Projects",
 				},
 				{
 					name: "categoryBlock",
 					type: "categoryBlock",
-					title: "Category",
+					title: "Categories",
+				},
+				{
+					name: "pageBlock",
+					type: "pageBlock",
+					title: "Page",
 				},
 				{
 					name: "campaignBlock",

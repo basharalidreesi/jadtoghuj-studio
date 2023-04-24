@@ -4,7 +4,7 @@ import { previewArrayValues } from "../../lib/previewArrayValues"
 export default {
 	name: "categoryBlock",
 	type: "object",
-	title: "Category",
+	title: "Categories",
 	icon: TagIcon,
 	fields: [
 		{
@@ -44,7 +44,7 @@ export default {
 			const { category0, category1, category2, category3 } = selection
 			return {
 				title: previewArrayValues(category0, category1, category2, category3),
-				subtitle: "Category Block",
+				subtitle: category1 ? "Categories" : "Category",
 			}
 		},
 	},

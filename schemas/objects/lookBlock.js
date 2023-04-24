@@ -5,7 +5,7 @@ import { previewArrayValues } from "../../lib/previewArrayValues"
 export default {
 	name: "lookBlock",
 	type: "object",
-	title: "Look",
+	title: "Looks",
 	icon: StarIcon,
 	fields: [
 		{
@@ -93,7 +93,7 @@ export default {
 					ref3: ref3,
 					untitled: "Untitled Look",
 				}),
-				subtitle: "Look Block",
+				subtitle: ref1 ? "Looks" : "Look",
 			}
 		},
 	},

@@ -22,7 +22,7 @@ export default {
 			const { text } = selection
 			return {
 				title: previewPortableText(text),
-				subtitle: "Text Block"
+				subtitle: "Text"
 			}
 		},
 	},
