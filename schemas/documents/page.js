@@ -63,7 +63,7 @@ export default {
 				{
 					name: "pageBlock",
 					type: "pageBlock",
-					title: "Page",
+					title: "Pages",
 				},
 				{
 					name: "campaignBlock",
