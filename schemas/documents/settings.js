@@ -1,5 +1,7 @@
-import { CogIcon, DocumentsIcon, DocumentTextIcon, IceCreamIcon, InfoOutlineIcon, LeaveIcon } from "@sanity/icons"
+import { BulbOutlineIcon, CogIcon, DocumentsIcon, DocumentTextIcon, InfoOutlineIcon, LeaveIcon } from "@sanity/icons"
 import { previewArrayValues } from "../../lib/previewArrayValues"
+import { gradientPreview } from "../../components/gradientPreview"
+import { colourPreview } from "../../components/colourPreview"
 
 export default {
 	name: "settings",
@@ -15,7 +17,7 @@ export default {
 		{
 			name: "presentation",
 			title: "Presentation",
-			icon: IceCreamIcon,
+			icon: BulbOutlineIcon,
 		},
 		{
 			name: "configuration",
@@ -58,10 +60,50 @@ export default {
 		},
 		{
 			name: "colours",
-			type: "gradient",
+			type: "object",
 			title: "Colours",
 			description: "",
 			group: "presentation",
+			fields: [
+				{
+					name: "top",
+					type: "string",
+					title: "Top",
+					description: "",
+					initialValue: "#ffffff",
+					components: {
+						input: colourPreview,
+					},
+				},
+				{
+					name: "bottom",
+					type: "string",
+					title: "Bottom",
+					description: "",
+					initialValue: "#91a3b0",
+					components: {
+						input: colourPreview,
+					},
+				},
+				{
+					name: "text",
+					type: "string",
+					title: "Text",
+					description: "",
+					initialValue: "#000000",
+					components: {
+						input: colourPreview,
+					},
+				},
+			],
+			components: {
+				input: gradientPreview,
+			},
+			options: {
+				colour1: "text",
+				colour2: "top",
+				colour3: "bottom",
+			},
 		},
 		{
 			name: "navigation",

@@ -10,11 +10,10 @@ import settings from "./documents/settings"
 // Objects
 import campaignBlock from "./objects/campaignBlock"
 import categoryBlock from "./objects/categoryBlock"
-import gradient from "./objects/gradient"
 import imageBlock from "./objects/imageBlock"
 import pageBlock from "./objects/pageBlock"
 import lookBlock from "./objects/lookBlock"
-import looks from "./objects/looks"
+import looksInLookbookEntry from "./objects/looksInLookbookEntry"
 import portableText from "./objects/portableText"
 import projectBlock from "./objects/projectBlock"
 import textBlock from "./objects/textBlock"
@@ -25,7 +24,6 @@ export const schemaTypes = [
 	// Documents
 	campaign,
 	category,
-	gradient,
 	look,
 	page,
 	person,
@@ -38,7 +36,7 @@ export const schemaTypes = [
 	imageBlock,
 	pageBlock,
 	lookBlock,
-	looks,
+	looksInLookbookEntry,
 	portableText,
 	projectBlock,
 	textBlock,

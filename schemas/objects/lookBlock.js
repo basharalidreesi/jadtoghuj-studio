@@ -1,4 +1,4 @@
-import { StarIcon } from "@sanity/icons"
+import { IceCreamIcon } from "@sanity/icons"
 import { apiVersion } from "../../sanity.client"
 import { previewArrayValues } from "../../lib/previewArrayValues"
 
@@ -6,7 +6,7 @@ export default {
 	name: "lookBlock",
 	type: "object",
 	title: "Looks",
-	icon: StarIcon,
+	icon: IceCreamIcon,
 	fields: [
 		{
 			name: "project",

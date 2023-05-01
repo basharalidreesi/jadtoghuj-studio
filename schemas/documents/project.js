@@ -3,6 +3,8 @@ import { filterAlreadyReferencedDocuments } from "../../lib/filterAlreadyReferen
 import { previewPortableText } from "../../lib/previewPortableText"
 import { previewArrayValues } from "../../lib/previewArrayValues"
 import { apiVersion } from "../../sanity.client"
+import { colourPreview } from "../../components/colourPreview"
+import { lookbookColourPreview } from "../../components/lookbookColourPreview"
 
 export default {
 	name: "project",
@@ -41,7 +43,7 @@ export default {
 			name: "isPublic",
 			type: "boolean",
 			title: "Public",
-			description: "Controls whether to publish this project and its contents.",
+			description: "Controls whether this project and its contents are to be published.",
 			initialValue: true,
 		},
 		{
@@ -161,7 +163,7 @@ export default {
 					fields: [
 						{
 							name: "looks",
-							type: "looks",
+							type: "looksInLookbookEntry",
 							title: "Looks in this image",
 							description: "",
 						},
@@ -211,7 +213,7 @@ export default {
 						},
 						{
 							name: "looks",
-							type: "looks",
+							type: "looksInLookbookEntry",
 							title: "Looks in this video",
 							description: "",
 						},
@@ -247,6 +249,27 @@ export default {
 					},
 				},
 			],
+			components: {
+				field: lookbookColourPreview,
+			},
+		},
+		{
+			name: "colour",
+			type: "string",
+			title: "Colour",
+			description: "",
+			initialValue: "#ffffff",
+			hidden: ({parent}) => !parent?.useCustomColour,
+			components: {
+				input: colourPreview,
+			},
+		},
+		{
+			name: "useCustomColour",
+			type: "boolean",
+			title: "Custom colour",
+			description: "",
+			initialValue: false,
 		},
 	],
 	orderings: [

@@ -1,7 +1,14 @@
-- products as new schema? or as category?
-- campaigns
-- filter by campaign
-- portable text reference to project?
-- filter by projects used on website
-- better slugify
-- colour override
+TODO
+[] campaigns
+[] filter by campaign
+[] portable text reference to project?
+[] filter by projects used on website
+[] better slugify
+[] media viewer
+[] look viewer
+
+DONE
+[x] colour override for projects
+
+WONTFIX
+[x] products as new schema? or as category?

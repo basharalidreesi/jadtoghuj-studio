@@ -1,7 +1,7 @@
 export default {
-	name: "looks",
+	name: "looksInLookbookEntry",
 	type: "array",
-	title: "Looks",
+	title: "Looks in this entry",
 	of: [
 		{
 			type: "reference",

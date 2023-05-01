@@ -1,4 +1,4 @@
-import { BookIcon, CogIcon, DocumentsIcon, EarthGlobeIcon, FilterIcon, HeartIcon, TagIcon, UsersIcon } from "@sanity/icons"
+import { BookIcon, CogIcon, DocumentsIcon, EarthGlobeIcon, FilterIcon, HeartIcon, IceCreamIcon, TagIcon, UsersIcon } from "@sanity/icons"
 import { supportedWebsites } from "./lib/websites"
 import { apiVersion } from "./sanity.client"
 
@@ -45,6 +45,16 @@ export const structure = (S, context) =>
 					S.documentTypeList("campaign")
 						.title("Campaigns")
 						.menuItems([])
+						.defaultOrdering([{ field: "title", direction: "asc" }])
+				),
+			S.listItem()
+				.title("Looks")
+				.icon(IceCreamIcon)
+				.child(
+					S.documentTypeList("look")
+						.title("Looks")
+						.menuItems([])
+						.defaultLayout("detail")
 						.defaultOrdering([{ field: "title", direction: "asc" }])
 				),
 			S.listItem()
