@@ -4,8 +4,8 @@ import { CogIcon, DatabaseIcon, EarthGlobeIcon, FilterIcon, SparklesIcon, TagIco
 const hiddenTypes = new Set([
 	"category",
 	"look",
+	"entity",
 	"page",
-	"person",
 	"project",
 	"settings",
 ])
@@ -50,7 +50,7 @@ export const structure = (S, context) =>
 				.title("References")
 				.icon(UsersIcon)
 				.child(
-					S.documentTypeList("person")
+					S.documentTypeList("entity")
 						.title("References")
 						.menuItems([])
 						.defaultOrdering([{ field: "name", direction: "asc" }])

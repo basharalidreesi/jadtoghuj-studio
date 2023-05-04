@@ -1,5 +1,7 @@
 import { Card } from "@sanity/ui"
 
+// TODO
+
 export default function gradientPreview(props) {
 	const c1 = props.value && props.schemaType.options?.colour1 ? props.value[props.schemaType.options?.colour1] : "#000000"
 	const c2 = props.value && props.schemaType.options?.colour2 ? props.value[props.schemaType.options?.colour2] : "#ffffff"

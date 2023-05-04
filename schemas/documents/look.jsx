@@ -2,6 +2,8 @@ import { defineField, defineType } from "sanity"
 import { previewPortableText } from "../../lib"
 import { SparklesIcon } from "@sanity/icons"
 
+// DONE
+
 export default defineType({
 	name: "look",
 	type: "document",
@@ -29,6 +31,18 @@ export default defineType({
 			title: "Description",
 			description: "",
 		}),
+	],
+	orderings: [
+		{
+			title: "title (a → z)",
+			name: "titleAsc",
+			by: [
+				{
+					field: "title",
+					direction: "asc",
+				},
+			],
+		},
 	],
 	preview: {
 		select: {

@@ -1,5 +1,7 @@
 import { ColouredInput, gradientPreview } from "../../components"
 
+// TODO
+
 export default {
 	name: "gradient",
 	type: "object",

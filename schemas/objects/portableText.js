@@ -1,18 +1,15 @@
-export default {
+import { LinkIcon } from "@sanity/icons"
+import { defineField } from "sanity"
+
+// DONE
+
+export default defineField({
 	name: "portableText",
 	type: "array",
 	title: "Portable Text",
 	of: [
-		{
+		defineField({
 			type: "block",
-			of: [
-				{
-					name: "person",
-					type: "reference",
-					title: "Person",
-					to: [{ type: "person" }],
-				},
-			],
 			styles: [
 				{
 					title: "Normal",
@@ -36,16 +33,27 @@ export default {
 						name: "link",
 						type: "object",
 						title: "Link",
+						icon: LinkIcon,
 						fields: [
-							{
+							defineField({
 								name: "url",
 								type: "url",
 								title: "URL",
-							},
+								description: "",
+							}),
 						],
 					},
 				],
 			},
-		},
+			of: [
+				defineField({
+					name: "entity",
+					type: "reference",
+					title: "Reference",
+					description: "",
+					to: [{ type: "entity" }],
+				}),
+			],
+		}),
 	],
-}
+})

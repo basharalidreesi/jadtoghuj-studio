@@ -1,7 +1,9 @@
 import { apiVersion } from "../../sanity.client"
-import { ExposedArrayFunctions, PrefixedInput } from "../../components"
-import { filterAlreadyReferencedDocuments, previewArrayValues, previewPortableText } from "../../lib"
+import { PrefixedInput } from "../../components"
+import { checkIfValueAlreadyExistsInType, filterAlreadyReferencedDocuments, previewArrayValues, previewPortableText } from "../../lib"
 import { DatabaseIcon, EarthGlobeIcon, EditIcon, HomeIcon, ImageIcon, SparkleIcon, SparklesIcon, TagIcon } from "@sanity/icons"
+
+// TODO
 
 export default {
 	name: "page",
@@ -14,6 +16,7 @@ export default {
 			type: "string",
 			title: "Title",
 			description: "",
+			validation: (Rule) => Rule.custom(checkIfValueAlreadyExistsInType).warning(),
 		},
 		{
 			name: "address",
@@ -53,9 +56,6 @@ export default {
 				categoryBlock(),
 				// pageBlock(),
 			],
-			components: {
-				input: ExposedArrayFunctions
-			}
 		},
 	],
 	orderings: [

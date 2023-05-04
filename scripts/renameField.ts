@@ -5,9 +5,9 @@
 import { getCliClient } from "sanity/cli"
 import { Transaction } from "@sanity/client"
 
-const type = "project"
-const renameFrom = "lookbook[].looks"
-const renameTo = "lookbook[].featuredLooks"
+const type = ""
+const renameFrom = ""
+const renameTo = ""
 
 type Doc = {
 	_id: string

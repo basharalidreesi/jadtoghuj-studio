@@ -4,6 +4,8 @@ import { useEffect, useState } from "react"
 import { Box, Card, Flex, Spinner, Text } from "@sanity/ui"
 import { ErrorOutlineIcon } from "@sanity/icons"
 
+// DONE
+
 export default function PrefixedInput(props) {
 	var localPrefix = null
 	const [isFetching, setIsFetching] = useState(false)
@@ -38,30 +40,34 @@ export default function PrefixedInput(props) {
 	if (!source && prefix && !Array.isArray(prefix)) {
 		localPrefix = prefix
 	}
-	const extension = (text, marginLeft, marginRight) => (
-		<Card sizing={"border"} padding={2} marginLeft={marginLeft} marginRight={marginRight} radius={1} border={true} tone={!isFetching && !hasError ? "positive" : "critical"} style={{ display: "flex", alignItems: "center", maxWidth: "30%" }}>
-			{isFetching ? <Spinner muted /> : ""}
-			{hasError ? <ErrorOutlineIcon style={{ display: "block", width: "100%", height: "100%", color: "var(--card-fg-color)" }} /> : ""}
-			{!isFetching && !hasError
-				? (
-					<Text size={0} muted={true} style={{ maxWidth: "100%" }}>
-						<div style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-							{text}
-						</div>
-					</Text>
-				)
-				: ""
-			}
-		</Card>
-	)
-	return ((localPrefix || fetchedPrefix || suffix) && props.value?.current !== "/" && props.value !== "/")
+	const extension = (text) => {
+		return text
+		? (
+			<Card sizing={"border"} padding={2} radius={1} border={true} tone={!isFetching && !hasError ? "positive" : "critical"} style={{ display: "flex", alignItems: "center", maxWidth: "25%" }}>
+				{isFetching ? <Spinner muted /> : ""}
+				{hasError ? <ErrorOutlineIcon style={{ display: "block", width: "100%", height: "100%", color: "var(--card-fg-color)" }} /> : ""}
+				{!isFetching && !hasError
+					? (
+						<Text size={0} muted={true} style={{ maxWidth: "100%" }}>
+							<div dir={"rtl"} style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+								<bdi>{text}</bdi>
+							</div>
+						</Text>
+					)
+					: ""
+				}
+			</Card>
+		)
+		: ""
+	}
+	return (localPrefix || fetchedPrefix || suffix)
 		? (<>
-				<Flex direction="row" wrap="nowrap" justify="center">
-					{(localPrefix || fetchedPrefix) ? extension(localPrefix || fetchedPrefix, 0, 1) : ""}
+				<Flex direction="row" wrap="nowrap" justify="center" gap={1}>
+					{(localPrefix || fetchedPrefix) ? extension(localPrefix || fetchedPrefix) : ""}
 					<Box flex={1}>
 						{props.renderDefault(props)}
 					</Box>
-					{suffix ? extension(suffix, 1, 0) : ""}
+					{suffix ? extension(suffix) : ""}
 				</Flex>
 			</>)
 		: props.renderDefault(props)

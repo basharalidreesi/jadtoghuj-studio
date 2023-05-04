@@ -2,9 +2,11 @@ import { useEffect, useState } from "react"
 import { defineField, defineType, useFormValue } from "sanity"
 import client, { apiVersion } from "../../sanity.client"
 import { ColouredInput, ExposedArrayFunctions, PrefixedInput, VideoPreview } from "../../components"
-import { filterAlreadyReferencedDocuments, previewArrayValues, previewPortableText } from "../../lib"
+import { checkIfValueAlreadyExistsInType, filterAlreadyReferencedDocuments, previewArrayValues, previewPortableText } from "../../lib"
 import { DatabaseIcon, ImageIcon, PlayIcon, UserIcon, UsersIcon } from "@sanity/icons"
 import { Box, Card, Flex, Text, TextInput } from "@sanity/ui"
+
+// DONE
 
 export default defineType({
 	name: "project",
@@ -17,6 +19,7 @@ export default defineType({
 			type: "string",
 			title: "Title",
 			description: "",
+			validation: (Rule) => Rule.custom(checkIfValueAlreadyExistsInType).warning(),
 		}),
 		defineField({
 			name: "description",
@@ -152,25 +155,24 @@ export default defineType({
 					title: "Look",
 					to: [{ type: "look" }],
 					options: {
-						filter: ({parent}) => filterAlreadyReferencedDocuments(parent),
-						// filter: async ({document, parent, getClient}) => {
-						// 	const unreferencedLooks = await getClient({apiVersion}).fetch(`
-						// 		*[_type == "look"] {
-						// 			_id,
-						// 			"refs": count(*[references(^._id)])
-						// 		} [refs == 0]._id
-						// 	`)
-						// 	const usedLooks = document?.lookbook?.map(image => image?.looks?.map(look => look?._ref))?.filter(Boolean)?.flat() || ""
-						// 	const existingLooks = parent?.map(look => look._ref)?.filter(Boolean) | ""
-						// 	return Promise.resolve({
-						// 		filter: '((_id in $usedLooks) && !(_id in $existingLooks)) || _id in $unreferencedLooks',
-						// 		params: {
-						// 			usedLooks,
-						// 			existingLooks,
-						// 			unreferencedLooks,
-						// 		}
-						// 	})
-						// },
+						filter: async ({document, parent, getClient}) => {
+							const unusedLooks = await getClient({apiVersion}).fetch(`
+								*[_type == "look"] {
+									_id,
+									"refs": count(*[references(^._id)])
+								} [refs == 0]._id
+							`)
+							const featuredLooks = document?.lookbook?.map(image => image?.looks?.map(look => look?._ref))?.filter(Boolean)?.flat() || ""
+							const alreadyReferencedLooks = parent?.map(look => look._ref)?.filter(Boolean) || ""
+							return Promise.resolve({
+								filter: `_id in $unusedLooks || ((_id in $featuredLooks) && !(_id in $alreadyReferencedLooks))`,
+								params: {
+									unusedLooks,
+									featuredLooks,
+									alreadyReferencedLooks,
+								}
+							})
+						},
 					},
 				}),
 			],
@@ -383,18 +385,19 @@ function featuredLooks() {
 					disableNew: true,
 					filter: ({document, parent}) => {
 						const specifiedLooks = document?.looks?.map(look => look._ref)?.filter(Boolean) || ""
-						const alreadyExistingLooks = parent?.map(look => look._ref)?.filter(Boolean) || ""
+						const alreadyReferencedLooks = parent?.map(look => look._ref)?.filter(Boolean) || ""
 						return {
-							filter: '(_id in $specifiedLooks) && !(_id in $alreadyExistingLooks)',
+							filter: `(_id in $specifiedLooks) && !(_id in $alreadyReferencedLooks)`,
 							params: {
 								specifiedLooks,
-								alreadyExistingLooks,
+								alreadyReferencedLooks,
 							}
 						}
 					},
 				},
 			}),
 		],
+		// validation: TODO,
 		components: {
 			input: ExposedArrayFunctions,
 		},
@@ -434,12 +437,12 @@ function LookbookWithColourPreview(props) {
 							</label>
 						</Text>
 					</Box>
-					<Flex direction="row" wrap="nowrap">
-						<Card sizing="border" flex={1} marginRight={2} border="true" style={{ borderRadius: "0.0625rem", background: "transparent", }}>
-							<label htmlFor="lookbook-colour-preview" style={{ display: "block", width: "100%", height: "100%", background: colour }}></label>
+					<Flex direction="row" wrap="nowrap" gap={1}>
+						<Card sizing="border" flex={1} border="true" style={{ borderRadius: "0.0625rem", background: "transparent", }}>
+							<label htmlFor="lookbook-with-colour-preview" style={{ display: "block", width: "100%", height: "100%", background: colour }}></label>
 						</Card>
 						<Box flex={3}>
-							<TextInput value={colour} id="lookbook-colour-preview" readOnly />
+							<TextInput value={colour} id="lookbook-with-colour-preview" readOnly />
 						</Box>
 					</Flex>
 				</Box>

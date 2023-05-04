@@ -1,17 +1,22 @@
+import { defineField, defineType } from "sanity"
+import { checkIfValueAlreadyExistsInType } from "../../lib"
 import { TagIcon } from "@sanity/icons"
 
-export default {
+// DONE
+
+export default defineType({
 	name: "category",
 	type: "document",
 	title: "Category",
 	icon: TagIcon,
 	fields: [
-		{
+		defineField({
 			name: "title",
 			type: "string",
 			title: "Title",
 			description: "",
-		},
+			validation: (Rule) => Rule.custom(checkIfValueAlreadyExistsInType).warning(),
+		}),
 	],
 	orderings: [
 		{
@@ -21,7 +26,7 @@ export default {
 				{
 					field: "title",
 					direction: "asc",
-				}
+				},
 			],
 		},
 	],
@@ -33,8 +38,7 @@ export default {
 			const { title } = selection
 			return {
 				title: title,
-				media: TagIcon,
 			}
 		},
 	},
-}
+})
