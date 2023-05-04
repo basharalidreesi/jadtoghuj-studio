@@ -4,11 +4,8 @@ import { structure } from "./structure"
 import { defaultDocumentNode } from "./defaultDocumentNode"
 import { visionTool } from "@sanity/vision"
 import { schemaTypes } from "./schemas"
-import { templates } from "./templatesAndActions"
-import { newDocumentOptions } from "./newDocumentOptions"
-import { actions } from "./templatesAndActions"
-import { logo } from "./components/logo"
-import { hideElementUsingCssSelector } from "./components/css"
+import { actions, newDocumentOptions } from "./document"
+import { Logo } from "./components"
 
 export default defineConfig({
 	name: "default",
@@ -25,7 +22,6 @@ export default defineConfig({
 	],
 	schema: {
 		types: schemaTypes,
-		templates: templates,
 	},
 	document: {
 		newDocumentOptions: newDocumentOptions,
@@ -33,8 +29,7 @@ export default defineConfig({
 	},
 	studio: {
 		components: {
-			logo: logo,
-			layout: (props) => hideElementUsingCssSelector(props, '[id^="noCreate-"] [data-ui="Button"][data-testid="action-intent-button"]'),
+			logo: Logo,
 		},
 	},
 })

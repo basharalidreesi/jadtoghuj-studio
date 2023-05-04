@@ -1,6 +1,6 @@
 import { Box } from "@sanity/ui"
 
-export const logo = () => {
+export default function Logo() {
 	return (
 		<Box padding={1}>
 			<svg viewBox="0 0 508.02 150" width="508.02" height="150" xmlns="http://www.w3.org/2000/svg" style={{ display: "block", width: "auto", height: "100%", maxHeight: "1.75rem", fill: "#ffffff" }}>

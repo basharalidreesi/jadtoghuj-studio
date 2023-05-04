@@ -1,7 +1,6 @@
+import { PrefixedInput } from "../../components"
+import { filterAlreadyReferencedDocuments, previewArrayValues } from "../../lib"
 import { BulbOutlineIcon, CogIcon, DocumentsIcon, DocumentTextIcon, InfoOutlineIcon, LeaveIcon } from "@sanity/icons"
-import { previewArrayValues } from "../../lib/previewArrayValues"
-import { gradientPreview } from "../../components/gradientPreview"
-import { colourPreview } from "../../components/colourPreview"
 
 export default {
 	name: "settings",
@@ -34,13 +33,6 @@ export default {
 			group: "information",
 		},
 		{
-			name: "website",
-			type: "website",
-			title: "Website",
-			description: "The website to which this settings page is attributed.",
-			group: "information",
-		},
-		{
 			name: "description",
 			type: "text",
 			title: "Description",
@@ -60,50 +52,10 @@ export default {
 		},
 		{
 			name: "colours",
-			type: "object",
+			type: "gradient",
 			title: "Colours",
 			description: "",
 			group: "presentation",
-			fields: [
-				{
-					name: "top",
-					type: "string",
-					title: "Top",
-					description: "",
-					initialValue: "#ffffff",
-					components: {
-						input: colourPreview,
-					},
-				},
-				{
-					name: "bottom",
-					type: "string",
-					title: "Bottom",
-					description: "",
-					initialValue: "#91a3b0",
-					components: {
-						input: colourPreview,
-					},
-				},
-				{
-					name: "text",
-					type: "string",
-					title: "Text",
-					description: "",
-					initialValue: "#000000",
-					components: {
-						input: colourPreview,
-					},
-				},
-			],
-			components: {
-				input: gradientPreview,
-			},
-			options: {
-				colour1: "text",
-				colour2: "top",
-				colour3: "bottom",
-			},
 		},
 		{
 			name: "navigation",
@@ -129,16 +81,7 @@ export default {
 									to: [{ type: "page" }],
 									options: {
 										disableNew: true,
-										filter: ({document}) => {
-											const listedPages = document?.navigation?.map(group => group?.pages?.map(page => page?._ref))?.filter(Boolean)?.flat()
-											return {
-												filter: '(website == $website && !(_id in $listedPages))',
-												params: {
-													website: document.website,
-													listedPages: listedPages,
-												},
-											}
-										},
+										filter: ({parent}) => filterAlreadyReferencedDocuments(parent),
 									},
 								},
 								{
@@ -237,22 +180,28 @@ export default {
 			name: "url",
 			type: "url",
 			title: "URL",
-			description: "The scheme, subdomain, second-level domain, and top-level domain of this website.",
+			description: "The scheme, subdomain, second-level domain, and top-level domain of this website. A trailing slash is required.",
 			group: "configuration",
 		},
 		{
-			name: "baseUrl",
+			name: "basePath",
 			type: "string",
-			title: "Base URL",
-			description: "The subdirectory under which this website exists. The base URL Must begin with a forward slash, and mustn't end with a trailing one.",
+			title: "Base Path",
+			description: "The subdirectory under which all content is filed. A trailing slash is required if a value is specified.",
 			group: "configuration",
+			components: {
+				input: (props) => <PrefixedInput prefix={["url"]} {...props} />,
+			},
 		},
 		{
 			name: "projectPath",
 			type: "string",
 			title: "Project Path",
-			description: "",
+			description: "The subdirectory under which projects are filed. A trailing slash is required if a value is specified.",
 			group: "configuration",
+			components: {
+				input: (props) => <PrefixedInput prefix={["url", "basePath"]} {...props} />,
+			},
 		},
 		{
 			name: "analytics",
@@ -263,14 +212,9 @@ export default {
 		},
 	],
 	preview: {
-		select: {
-			website: "website",
-		},
-		prepare(selection) {
-			const { website } = selection
+		prepare() {
 			return {
 				title: "Settings",
-				subtitle: website,
 				media: CogIcon,
 			}
 		},

@@ -2,9 +2,9 @@ import { apiVersion } from "../../sanity.client"
 import { UserIcon } from "@sanity/icons"
 
 export default {
-	name: "person",
+	name: "entity",
 	type: "document",
-	title: "Person",
+	title: "Reference",
 	icon: UserIcon,
 	fields: [
 		{
@@ -15,7 +15,7 @@ export default {
 			validation: (Rule) => Rule.custom(async (value, context) => {
 				const { document, getClient } = context
 				const id = document._id.replace(/^drafts\./, "")
-				const query = `!defined(*[_type == "person" && !(_id in [$draft, $published]) && lower(name) == $name][0]._id)`
+				const query = `!defined(*[_type == "entity" && !(_id in [$draft, $published]) && lower(name) == $name][0]._id)`
 				const params = {
 					draft: `drafts.${id}`,
 					published: id,
@@ -23,7 +23,7 @@ export default {
 				}
 				const isUnique = await getClient({apiVersion}).fetch(query, params)
 				if (!isUnique) {
-					return "Warning: A person with this name already exists."
+					return "Warning: A reference with this name already exists."
 				}
 				return true
 			}).warning(),

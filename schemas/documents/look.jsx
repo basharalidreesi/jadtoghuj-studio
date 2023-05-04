@@ -1,19 +1,20 @@
-import { IceCreamIcon } from "@sanity/icons"
-import { previewPortableText } from "../../lib/previewPortableText"
+import { defineField, defineType } from "sanity"
+import { previewPortableText } from "../../lib"
+import { SparklesIcon } from "@sanity/icons"
 
-export default {
+export default defineType({
 	name: "look",
 	type: "document",
 	title: "Look",
-	icon: IceCreamIcon,
+	icon: SparklesIcon,
 	fields: [
-		{
+		defineField({
 			name: "title",
 			type: "string",
 			title: "Title",
 			description: "",
-		},
-		{
+		}),
+		defineField({
 			name: "image",
 			type: "image",
 			title: "Image",
@@ -21,13 +22,13 @@ export default {
 			options: {
 				storeOriginalFilename: false,
 			},
-		},
-		{
+		}),
+		defineField({
 			name: "description",
 			type: "portableText",
 			title: "Description",
 			description: "",
-		},
+		}),
 	],
 	preview: {
 		select: {
@@ -40,8 +41,8 @@ export default {
 			return {
 				title: title,
 				subtitle: previewPortableText(description),
-				media: image ? image : IceCreamIcon,
+				media: image,
 			}
 		},
 	},
-}
+})

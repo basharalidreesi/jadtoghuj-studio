@@ -5,9 +5,11 @@ export const dataset = "production"
 export const useCdn = true
 export const apiVersion = "2023-04-05"
 
-export const client = createClient({
+const client = createClient({
 	projectId,
 	dataset,
 	useCdn,
 	apiVersion,
 })
+
+export default client

@@ -1,12 +1,13 @@
-// sanity exec scripts/renameField.ts --with-user-token  
-
 /* eslint-disable no-console */
+
+// `sanity exec scripts/renameField.ts --with-user-token`
+
 import { getCliClient } from "sanity/cli"
 import { Transaction } from "@sanity/client"
 
-const type = ""
-const renameFrom = ""
-const renameTo = ""
+const type = "project"
+const renameFrom = "lookbook[].looks"
+const renameTo = "lookbook[].featuredLooks"
 
 type Doc = {
 	_id: string

@@ -1,24 +1,32 @@
-import { BookIcon, CogIcon, DocumentsIcon, EarthGlobeIcon, FilterIcon, HeartIcon, IceCreamIcon, TagIcon, UsersIcon } from "@sanity/icons"
-import { supportedWebsites } from "./lib/websites"
 import { apiVersion } from "./sanity.client"
+import { CogIcon, DatabaseIcon, EarthGlobeIcon, FilterIcon, SparklesIcon, TagIcon, UsersIcon } from "@sanity/icons"
 
-const hiddenDocumentTypes = listItem => ![
-	"campaign",
+const hiddenTypes = new Set([
 	"category",
 	"look",
 	"page",
 	"person",
 	"project",
 	"settings",
-].includes(listItem.getId())
+])
 
 export const structure = (S, context) =>
 	S.list()
 		.title("Library")
 		.items([
 			S.listItem()
+				.title("Looks")
+				.icon(SparklesIcon)
+				.child(
+					S.documentTypeList("look")
+						.title("Looks")
+						.menuItems([])
+						.defaultLayout("detail")
+						.defaultOrdering([{ field: "title", direction: "asc" }])
+				),
+			S.listItem()
 				.title("Projects")
-				.icon(BookIcon)
+				.icon(DatabaseIcon)
 				.child(
 					S.documentTypeList("project")
 						.title("Projects")
@@ -39,195 +47,168 @@ export const structure = (S, context) =>
 						.defaultOrdering([{ field: "title", direction: "asc" }])
 				),
 			S.listItem()
-				.title("Campaigns")
-				.icon(HeartIcon)
-				.child(
-					S.documentTypeList("campaign")
-						.title("Campaigns")
-						.menuItems([])
-						.defaultOrdering([{ field: "title", direction: "asc" }])
-				),
-			S.listItem()
-				.title("Looks")
-				.icon(IceCreamIcon)
-				.child(
-					S.documentTypeList("look")
-						.title("Looks")
-						.menuItems([])
-						.defaultLayout("detail")
-						.defaultOrdering([{ field: "title", direction: "asc" }])
-				),
-			S.listItem()
-				.title("People")
+				.title("References")
 				.icon(UsersIcon)
 				.child(
 					S.documentTypeList("person")
-						.title("People")
+						.title("References")
 						.menuItems([])
 						.defaultOrdering([{ field: "name", direction: "asc" }])
 				),
 			S.divider(),
-			...supportedWebsites.map(website => {
-				return S.listItem()
-					.title(supportedWebsites.length === 1 ? "Website" : website.title)
-					.icon(EarthGlobeIcon)
-					.child(
-						S.list()
-							.title(supportedWebsites.length === 1 ? "Website" : website.title)
-							.items([
-								S.listItem()
-									.title("Pages")
-									.icon(DocumentsIcon)
-									.child(
-										S.documentTypeList("page")
-											.title(supportedWebsites.length === 1 ? "Pages" : `Pages for ${website.title}`)
-											.filter(`_type == "page" && website == "${website.value}"`)
-											.menuItems([])
-											.defaultOrdering([{field: "title", direction: "asc"}])
-											.initialValueTemplates([
-												S.initialValueTemplateItem(`page-for-${website.value}`)
-											])
-									),
-								S.listItem()
-									.title("Settings")
-									.icon(CogIcon)
-									.child(
-										S.document()
-											.schemaType("settings")
-											.id("d5ca9e8b-c1e1-49f3-b0ea-0e7666d124f1")
-											.initialValueTemplate(`settings-for-${website.value}`)
-									),
-							])
-					)
-			}),
-			S.divider(),
 			S.listItem()
-				.title("Filters")
-				.icon(FilterIcon)
+				.title("Pages")
+				.icon(EarthGlobeIcon)
 				.child(
-					S.list()
-						.title("Filters")
-						.items([
-							S.listItem()
-								.title("Public projects")
-								.child(
-									S.documentTypeList("project")
-										.title("Public projecs")
-										.id("noCreate-publicProjects")
-										.filter('_type == "project" && isPublic == true')
-										.menuItems([])
-										.defaultLayout("detail")
-										.defaultOrdering([
-											{ field: "year", direction: "desc" },
-											{ field: "title", direction: "asc" },
-										])
-								),
-							S.listItem()
-								.title("Private projects")
-								.child(
-									S.documentTypeList("project")
-										.title("Private projects")
-										.id("noCreate-privateProjects")
-										.filter('_type == "project" && isPublic != true')
-										.menuItems([])
-										.defaultLayout("detail")
-										.defaultOrdering([
-											{ field: "year", direction: "desc" },
-											{ field: "title", direction: "asc" },
-										])
-								),
-							S.listItem()
-								.title("Projects by year")
-								.child(() => {
-									const query = `*[_type == "project"] | order(year desc) { year }`
-									const params = {}
-									return context.getClient({apiVersion}).fetch(query, params).then(docs => {
-										const years = []
-										docs.forEach(doc => {
-											const year = doc?.year
-											if (!years.includes(year)) { years.push(year) }
-										})
-										return S.list()
-											.title("Projects by year")
-											.items(
-												years.map(year => {
-													return S.listItem()
-														.title(`${year}`)
-														.id(`projectsFrom${year}`)
-														.child(
-															S.documentList()
-																.title(`Projects from ${year}`)
-																.id(`noCreate-projectsFrom${year}`)
-																.filter('_type == "project" && year == $year')
-																.params({ year: year })
-																.defaultLayout("detail")
-																.defaultOrdering([{ field: "title", direction: "asc" }])
-														)
-												}),
-											)
-									})
-								}),
-							S.listItem()
-								.title("Projects by category")
-								.child(() => {
-									const query = `*[_type == "category"] | order(lower(title) asc) { _id, title }`
-									const params = {}
-									return context.getClient({apiVersion}).fetch(query, params).then(docs => {
-										return S.list()
-											.title("Projects by category")
-											.items(
-												docs.map(doc => {
-													return S.listItem()
-														.title(doc.title)
-														.id(doc._id)
-														.child(categoryId =>
-															S.documentList()
-																.title(doc.title)
-																.id(`noCreate-${doc._id}`)
-																.filter('_type == "project" && $categoryId in categories[]._ref')
-																.params({ categoryId: categoryId })
-																.defaultLayout("detail")
-																.defaultOrdering([{ field: "title", direction: "asc" }])
-														)
-												}),
-											)
-									})
-								}),
-							S.listItem()
-								.title("Projects by person(s)")
-								.id("projectsByPersons")
-								.child(() => {
-									const query = `
-										*[_type == "person"] | order(lower(name) asc) {
-											_id,
-											name,
-											"referencedLooks": *[_type == "look" && references(^._id)]._id,
-										}
-									`
-									const params = {}
-									return context.getClient({apiVersion}).fetch(query, params).then(docs => {
-										return S.list()
-											.title("Projects by person(s)")
-											.items(
-												docs.map(doc => {
-													return S.listItem()
-														.title(doc.name)
-														.id(doc._id)
-														.child(personId =>
-															S.documentList()
-																.title(`Projects with "${doc.name}"`)
-																.id(`noCreate-${doc._id}`)
-																.filter('(_type == "project" && references($personId)) || (_type == "project" && references($referencedLooks))')
-																.params({ personId: personId, referencedLooks: doc.referencedLooks })
-																.defaultLayout("detail")
-																.defaultOrdering([{ field: "name", direction: "asc" }])
-														)
-												})
-											)
-									})
-								}),
-						])
+					S.documentTypeList("page")
+						.title("Pages")
+						.menuItems([])
+						.defaultOrdering([{field: "title", direction: "asc"}])
+				),
+			S.listItem()
+				.title("Settings")
+				.icon(CogIcon)
+				.child(
+					S.document()
+						.schemaType("settings")
+						.documentId("settings")
 				),
 			S.divider(),
-			...S.documentTypeListItems().filter(hiddenDocumentTypes)
+			// S.listItem()
+			// 	.title("Website")
+			// 	.icon(EarthGlobeIcon)
+			// 	.child(
+			// 		S.list()
+			// 			.title("Website")
+			// 			.items([])
+			// 	),
+			// S.listItem()
+			// 	.title("Filters")
+			// 	.icon(FilterIcon)
+			// 	.child(
+			// 		S.list()
+			// 			.title("Filters")
+			// 			.items([
+			// 				S.listItem()
+			// 					.title("Public projects")
+			// 					.child(
+			// 						S.documentTypeList("project")
+			// 							.title("Public projecs")
+			// 							.id("noCreate-publicProjects")
+			// 							.filter('_type == "project" && isPublic == true')
+			// 							.menuItems([])
+			// 							.defaultLayout("detail")
+			// 							.defaultOrdering([
+			// 								{ field: "year", direction: "desc" },
+			// 								{ field: "title", direction: "asc" },
+			// 							])
+			// 					),
+			// 				S.listItem()
+			// 					.title("Private projects")
+			// 					.child(
+			// 						S.documentTypeList("project")
+			// 							.title("Private projects")
+			// 							.id("noCreate-privateProjects")
+			// 							.filter('_type == "project" && isPublic != true')
+			// 							.menuItems([])
+			// 							.defaultLayout("detail")
+			// 							.defaultOrdering([
+			// 								{ field: "year", direction: "desc" },
+			// 								{ field: "title", direction: "asc" },
+			// 							])
+			// 					),
+			// 				S.listItem()
+			// 					.title("Projects by year")
+			// 					.child(() => {
+			// 						const query = `*[_type == "project"] | order(year desc) { year }`
+			// 						const params = {}
+			// 						return context.getClient({apiVersion}).fetch(query, params).then(docs => {
+			// 							const years = []
+			// 							docs.forEach(doc => {
+			// 								const year = doc?.year
+			// 								if (!years.includes(year)) { years.push(year) }
+			// 							})
+			// 							return S.list()
+			// 								.title("Projects by year")
+			// 								.items(
+			// 									years.map(year => {
+			// 										return S.listItem()
+			// 											.title(`${year}`)
+			// 											.id(`projectsFrom${year}`)
+			// 											.child(
+			// 												S.documentList()
+			// 													.title(`Projects from ${year}`)
+			// 													.id(`noCreate-projectsFrom${year}`)
+			// 													.filter('_type == "project" && year == $year')
+			// 													.params({ year: year })
+			// 													.defaultLayout("detail")
+			// 													.defaultOrdering([{ field: "title", direction: "asc" }])
+			// 											)
+			// 									}),
+			// 								)
+			// 						})
+			// 					}),
+			// 				S.listItem()
+			// 					.title("Projects by category")
+			// 					.child(() => {
+			// 						const query = `*[_type == "category"] | order(lower(title) asc) { _id, title }`
+			// 						const params = {}
+			// 						return context.getClient({apiVersion}).fetch(query, params).then(docs => {
+			// 							return S.list()
+			// 								.title("Projects by category")
+			// 								.items(
+			// 									docs.map(doc => {
+			// 										return S.listItem()
+			// 											.title(doc.title)
+			// 											.id(doc._id)
+			// 											.child(categoryId =>
+			// 												S.documentList()
+			// 													.title(doc.title)
+			// 													.id(`noCreate-${doc._id}`)
+			// 													.filter('_type == "project" && $categoryId in categories[]._ref')
+			// 													.params({ categoryId: categoryId })
+			// 													.defaultLayout("detail")
+			// 													.defaultOrdering([{ field: "title", direction: "asc" }])
+			// 											)
+			// 									}),
+			// 								)
+			// 						})
+			// 					}),
+			// 				S.listItem()
+			// 					.title("Projects by person")
+			// 					.id("projectsByPerson")
+			// 					.child(() => {
+			// 						const query = `
+			// 							*[_type == "person"] | order(lower(name) asc) {
+			// 								_id,
+			// 								name,
+			// 								"referencedLooks": *[_type == "look" && references(^._id)]._id,
+			// 							}
+			// 						`
+			// 						const params = {}
+			// 						return context.getClient({apiVersion}).fetch(query, params).then(docs => {
+			// 							return S.list()
+			// 								.title("Projects by person")
+			// 								.items(
+			// 									docs.map(doc => {
+			// 										return S.listItem()
+			// 											.title(doc.name)
+			// 											.id(doc._id)
+			// 											.child(personId =>
+			// 												S.documentList()
+			// 													.title(`Projects with "${doc.name}"`)
+			// 													.id(`noCreate-${doc._id}`)
+			// 													.filter('(_type == "project" && references($personId)) || (_type == "project" && references($referencedLooks))')
+			// 													.params({ personId: personId, referencedLooks: doc.referencedLooks })
+			// 													.defaultLayout("detail")
+			// 													.defaultOrdering([{ field: "name", direction: "asc" }])
+			// 											)
+			// 									})
+			// 								)
+			// 						})
+			// 					}),
+			// 			])
+			//	),
+			// S.divider(),
+			...S.documentTypeListItems().filter(type => !hiddenTypes.has(type.spec.id))
 		])
