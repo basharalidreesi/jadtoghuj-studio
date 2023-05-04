@@ -1,5 +1,7 @@
 import { apiVersion } from "./sanity.client"
-import { CogIcon, DatabaseIcon, EarthGlobeIcon, FilterIcon, SparklesIcon, TagIcon, UsersIcon } from "@sanity/icons"
+import { BillIcon, CogIcon, DatabaseIcon, FilterIcon, SparklesIcon, TagIcon, UsersIcon } from "@sanity/icons"
+
+// TODO
 
 const hiddenTypes = new Set([
 	"category",
@@ -58,7 +60,7 @@ export const structure = (S, context) =>
 			S.divider(),
 			S.listItem()
 				.title("Pages")
-				.icon(EarthGlobeIcon)
+				.icon(BillIcon)
 				.child(
 					S.documentTypeList("page")
 						.title("Pages")

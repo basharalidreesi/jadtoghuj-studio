@@ -1,7 +1,5 @@
 import { Box } from "@sanity/ui"
 
-// DONE
-
 export default function Logo() {
 	return (
 		<Box padding={1}>

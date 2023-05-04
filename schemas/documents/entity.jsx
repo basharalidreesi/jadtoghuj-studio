@@ -2,8 +2,6 @@ import { defineField, defineType } from "sanity"
 import { checkIfValueAlreadyExistsInType } from "../../lib"
 import { UserIcon } from "@sanity/icons"
 
-// DONE
-
 export default defineType({
 	name: "entity",
 	type: "document",

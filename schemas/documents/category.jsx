@@ -2,8 +2,6 @@ import { defineField, defineType } from "sanity"
 import { checkIfValueAlreadyExistsInType } from "../../lib"
 import { TagIcon } from "@sanity/icons"
 
-// DONE
-
 export default defineType({
 	name: "category",
 	type: "document",

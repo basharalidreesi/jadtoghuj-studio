@@ -2,8 +2,6 @@ import { defineField, defineType } from "sanity"
 import { previewPortableText } from "../../lib"
 import { SparklesIcon } from "@sanity/icons"
 
-// DONE
-
 export default defineType({
 	name: "look",
 	type: "document",

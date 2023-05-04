@@ -1,9 +1,7 @@
 import { defineField, defineType } from "sanity"
-import { PrefixedInput } from "../../components"
+import { ExposedArrayFunctions, PrefixedInput } from "../../components"
 import { filterAlreadyReferencedDocuments, previewArrayValues } from "../../lib"
-import { BulbOutlineIcon, CogIcon, DocumentsIcon, DocumentTextIcon, InfoOutlineIcon, LeaveIcon } from "@sanity/icons"
-
-// TODO
+import { BillIcon, BulbOutlineIcon, CogIcon, InfoOutlineIcon, TokenIcon, TruncateIcon } from "@sanity/icons"
 
 export default defineType({
 	name: "settings",
@@ -69,8 +67,8 @@ export default defineType({
 				defineField({
 					name: "group",
 					type: "object",
-					title: "Group",
-					icon: DocumentsIcon,
+					title: "Navigation Group",
+					icon: TokenIcon,
 					fields: [
 						defineField({
 							name: "pages",
@@ -80,8 +78,8 @@ export default defineType({
 								defineField({
 									name: "page",
 									type: "reference",
-									title: "Internal Page",
-									icon: DocumentTextIcon,
+									title: "Page",
+									icon: BillIcon,
 									to: [{ type: "page" }],
 									options: {
 										disableNew: true,
@@ -89,68 +87,28 @@ export default defineType({
 									},
 								}),
 								defineField({
-									name: "external",
+									name: "separator",
 									type: "object",
-									title: "External Page",
-									icon: LeaveIcon,
+									title: "Separator",
+									icon: TruncateIcon,
 									fields: [
 										defineField({
-											name: "title",
+											name: "label",
 											type: "string",
-											title: "Title",
-											description: "",
-										}),
-										defineField({
-											name: "address",
-											type: "url",
-											title: "Address",
+											title: "Label",
 											description: "",
 										}),
 									],
-									preview: {
-										select: {
-											title: "title",
-											address: "address",
-										},
-										prepare(selection) {
-											const { title, address } = selection
-											return {
-												title: title,
-												subtitle: address,
-											}
+									options: {
+										exposedArrayConstraints: {
+											maxAllowed: 1,
 										},
 									},
 								}),
 							],
-						}),
-						defineField({
-							name: "truncation",
-							type: "object",
-							title: "Truncation",
-							description: "",
-							fields: [
-								defineField({
-									name: "isTruncated",
-									type: "boolean",
-									title: "Truncate",
-									description: "",
-									initialValue: false,
-								}),
-								defineField({
-									name: "limit",
-									type: "number",
-									title: "Limit",
-									description: "",
-									hidden: ({parent}) => !parent?.isTruncated,
-								}),
-								defineField({
-									name: "label",
-									type: "string",
-									title: "Label",
-									description: "",
-									hidden: ({parent}) => !parent?.isTruncated,
-								}),
-							],
+							components: {
+								input: ExposedArrayFunctions,
+							},
 						}),
 					],
 					preview: {
@@ -159,20 +117,31 @@ export default defineType({
 							page1Title: "pages.1.title",
 							page2Title: "pages.2.title",
 							page3Title: "pages.3.title",
+							separator0Label: "pages.0.label",
+							separator1Label: "pages.1.label",
+							separator2Label: "pages.2.label",
+							separator3Label: "pages.3.label",
 						},
 						prepare(selection) {
 							const {
 								page0Title,
 								page1Title,
 								page2Title,
-								page3Title
+								page3Title,
+								separator0Label,
+								separator1Label,
+								separator2Label,
+								separator3Label
 							} = selection
+							const transformSeparator = (separator) => {
+								return separator ? `[${separator.toUpperCase()}]→` : null
+							}
 							return {
 								title: previewArrayValues(
-									page0Title,
-									page1Title,
-									page2Title,
-									page3Title
+									page0Title || transformSeparator(separator0Label),
+									page1Title || transformSeparator(separator1Label),
+									page2Title || transformSeparator(separator2Label),
+									page3Title || transformSeparator(separator3Label),
 								),
 							}
 						},
@@ -180,6 +149,9 @@ export default defineType({
 				}),
 			],
 			group: "presentation",
+			components: {
+				input: ExposedArrayFunctions,
+			},
 		}),
 		defineField({
 			name: "footer",

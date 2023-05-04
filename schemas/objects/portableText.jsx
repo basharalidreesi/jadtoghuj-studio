@@ -1,7 +1,5 @@
-import { LinkIcon } from "@sanity/icons"
 import { defineField } from "sanity"
-
-// DONE
+import { LinkIcon } from "@sanity/icons"
 
 export default defineField({
 	name: "portableText",

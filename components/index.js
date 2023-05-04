@@ -1,14 +1,14 @@
-import ColouredInput from "./ColouredInput"
+import ColourPreview from "./ColourPreview"
 import ExposedArrayFunctions from "./ExposedArrayFunctions"
-import gradientPreview from "./gradientPreview"
+import GradientPreview from "./GradientPreview"
 import Logo from "./Logo"
 import PrefixedInput from "./PrefixedInput"
 import VideoPreview from "./VideoPreview"
 
 export {
-	ColouredInput,
+	ColourPreview,
 	ExposedArrayFunctions,
-	gradientPreview,
+	GradientPreview,
 	Logo,
 	PrefixedInput,
 	VideoPreview,

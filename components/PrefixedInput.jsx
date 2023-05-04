@@ -1,10 +1,8 @@
-import client from "../sanity.client"
-import { useFormValue } from "sanity"
 import { useEffect, useState } from "react"
+import { useFormValue } from "sanity"
+import client from "../sanity.client"
 import { Box, Card, Flex, Spinner, Text } from "@sanity/ui"
 import { ErrorOutlineIcon } from "@sanity/icons"
-
-// DONE
 
 export default function PrefixedInput(props) {
 	var localPrefix = null
@@ -40,26 +38,22 @@ export default function PrefixedInput(props) {
 	if (!source && prefix && !Array.isArray(prefix)) {
 		localPrefix = prefix
 	}
-	const extension = (text) => {
-		return text
-		? (
-			<Card sizing={"border"} padding={2} radius={1} border={true} tone={!isFetching && !hasError ? "positive" : "critical"} style={{ display: "flex", alignItems: "center", maxWidth: "25%" }}>
-				{isFetching ? <Spinner muted /> : ""}
-				{hasError ? <ErrorOutlineIcon style={{ display: "block", width: "100%", height: "100%", color: "var(--card-fg-color)" }} /> : ""}
-				{!isFetching && !hasError
-					? (
-						<Text size={0} muted={true} style={{ maxWidth: "100%" }}>
-							<div dir={"rtl"} style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-								<bdi>{text}</bdi>
-							</div>
-						</Text>
-					)
-					: ""
-				}
-			</Card>
-		)
-		: ""
-	}
+	const extension = (text) => (
+		<Card sizing={"border"} padding={2} radius={1} border={true} tone={!isFetching && !hasError ? "positive" : "critical"} style={{ display: "flex", alignItems: "center", maxWidth: "25%" }}>
+			{isFetching ? <Spinner muted /> : ""}
+			{hasError ? <ErrorOutlineIcon style={{ display: "block", width: "100%", height: "100%", color: "var(--card-fg-color)" }} /> : ""}
+			{!isFetching && !hasError
+				? (
+					<Text size={0} muted={true} style={{ maxWidth: "100%" }}>
+						<div dir={"rtl"} style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+							<bdi>{text}</bdi>
+						</div>
+					</Text>
+				)
+				: ""
+			}
+		</Card>
+	)
 	return (localPrefix || fetchedPrefix || suffix)
 		? (<>
 				<Flex direction="row" wrap="nowrap" justify="center" gap={1}>

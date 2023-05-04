@@ -1,15 +1,16 @@
 import { apiVersion } from "../../sanity.client"
 import { PrefixedInput } from "../../components"
 import { checkIfValueAlreadyExistsInType, filterAlreadyReferencedDocuments, previewArrayValues, previewPortableText } from "../../lib"
-import { DatabaseIcon, EarthGlobeIcon, EditIcon, HomeIcon, ImageIcon, SparkleIcon, SparklesIcon, TagIcon } from "@sanity/icons"
+import { BillIcon, DatabaseIcon, EarthGlobeIcon, EditIcon, HomeIcon, ImageIcon, SparkleIcon, SparklesIcon, TagIcon } from "@sanity/icons"
 
 // TODO
+// TODO: Prevent homepage from being deleted or unpublished
 
 export default {
 	name: "page",
 	type: "document",
 	title: "Page",
-	icon: EarthGlobeIcon,
+	icon: BillIcon,
 	fields: [
 		{
 			name: "title",

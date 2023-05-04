@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react"
 import { defineField, defineType, useFormValue } from "sanity"
 import client, { apiVersion } from "../../sanity.client"
-import { ColouredInput, ExposedArrayFunctions, PrefixedInput, VideoPreview } from "../../components"
+import { ColourPreview, ExposedArrayFunctions, PrefixedInput, VideoPreview } from "../../components"
 import { checkIfValueAlreadyExistsInType, filterAlreadyReferencedDocuments, previewArrayValues, previewPortableText } from "../../lib"
+import { Box, Flex, Text, TextInput } from "@sanity/ui"
 import { DatabaseIcon, ImageIcon, PlayIcon, UserIcon, UsersIcon } from "@sanity/icons"
-import { Box, Card, Flex, Text, TextInput } from "@sanity/ui"
-
-// DONE
 
 export default defineType({
 	name: "project",
@@ -318,7 +316,7 @@ export default defineType({
 			initialValue: "#ffffff",
 			hidden: ({parent}) => !parent?.hasCustomColour,
 			components: {
-				input: ColouredInput,
+				input: (props) => <ColourPreview withDefault={true} colour={props.value} {...props} />,
 			},
 		}),
 		defineField({
@@ -397,7 +395,6 @@ function featuredLooks() {
 				},
 			}),
 		],
-		// validation: TODO,
 		components: {
 			input: ExposedArrayFunctions,
 		},
@@ -431,16 +428,12 @@ function LookbookWithColourPreview(props) {
 				{props.renderDefault(props)}
 				<Box>
 					<Box paddingTop={2} paddingBottom={3}>
-						<Text size={1} weight="semibold">
-							<label htmlFor="lookbook-colour-preview">
-								Colour
-							</label>
+						<Text as={"label"} htmlFor={"lookbook-with-colour-preview"} size={1} weight={"semibold"}>
+							Colour
 						</Text>
 					</Box>
 					<Flex direction="row" wrap="nowrap" gap={1}>
-						<Card sizing="border" flex={1} border="true" style={{ borderRadius: "0.0625rem", background: "transparent", }}>
-							<label htmlFor="lookbook-with-colour-preview" style={{ display: "block", width: "100%", height: "100%", background: colour }}></label>
-						</Card>
+						<ColourPreview id={"lookbook-with-colour-preview"} />
 						<Box flex={3}>
 							<TextInput value={colour} id="lookbook-with-colour-preview" readOnly />
 						</Box>

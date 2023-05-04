@@ -2,8 +2,6 @@ import { useEffect, useState } from "react"
 import { Card, Flex, Spinner } from "@sanity/ui"
 import { ErrorOutlineIcon } from "@sanity/icons"
 
-// DONE
-
 export default function VideoPreview(props) {
 	const [data, setData] = useState("")
 	const [isFetching, setIsFetching] = useState(false)

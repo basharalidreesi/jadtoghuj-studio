@@ -1,20 +1,39 @@
-import { Card } from "@sanity/ui"
+import { Card, Flex } from "@sanity/ui"
 
-// TODO
-
-export default function gradientPreview(props) {
-	const c1 = props.value && props.schemaType.options?.colour1 ? props.value[props.schemaType.options?.colour1] : "#000000"
-	const c2 = props.value && props.schemaType.options?.colour2 ? props.value[props.schemaType.options?.colour2] : "#ffffff"
-	const c3 = props.value && props.schemaType.options?.colour3 ? props.value[props.schemaType.options?.colour3] : "#ffffff"
+export default function GradientPreview(props) {
+	const colour1 = props.colour1 || "#000000"
+	const colour2 = props.colour2 || "#ffffff"
+	const colour3 = props.colour3 || "#ffffff"
 	return (
 		<>
-			{props.renderDefault(props)}
-			<Card sizing="border" border="true" style={{ position: "relative", width: "100%", paddingTop: "33%", borderRadius: "0.0625rem", background: `linear-gradient(to bottom, ${c2}, ${c3})`, }}>
-				<div align="center" style={{ position: "absolute", top: "0", left: "0", width: "100%", height: "100%", display: "flex", alignItems: "center", justifyContent: "center", color: c1, }}>
+			{props.withDefault && props.renderDefault ? props.renderDefault(props) : ""}
+			<Card
+				sizing="border"
+				border="true"
+				radius={1}
+				style={{
+					position: "relative",
+					width: "100%",
+					paddingTop: "33%",
+					background: `linear-gradient(to bottom, ${colour2}, ${colour3})`,
+				}}
+			>
+				<Flex
+					align={"center"}
+					justify={"center"}
+					style={{
+						position: "absolute",
+						top: "0",
+						left: "0",
+						width: "100%",
+						height: "100%",
+						color: colour1,
+					}}
+				>
 					<p>
 						Preview
 					</p>
-				</div>
+				</Flex>
 			</Card>
 		</>
 	)
