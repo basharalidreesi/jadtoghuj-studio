@@ -72,24 +72,22 @@ export default function VideoPreview(props) {
 			)
 		}
 		if (props.target === "iframe") {
-			return (
-				<>
-					{(props.withDefault && props.renderDefault) ? props.renderDefault(props) : ""}
-					<Card marginTop={4} border={true} radius={1} tone={"transparent"} style={{ position: "relative" }}>
-						<style>{`
-							.jt-iframe-wrapper > iframe {
-								display: block;
-								position: absolute;
-								top: 0;
-								left: 0;
-								width: 100%;
-								height: 100%;
-							}
-						`}</style>
-						<div className={"jt-iframe-wrapper"} dangerouslySetInnerHTML={{ __html: data["html"] }} style={{ width: "100%", paddingTop: "56.25%" }}></div>
-					</Card>
-				</>
-			)
+			return (<>
+				{(props.withDefault && props.renderDefault) ? props.renderDefault(props) : ""}
+				<Card marginTop={4} border={true} radius={1} tone={"transparent"} style={{ position: "relative" }}>
+					<style>{`
+						.jt-iframe-wrapper > iframe {
+							display: block;
+							position: absolute;
+							top: 0;
+							left: 0;
+							width: 100%;
+							height: 100%;
+						}
+					`}</style>
+					<div className={"jt-iframe-wrapper"} dangerouslySetInnerHTML={{ __html: data["html"] }} style={{ width: "100%", paddingTop: "56.25%" }}></div>
+				</Card>
+			</>)
 		}
 	}
 }

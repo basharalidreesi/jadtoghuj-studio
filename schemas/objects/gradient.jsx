@@ -38,6 +38,6 @@ export default defineField({
 		}),
 	],
 	components: {
-		input: (props) => <GradientPreview withDefault={true} colour1={props.value.text} colour2={props.value.top} colour3={props.value.bottom} {...props} />,
+		input: (props) => <GradientPreview withDefault={true} colour1={props.value?.text} colour2={props.value?.top} colour3={props.value?.bottom} {...props} />,
 	},
 })

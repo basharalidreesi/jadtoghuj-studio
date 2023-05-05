@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react"
 import { defineField, defineType, useFormValue } from "sanity"
 import client, { apiVersion } from "../../sanity.client"
-import { ColourPreview, ExposedArrayFunctions, PrefixedInput, VideoPreview } from "../../components"
+import { ColourPreview, ExposedArrayFunctions, InputWithPrefixOrSuffix, VideoPreview } from "../../components"
 import { checkIfValueAlreadyExistsInType, filterAlreadyReferencedDocuments, previewArrayValues, previewPortableText } from "../../lib"
 import { Box, Flex, Text, TextInput } from "@sanity/ui"
 import { DatabaseIcon, ImageIcon, PlayIcon, UserIcon, UsersIcon } from "@sanity/icons"
@@ -43,13 +43,13 @@ export default defineType({
 			type: "slug",
 			title: "Address",
 			description: "",
-			components: {
-				input: (props) => <PrefixedInput source={"settings"} prefix={["url", "basePath", "projectPath"]} suffix={"/"} {...props} />,
-			},
 			options: {
 				source: "title",
 			},
 			hidden: ({document}) => !document?.isPublic,
+			components: {
+				input: (props) => <InputWithPrefixOrSuffix prefix={{ fromDocument: "settings", fromFields: ["url", "basePath", "projectPath"] }} suffix={{ fromString: "/" }} {...props} />,
+			},
 		}),
 		defineField({
 			name: "categories",

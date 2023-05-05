@@ -1,5 +1,6 @@
 import { useCallback } from "react"
-import { Button, Grid } from "@sanity/ui"
+import { ArrayOfPrimitivesFunctions } from "sanity"
+import { Box, Button, Grid } from "@sanity/ui"
 import { AddIcon } from "@sanity/icons"
 
 export default function ExposedArrayFunctions(props) {
@@ -14,6 +15,13 @@ function ArrayFunctions(props) {
 		const typeName = type.name
 		const typeConstraints = type.options?.exposedArrayConstraints
 		if (!typeConstraints) { return true }
+		const typePassesAllowExposure = () => {
+			const allowExposure = typeConstraints.allowExposure
+			if (allowExposure === false) {
+				return false
+			}
+			return true
+		}
 		const typePassesMaxAllowed = () => {
 			const maxAllowed = typeConstraints.maxAllowed
 			if (!maxAllowed) { return true }
@@ -21,7 +29,7 @@ function ArrayFunctions(props) {
 			if (instancesFound >= maxAllowed) { return false }
 			return true
 		}
-		return typePassesMaxAllowed() ? true : false
+		return typePassesAllowExposure() && typePassesMaxAllowed() ? true : false
 	})
 	const permittedTypes = resolvePermittedTypes()
 	return (
@@ -35,7 +43,14 @@ function ArrayFunctions(props) {
 					onClick={() => handleAdd(type.name)}
 				/>
 			))}
-			{/* <ArrayOfPrimitivesFunctions {...props} /> */}
+			{props.schemaType.options?.exposedArrayOptions
+				? (
+					<Box style={{ gridColumn: "1/-1" }}>
+						<ArrayOfPrimitivesFunctions {...props} />
+					</Box>
+				)
+				: ""
+			}
 		</Grid>
 	)
 }

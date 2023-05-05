@@ -1,5 +1,5 @@
 import { defineField, defineType } from "sanity"
-import { ExposedArrayFunctions, PrefixedInput } from "../../components"
+import { ExposedArrayFunctions, InputWithPrefixOrSuffix } from "../../components"
 import { filterAlreadyReferencedDocuments, previewArrayValues } from "../../lib"
 import { BillIcon, BulbOutlineIcon, CogIcon, InfoOutlineIcon, TokenIcon, TruncateIcon } from "@sanity/icons"
 
@@ -74,9 +74,9 @@ export default defineType({
 							name: "pages",
 							type: "array",
 							title: "Pages",
+							description: "",
 							of: [
 								defineField({
-									name: "page",
 									type: "reference",
 									title: "Page",
 									icon: BillIcon,
@@ -174,7 +174,7 @@ export default defineType({
 			description: "The subdirectory under which all content is filed. A trailing slash is required if a value is specified.",
 			group: "configuration",
 			components: {
-				input: (props) => <PrefixedInput prefix={["url"]} {...props} />,
+				input: (props) => <InputWithPrefixOrSuffix prefix={{ fromFields: ["url"] }} {...props} />,
 			},
 		}),
 		defineField({
@@ -184,7 +184,7 @@ export default defineType({
 			description: "The subdirectory under which projects are filed. A trailing slash is required if a value is specified.",
 			group: "configuration",
 			components: {
-				input: (props) => <PrefixedInput prefix={["url", "basePath"]} {...props} />,
+				input: (props) => <InputWithPrefixOrSuffix prefix={{ fromFields: ["url", "basePath"] }} {...props} />,
 			},
 		}),
 		defineField({
