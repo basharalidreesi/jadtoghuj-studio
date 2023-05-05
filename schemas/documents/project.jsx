@@ -433,7 +433,7 @@ function LookbookWithColourPreview(props) {
 						</Text>
 					</Box>
 					<Flex direction="row" wrap="nowrap" gap={1}>
-						<ColourPreview id={"lookbook-with-colour-preview"} />
+						<ColourPreview id={"lookbook-with-colour-preview"} colour={colour} />
 						<Box flex={3}>
 							<TextInput value={colour} id="lookbook-with-colour-preview" readOnly />
 						</Box>
