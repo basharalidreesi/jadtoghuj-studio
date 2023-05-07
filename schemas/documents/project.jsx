@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { defineField, defineType, useFormValue } from "sanity"
+import { defineArrayMember, defineField, defineType, useFormValue } from "sanity"
 import client, { apiVersion } from "../../sanity.client"
 import { ColourPreview, ExposedArrayFunctions, InputWithPrefixOrSuffix, VideoPreview } from "../../components"
 import { checkIfValueAlreadyExistsInType, filterAlreadyReferencedDocuments, previewArrayValues, previewPortableText } from "../../lib"
@@ -48,7 +48,7 @@ export default defineType({
 			},
 			hidden: ({document}) => !document?.isPublic,
 			components: {
-				input: (props) => <InputWithPrefixOrSuffix prefix={{ fromDocument: "settings", fromFields: ["url", "basePath", "projectPath"] }} suffix={{ fromString: "/" }} {...props} />,
+				input: (props) => <InputWithPrefixOrSuffix options={{ prefix: { fromDocument: "settings", fromFields: ["url", "basePath", "projectPath"] }, suffix: {fromString: "/"} }} {...props} />,
 			},
 		}),
 		defineField({
@@ -57,7 +57,7 @@ export default defineType({
 			title: "Categories",
 			description: "",
 			of: [
-				defineField({
+				defineArrayMember({
 					type: "reference",
 					title: "Category",
 					to: [{ type: "category" }],
@@ -66,6 +66,7 @@ export default defineType({
 					},
 				}),
 			],
+			validation: (Rule) => Rule.unique().warning("Duplicate categories found."),
 			components: {
 				input: ExposedArrayFunctions,
 			},
@@ -76,7 +77,7 @@ export default defineType({
 			title: "Contributions",
 			description: "",
 			of: [
-				defineField({
+				defineArrayMember({
 					name: "contribution",
 					type: "object",
 					title: "Contribution",
@@ -94,7 +95,7 @@ export default defineType({
 							title: "Contributors",
 							description: "",
 							of: [
-								defineField({
+								defineArrayMember({
 									type: "reference",
 									title: "Reference",
 									to: [{ type: "entity" }],
@@ -103,6 +104,7 @@ export default defineType({
 									},
 								}),
 							],
+							validation: (Rule) => Rule.unique().warning("Duplicate contributors found."),
 							components: {
 								input: ExposedArrayFunctions,
 							},
@@ -138,6 +140,7 @@ export default defineType({
 					},
 				}),
 			],
+			validation: (Rule) => Rule.unique().warning("Duplicate contributions found."),
 			components: {
 				input: ExposedArrayFunctions,
 			},
@@ -148,32 +151,34 @@ export default defineType({
 			title: "Looks",
 			description: "",
 			of: [
-				defineField({
+				defineArrayMember({
 					type: "reference",
 					title: "Look",
 					to: [{ type: "look" }],
 					options: {
-						filter: async ({document, parent, getClient}) => {
-							const unusedLooks = await getClient({apiVersion}).fetch(`
-								*[_type == "look"] {
-									_id,
-									"refs": count(*[references(^._id)])
-								} [refs == 0]._id
-							`)
-							const featuredLooks = document?.lookbook?.map(image => image?.looks?.map(look => look?._ref))?.filter(Boolean)?.flat() || ""
-							const alreadyReferencedLooks = parent?.map(look => look._ref)?.filter(Boolean) || ""
-							return Promise.resolve({
-								filter: `_id in $unusedLooks || ((_id in $featuredLooks) && !(_id in $alreadyReferencedLooks))`,
-								params: {
-									unusedLooks,
-									featuredLooks,
-									alreadyReferencedLooks,
-								}
-							})
-						},
+						// TODO
+						// filter: async ({document, parent, getClient}) => {
+						// 	const unusedLooks = await getClient({apiVersion}).fetch(`
+						// 		*[_type == "look"] {
+						// 			_id,
+						// 			"refs": count(*[references(^._id)])
+						// 		} [refs == 0]._id
+						// 	`).then(console.info("Fetching unused looks."))
+						// 	const featuredLooks = document?.lookbook?.map((image) => image?.looks?.map((look) => look?._ref))?.filter(Boolean)?.flat() || ""
+						// 	const alreadyReferencedLooks = parent?.map((look) => look._ref)?.filter(Boolean) || ""
+						// 	return Promise.resolve({
+						// 		filter: `_id in $unusedLooks || ((_id in $featuredLooks) && !(_id in $alreadyReferencedLooks))`,
+						// 		params: {
+						// 			unusedLooks,
+						// 			featuredLooks,
+						// 			alreadyReferencedLooks,
+						// 		}
+						// 	})
+						// },
 					},
 				}),
 			],
+			validation: (Rule) => Rule.unique().warning("Duplicate looks found."),
 			components: {
 				input: ExposedArrayFunctions,
 			},
@@ -184,7 +189,7 @@ export default defineType({
 			title: "Lookbook",
 			description: "",
 			of: [
-				defineField({
+				defineArrayMember({
 					name: "image",
 					type: "image",
 					title: "Image",
@@ -239,7 +244,7 @@ export default defineType({
 						},
 					},
 				}),
-				defineField({
+				defineArrayMember({
 					name: "video",
 					type: "object",
 					title: "Video",
@@ -250,8 +255,9 @@ export default defineType({
 							type: "url",
 							title: "URL",
 							description: "",
+							// validation: TODO,
 							components: {
-								input: (props) => <VideoPreview withDefault={true} url={props.value} target={"iframe"} {...props} />,
+								input: (props) => <VideoPreview options={{ withDefault: true, from: props.value, as: "iframe" }} {...props} />,
 							},
 						}),
 						featuredLooks(),
@@ -297,12 +303,13 @@ export default defineType({
 										untitledLabel: "Untitled Look",
 									}
 								),
-								media: url ? <VideoPreview url={url} target={"img"} /> : null,
+								media: url ? <VideoPreview options={{ from: url, as: "img" }} /> : null,
 							}
 						},
 					},
 				}),
 			],
+			validation: (Rule) => Rule.unique().warning("Duplicate entries found."),
 			components: {
 				field: LookbookWithColourPreview,
 				input: ExposedArrayFunctions,
@@ -315,8 +322,9 @@ export default defineType({
 			description: "",
 			initialValue: "#ffffff",
 			hidden: ({parent}) => !parent?.hasCustomColour,
+			// validation: TODO,
 			components: {
-				input: (props) => <ColourPreview withDefault={true} colour={props.value} {...props} />,
+				input: (props) => <ColourPreview options={{ withDefault: true, colour: props.value }} {...props} />,
 			},
 		}),
 		defineField({
@@ -362,7 +370,7 @@ export default defineType({
 			return {
 				title: isPublic ? title : (title ? ("🔒 " + title) : null),
 				subtitle: previewPortableText(description),
-				media: lookbook0Asset ? lookbook0Asset : (lookbook0Video ? <VideoPreview url={lookbook0Video} target={"img"} /> : null),
+				media: lookbook0Asset ? lookbook0Asset : (lookbook0Video ? <VideoPreview options={{ from: lookbook0Video, as: "img" }} /> : null),
 			}
 		},
 	},
@@ -375,15 +383,15 @@ function featuredLooks() {
 		title: "Featured Looks",
 		description: "",
 		of: [
-			defineField({
+			defineArrayMember({
 				type: "reference",
 				title: "Look",
 				to: [{ type: "look" }],
 				options: {
 					disableNew: true,
 					filter: ({document, parent}) => {
-						const specifiedLooks = document?.looks?.map(look => look._ref)?.filter(Boolean) || ""
-						const alreadyReferencedLooks = parent?.map(look => look._ref)?.filter(Boolean) || ""
+						const specifiedLooks = document?.looks?.map((look) => look._ref)?.filter(Boolean) || ""
+						const alreadyReferencedLooks = parent?.map((look) => look._ref)?.filter(Boolean) || ""
 						return {
 							filter: `(_id in $specifiedLooks) && !(_id in $alreadyReferencedLooks)`,
 							params: {
@@ -395,6 +403,10 @@ function featuredLooks() {
 				},
 			}),
 		],
+		validation: (Rule) => [
+			Rule.unique().warning("Duplicate looks found."),
+			// TODO
+		],
 		components: {
 			input: ExposedArrayFunctions,
 		},
@@ -402,17 +414,18 @@ function featuredLooks() {
 }
 
 function LookbookWithColourPreview(props) {
+	const [colour, setColour] = useState("")
+	const hasCustomColour = useFormValue(["hasCustomColour"])
 	const lookbook = useFormValue(["lookbook"])
 	const image0 = lookbook && lookbook[0]._type === "image" && lookbook[0].asset ? lookbook[0] : null
-	const ref = image0 ? image0.asset._ref : "null"
-	const [colour, setColour] = useState(0)
+	const ref = image0?.asset?._ref
 	useEffect(() => {
 		async function getDefaultBackgroundColour() {
-			const defaultBackgroundColour = await client.fetch(`*[_type == "settings"].colours.bottom`)
+			const defaultBackgroundColour = await client.fetch(`*[_type == "settings"].colours.bottom`).then(console.info("Fetching default background colour."))
 			setColour(defaultBackgroundColour)
 		}
 		async function getDominantBackgroundColour() {
-			const dominantBackgroundColour = await client.fetch(`*[_id == "${ref}"].metadata.palette.dominant.background`)
+			const dominantBackgroundColour = await client.fetch(`*[_id == "${ref}"].metadata.palette.dominant.background`).then(console.info("Fetching dominant background colour."))
 			setColour(dominantBackgroundColour)
 		}
 		if (image0) {
@@ -421,7 +434,7 @@ function LookbookWithColourPreview(props) {
 			getDefaultBackgroundColour()
 		}
 	}, [ref])
-	return useFormValue(["hasCustomColour"]) === true
+	return hasCustomColour
 		? props.renderDefault(props)
 		: (
 			<>
@@ -433,7 +446,7 @@ function LookbookWithColourPreview(props) {
 						</Text>
 					</Box>
 					<Flex direction="row" wrap="nowrap" gap={1}>
-						<ColourPreview id={"lookbook-with-colour-preview"} colour={colour} />
+						<ColourPreview options={{ colour: colour }} id={"lookbook-with-colour-preview"} />
 						<Box flex={3}>
 							<TextInput value={colour} id="lookbook-with-colour-preview" readOnly />
 						</Box>

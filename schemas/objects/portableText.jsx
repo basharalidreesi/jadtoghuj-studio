@@ -1,5 +1,5 @@
 import { defineField } from "sanity"
-import { LinkIcon } from "@sanity/icons"
+import { LinkIcon, UserIcon } from "@sanity/icons"
 
 export default defineField({
 	name: "portableText",
@@ -49,6 +49,7 @@ export default defineField({
 					type: "reference",
 					title: "Reference",
 					description: "",
+					icon: UserIcon,
 					to: [{ type: "entity" }],
 				}),
 			],

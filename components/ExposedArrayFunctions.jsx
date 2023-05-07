@@ -11,30 +11,30 @@ function ArrayFunctions(props) {
 	const handleAdd = useCallback((type) => {
 		props.onItemAppend({"_type": `${type}`})
 	}, [props])
-	const resolvePermittedTypes = () => props.schemaType.of.filter(type => {
+	const resolvePermittedTypes = () => props.schemaType.of.filter((type) => {
 		const typeName = type.name
 		const typeConstraints = type.options?.exposedArrayConstraints
 		if (!typeConstraints) { return true }
-		const typePassesAllowExposure = () => {
-			const allowExposure = typeConstraints.allowExposure
-			if (allowExposure === false) {
+		const typePassesIncludeInExposedArray = () => {
+			const includeInExposedArray = typeConstraints.includeInExposedArray
+			if (includeInExposedArray === false) {
 				return false
 			}
 			return true
 		}
-		const typePassesMaxAllowed = () => {
-			const maxAllowed = typeConstraints.maxAllowed
-			if (!maxAllowed) { return true }
-			const instancesFound = props.value.filter(item => item._type === typeName).length
-			if (instancesFound >= maxAllowed) { return false }
+		const typePassesMaxInstances = () => {
+			const maxInstances = typeConstraints.maxInstances
+			if (!maxInstances) { return true }
+			const instancesFound = props.value.filter((item) => item._type === typeName).length
+			if (instancesFound >= maxInstances) { return false }
 			return true
 		}
-		return typePassesAllowExposure() && typePassesMaxAllowed() ? true : false
+		return typePassesIncludeInExposedArray() && typePassesMaxInstances() ? true : false
 	})
 	const permittedTypes = resolvePermittedTypes()
 	return (
 		<Grid columns={permittedTypes.length} gap={3}>
-			{permittedTypes.map(type => (
+			{permittedTypes.map((type) => (
 				<Button
 					key={type.name}
 					icon={permittedTypes.length > 1 && type.icon ? type.icon : AddIcon}

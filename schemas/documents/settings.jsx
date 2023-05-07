@@ -101,7 +101,7 @@ export default defineType({
 									],
 									options: {
 										exposedArrayConstraints: {
-											maxAllowed: 1,
+											maxInstances: 1,
 										},
 									},
 								}),
@@ -174,7 +174,7 @@ export default defineType({
 			description: "The subdirectory under which all content is filed. A trailing slash is required if a value is specified.",
 			group: "configuration",
 			components: {
-				input: (props) => <InputWithPrefixOrSuffix prefix={{ fromFields: ["url"] }} {...props} />,
+				input: (props) => <InputWithPrefixOrSuffix options={{ prefix: {fromFields: ["url"]} }} {...props} />,
 			},
 		}),
 		defineField({
@@ -184,7 +184,7 @@ export default defineType({
 			description: "The subdirectory under which projects are filed. A trailing slash is required if a value is specified.",
 			group: "configuration",
 			components: {
-				input: (props) => <InputWithPrefixOrSuffix prefix={{ fromFields: ["url", "basePath"] }} {...props} />,
+				input: (props) => <InputWithPrefixOrSuffix options={{ prefix: {fromFields: ["url", "basePath"]} }} {...props} />,
 			},
 		}),
 		defineField({

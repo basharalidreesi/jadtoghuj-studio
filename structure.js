@@ -1,5 +1,5 @@
 import { apiVersion } from "./sanity.client"
-import { BillIcon, CogIcon, DatabaseIcon, FilterIcon, SparklesIcon, TagIcon, UsersIcon } from "@sanity/icons"
+import { BillIcon, CogIcon, DatabaseIcon, FilterIcon, HomeIcon, SparklesIcon, TagIcon, UsersIcon } from "@sanity/icons"
 
 // TODO
 
@@ -12,8 +12,8 @@ const hiddenTypes = new Set([
 	"settings",
 ])
 
-export const structure = (S, context) =>
-	S.list()
+export const structure = (S, context) => {
+	return S.list()
 		.title("Library")
 		.items([
 			S.listItem()
@@ -67,6 +67,15 @@ export const structure = (S, context) =>
 						.menuItems([])
 						.defaultOrdering([{field: "title", direction: "asc"}])
 				),
+			S.listItem()
+				.title("Homepage")
+				.icon(HomeIcon)
+				.child(
+					S.document()
+						.schemaType("page")
+						.documentId("homepage")
+				),
+			S.divider(),
 			S.listItem()
 				.title("Settings")
 				.icon(CogIcon)
@@ -124,16 +133,16 @@ export const structure = (S, context) =>
 			// 					.child(() => {
 			// 						const query = `*[_type == "project"] | order(year desc) { year }`
 			// 						const params = {}
-			// 						return context.getClient({apiVersion}).fetch(query, params).then(docs => {
+			// 						return context.getClient({apiVersion}).fetch(query, params).then((documents) => {
 			// 							const years = []
-			// 							docs.forEach(doc => {
-			// 								const year = doc?.year
+			// 							documents.forEach((document) => {
+			// 								const year = document?.year
 			// 								if (!years.includes(year)) { years.push(year) }
 			// 							})
 			// 							return S.list()
 			// 								.title("Projects by year")
 			// 								.items(
-			// 									years.map(year => {
+			// 									years.map((year) => {
 			// 										return S.listItem()
 			// 											.title(`${year}`)
 			// 											.id(`projectsFrom${year}`)
@@ -155,18 +164,18 @@ export const structure = (S, context) =>
 			// 					.child(() => {
 			// 						const query = `*[_type == "category"] | order(lower(title) asc) { _id, title }`
 			// 						const params = {}
-			// 						return context.getClient({apiVersion}).fetch(query, params).then(docs => {
+			// 						return context.getClient({apiVersion}).fetch(query, params).then((documents) => {
 			// 							return S.list()
 			// 								.title("Projects by category")
 			// 								.items(
-			// 									docs.map(doc => {
+			// 									documents.map((document) => {
 			// 										return S.listItem()
-			// 											.title(doc.title)
-			// 											.id(doc._id)
-			// 											.child(categoryId =>
+			// 											.title(document.title)
+			// 											.id(document._id)
+			// 											.child((categoryId) =>
 			// 												S.documentList()
-			// 													.title(doc.title)
-			// 													.id(`noCreate-${doc._id}`)
+			// 													.title(document.title)
+			// 													.id(`noCreate-${document._id}`)
 			// 													.filter('_type == "project" && $categoryId in categories[]._ref')
 			// 													.params({ categoryId: categoryId })
 			// 													.defaultLayout("detail")
@@ -188,20 +197,20 @@ export const structure = (S, context) =>
 			// 							}
 			// 						`
 			// 						const params = {}
-			// 						return context.getClient({apiVersion}).fetch(query, params).then(docs => {
+			// 						return context.getClient({apiVersion}).fetch(query, params).then((documents) => {
 			// 							return S.list()
 			// 								.title("Projects by person")
 			// 								.items(
-			// 									docs.map(doc => {
+			// 									documents.map((document) => {
 			// 										return S.listItem()
-			// 											.title(doc.name)
-			// 											.id(doc._id)
-			// 											.child(personId =>
+			// 											.title(document.name)
+			// 											.id(document._id)
+			// 											.child((personId) =>
 			// 												S.documentList()
-			// 													.title(`Projects with "${doc.name}"`)
-			// 													.id(`noCreate-${doc._id}`)
+			// 													.title(`Projects with "${document.name}"`)
+			// 													.id(`noCreate-${document._id}`)
 			// 													.filter('(_type == "project" && references($personId)) || (_type == "project" && references($referencedLooks))')
-			// 													.params({ personId: personId, referencedLooks: doc.referencedLooks })
+			// 													.params({ personId: personId, referencedLooks: document.referencedLooks })
 			// 													.defaultLayout("detail")
 			// 													.defaultOrdering([{ field: "name", direction: "asc" }])
 			// 											)
@@ -212,5 +221,6 @@ export const structure = (S, context) =>
 			// 			])
 			//	),
 			// S.divider(),
-			...S.documentTypeListItems().filter(type => !hiddenTypes.has(type.spec.id))
+			...S.documentTypeListItems().filter((type) => !hiddenTypes.has(type.spec.id))
 		])
+}

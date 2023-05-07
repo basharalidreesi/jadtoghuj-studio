@@ -13,7 +13,7 @@ export default defineField({
 			description: "",
 			initialValue: "#ffffff",
 			components: {
-				input: (props) => <ColourPreview withDefault={true} colour={props.value} {...props} />,
+				input: (props) => <ColourPreview options={{ withDefault: true, colour: props.value }} {...props} />,
 			},
 		}),
 		defineField({
@@ -23,7 +23,7 @@ export default defineField({
 			description: "",
 			initialValue: "#ffffff",
 			components: {
-				input: (props) => <ColourPreview withDefault={true} colour={props.value} {...props} />,
+				input: (props) => <ColourPreview options={{ withDefault: true, colour: props.value }} {...props} />,
 			},
 		}),
 		defineField({
@@ -33,11 +33,11 @@ export default defineField({
 			description: "",
 			initialValue: "#000000",
 			components: {
-				input: (props) => <ColourPreview withDefault={true} colour={props.value} {...props} />,
+				input: (props) => <ColourPreview options={{ withDefault: true, colour: props.value }} {...props} />,
 			},
 		}),
 	],
 	components: {
-		input: (props) => <GradientPreview withDefault={true} colour1={props.value?.text} colour2={props.value?.top} colour3={props.value?.bottom} {...props} />,
+		input: (props) => <GradientPreview options={{ withDefault: true, colour1: props.value?.text, colour2: props.value?.top, colour3: props.value?.bottom }} {...props} />,
 	},
 })

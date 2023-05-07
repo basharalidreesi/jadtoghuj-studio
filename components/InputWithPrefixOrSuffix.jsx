@@ -6,21 +6,21 @@ import { ErrorOutlineIcon } from "@sanity/icons"
 
 export default function InputWithPrefixOrSuffix(props) {
 	const prefix = {
-		hasPrefix: props.prefix ? true : false,
-		prefixFromDocument: props.prefix?.fromDocument || null,
-		prefixFromFields: props.prefix?.fromFields || null,
-		prefixFromString: props.prefix?.fromString || null,
+		hasPrefix: props.options?.prefix ? true : false,
+		prefixFromDocument: props.options?.prefix?.fromDocument || null,
+		prefixFromFields: props.options?.prefix?.fromFields || null,
+		prefixFromString: props.options?.prefix?.fromString || null,
 		resolvedPrefix: null,
 	}
 	const suffix = {
-		hasSuffix: props.suffix ? true : false,
-		suffixFromDocument: props.suffix?.fromDocument || null,
-		suffixFromFields: props.suffix?.fromFields || null,
-		suffixFromString: props.suffix?.fromString || null,
+		hasSuffix: props.options?.suffix ? true : false,
+		suffixFromDocument: props.options?.suffix?.fromDocument || null,
+		suffixFromFields: props.options?.suffix?.fromFields || null,
+		suffixFromString: props.options?.suffix?.fromString || null,
 		resolvedSuffix: null,
 	}
-	const [isFetching, setIsFetching] = useState(false)
 	const [hasError, setHasError] = useState(false)
+	const [isFetching, setIsFetching] = useState(false)
 	const [fetchedPrefix, setFetchedPrefix] = useState(null)
 	const [fetchedSuffix, setFetchedSuffix] = useState(null)
 	var localPrefix = null
@@ -33,9 +33,9 @@ export default function InputWithPrefixOrSuffix(props) {
 		try {
 			setHasError(false)
 			setIsFetching(true)
-			const data = await client.fetch(query)
+			const data = await client.fetch(query).then(console.info("Fetching to find prefix or suffix."))
 			setIsFetching(false)
-			return fields.map(field => data[`${field}`]).join("")
+			return fields.map((field) => data[`${field}`]).join("")
 		} catch {
 			setIsFetching(false)
 			setHasError(true)
@@ -60,10 +60,10 @@ export default function InputWithPrefixOrSuffix(props) {
 		}, [])
 	}
 	if (prefix.hasPrefix && !prefix.prefixFromDocument && prefix.prefixFromFields && !prefix.prefixFromString) {
-		localPrefix = prefix.prefixFromFields.map(field => useFormValue([`${field}`]))?.join("")
+		localPrefix = prefix.prefixFromFields.map((field) => useFormValue([`${field}`]))?.join("")
 	}
 	if (suffix.hasSuffix && !suffix.suffixFromDocument && suffix.suffixFromFields && !suffix.suffixFromString) {
-		localSuffix = suffix.suffixFromFields.map(field => useFormValue([`${field}`]))?.join("")
+		localSuffix = suffix.suffixFromFields.map((field) => useFormValue([`${field}`]))?.join("")
 	}
 	if (prefix.hasPrefix && prefix.prefixFromString) {
 		staticPrefix = prefix.prefixFromString
@@ -76,7 +76,7 @@ export default function InputWithPrefixOrSuffix(props) {
 	const Extension = (props) => {
 		if (!props.text && !isFetching && !hasError) { return null }
 		return (
-			<Card sizing={"border"} padding={2} radius={1} border={true} tone={!isFetching && !hasError ? "positive" : "critical"} style={{ display: "flex", alignItems: "center", maxWidth: "25%", minHeight: "2.1875rem" }}>
+			<Card sizing={"border"} padding={2} radius={1} border={true} tone={!isFetching && !hasError ? "transparent" : "critical"} style={{ display: "flex", alignItems: "center", maxWidth: "25%", minHeight: "2.1875rem" }}>
 				{isFetching
 					? <Spinner muted />
 					: ""
@@ -88,7 +88,7 @@ export default function InputWithPrefixOrSuffix(props) {
 				{(!isFetching && !hasError)
 					? (
 						<Text size={0} muted={true} style={{ maxWidth: "100%" }}>
-							<div dir={props.type === "prefix" ? "rtl" : null} style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+							<div dir={props.type === "prefix" ? "rtl" : null} style={{ whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis", direction: props.type === "prefix" ? "rtl" : "null", }}>
 								<bdi>{props.text}</bdi>
 							</div>
 						</Text>

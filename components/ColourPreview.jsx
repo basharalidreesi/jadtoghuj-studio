@@ -1,7 +1,7 @@
 import { Box, Card, Flex } from "@sanity/ui"
 
 export default function ColourPreview(props) {
-	const withDefault = props.withDefault && props.renderDefault
+	const withDefault = props.options?.withDefault && props.renderDefault
 	const Preview = () => (
 		<Card
 			as={(withDefault || props.id) ? "label" : "div"}
@@ -15,8 +15,8 @@ export default function ColourPreview(props) {
 				height: "100%",
 				minHeight: "2.1875rem",
 				borderRadius: "0.0625rem",
-				background: props.colour || "transparent",
-				}}
+				background: props.options?.colour || "transparent",
+			}}
 		></Card>
 	)
 	return withDefault
@@ -24,11 +24,9 @@ export default function ColourPreview(props) {
 			<Flex direction="row" wrap="nowrap" gap={1}>
 				<Preview />
 				<Box flex={3}>
-					{props.renderDefault(props)}
+					{props.renderDefault({...props, elementProps: { ...props.elementProps, placeholder: props.schemaType?.initialValue }})}
 				</Box>
 			</Flex>
 		)
-		: (
-			<Preview />
-		)
+		: <Preview />
 }

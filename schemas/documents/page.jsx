@@ -2,9 +2,7 @@ import { defineField, defineType } from "sanity"
 import { apiVersion } from "../../sanity.client"
 import { ExposedArrayFunctions, InputWithPrefixOrSuffix } from "../../components"
 import { checkIfValueAlreadyExistsInType, filterAlreadyReferencedDocuments, previewArrayValues, previewPortableText } from "../../lib"
-import { BillIcon, DatabaseIcon, EarthGlobeIcon, EditIcon, HomeIcon, ImageIcon, SparklesIcon, TagIcon } from "@sanity/icons"
-
-// TODO: Prevent homepage from being deleted or unpublished
+import { BillIcon, DatabaseIcon, EditIcon, HomeIcon, ImageIcon, SparklesIcon, TagIcon } from "@sanity/icons"
 
 export default defineType({
 	name: "page",
@@ -28,8 +26,9 @@ export default defineType({
 				source: "title",
 			},
 			components: {
-				input: (props) => <InputWithPrefixOrSuffix prefix={{ fromDocument: "settings", fromFields: ["url", "basePath"] }} suffix={{ fromString: "/" }} {...props} />,
+				input: (props) => <InputWithPrefixOrSuffix options={{ prefix: { fromDocument: "settings", fromFields: ["url", "basePath"] }, suffix: {fromString: "/"} }} {...props} />,
 			},
+			readOnly: ({document}) => ["homepage", "drafts.homepage"].includes(document._id) ? true : false,
 		}),
 		defineField({
 			name: "contents",
@@ -37,11 +36,11 @@ export default defineType({
 			title: "Contents",
 			description: "",
 			of: [
+				textBlock(),
+				imageBlock(),
 				lookBlock(),
 				projectBlock(),
 				categoryBlock(),
-				textBlock(),
-				imageBlock(),
 				pageBlock(),
 			],
 			options: {
@@ -82,18 +81,82 @@ export default defineType({
 	],
 	preview: {
 		select: {
+			id: "_id",
 			title: "title",
-			address: "address.current",
 		},
 		prepare(selection) {
-			const { title, address } = selection
+			const { id, title } = selection
 			return {
 				title: title,
-				media: address === "/" ? HomeIcon : null,
+				media: id.replace(/^drafts\./, "") === "homepage" ? HomeIcon : null,
 			}
 		},
 	},
 })
+
+function textBlock() {
+	return defineField({
+		name: "textBlock",
+		type: "object",
+		title: "Text",
+		icon: EditIcon,
+		fields: [
+			defineField({
+				name: "text",
+				type: "portableText",
+				title: "Text",
+				description: "",
+			}),
+		],
+		options: {
+			exposedArrayConstraints: {
+				includeInExposedArray: false,
+			},
+		},
+		preview: {
+			select: {
+				text: "text",
+			},
+			prepare(selection) {
+				const { text } = selection
+				return {
+					title: previewPortableText(text),
+					subtitle: "Text",
+				}
+			},
+		},
+	})
+}
+
+function imageBlock() {
+	// TODO
+	return defineField({
+		name: "imageBlock",
+		type: "image",
+		title: "Image",
+		description: "",
+		icon: ImageIcon,
+		options: {
+			exposedArrayConstraints: {
+				includeInExposedArray: false,
+			},
+		},
+		preview: {
+			select: {
+				originalFilename: "asset.originalFilename",
+				asset: "asset",
+			},
+			prepare(selection) {
+				const { originalFilename, asset } = selection
+				return {
+					title: originalFilename,
+					subtitle: "Image",
+					media: asset ? asset : ImageIcon
+				}
+			},
+		}
+	})
+}
 
 function lookBlock() {
 	return defineField({
@@ -119,7 +182,7 @@ function lookBlock() {
 				title: "Looks",
 				description: "",
 				of: [
-					{
+					defineField({
 						type: "reference",
 						title: "Look",
 						to: [{ type: "look" }],
@@ -127,14 +190,14 @@ function lookBlock() {
 							disableNew: true,
 							filter: async ({document, parent, parentPath, getClient}) => {
 								// TODO
-								const currentKey = parentPath?.find(item => item?._key)?._key
-								const referencedProject = document?.contents?.find(item => item?._key === currentKey)?.project?._ref || ""
+								const currentKey = parentPath?.find((item) => item?._key)?._key
+								const referencedProject = document?.contents?.find((item) => item?._key === currentKey)?.project?._ref || ""
 								const looksInReferencedProject = await getClient({apiVersion}).fetch(`*[_id == $referencedProject].looks[]->_id`, {
 									referencedProject,
 								})
-								const referencedDocuments = parent?.map(doc => doc?._ref)?.filter(Boolean) || ""
+								const referencedDocuments = parent?.map((document) => document?._ref)?.filter(Boolean) || ""
 								return Promise.resolve({
-									filter: '_id in $looksInReferencedProject && defined(image.asset._ref) && !(_id in $referencedDocuments)',
+									filter: `_id in $looksInReferencedProject && defined(image.asset._ref) && !(_id in $referencedDocuments)`,
 									params: {
 										looksInReferencedProject,
 										referencedDocuments,
@@ -146,9 +209,9 @@ function lookBlock() {
 							// TODO
 							if (value._ref) {
 								const { document, path, getClient } = context
-								const currentKey = path?.find(item => item?._key)?._key
+								const currentKey = path?.find((item) => item?._key)?._key
 								const referencedLook = value._ref
-								const referencedProject = document?.contents?.find(item => item?._key === currentKey)?.project?._ref || ""
+								const referencedProject = document?.contents?.find((item) => item?._key === currentKey)?.project?._ref || ""
 								const looksInReferencedProject = await getClient({apiVersion}).fetch(`*[_id == $referencedProject].looks[]->_id`, {
 									referencedProject,
 								})
@@ -160,11 +223,11 @@ function lookBlock() {
 							}
 							return true
 						}),
-					},
+					}),
 				],
 				components: {
 					input: ExposedArrayFunctions,
-				}
+				},
 			}),
 		],
 		preview: {
@@ -236,9 +299,9 @@ function projectBlock() {
 							disableNew: true,
 							filter: async ({document}) => {
 								// TODO
-								const referencedProjects = document?.contents?.filter(block => block?._type === "projectBlock")?.map(doc => doc?.projects?.map(project => project?._ref))?.filter(Boolean)?.flat() || ""
+								const referencedProjects = document?.contents?.filter((block) => block?._type === "projectBlock")?.map((document) => document?.projects?.map((project) => project?._ref))?.filter(Boolean)?.flat() || ""
 								return {
-									filter: '!(_id in $referencedProjects) && isPublic == true && defined(address.current)',
+									filter: `!(_id in $referencedProjects) && isPublic == true && defined(address.current)`,
 									params: {
 										referencedProjects,
 									}
@@ -284,7 +347,7 @@ function categoryBlock() {
 	return defineField({
 		name: "categoryBlock",
 		type: "object",
-		title: "Category(ies)",
+		title: "Categor(y/ies)",
 		icon: TagIcon,
 		fields: [
 			defineField({
@@ -301,9 +364,9 @@ function categoryBlock() {
 							disableNew: true,
 							filter: async ({document}) => {
 								// TODO
-								const referencedCategories = document?.contents?.filter(block => block?._type === "categoryBlock")?.map(doc => doc?.categories?.map(category => category?._ref))?.filter(Boolean)?.flat() || ""
+								const referencedCategories = document?.contents?.filter((block) => block?._type === "categoryBlock")?.map((document) => document?.categories?.map((category) => category?._ref))?.filter(Boolean)?.flat() || ""
 								return {
-									filter: '!(_id in $referencedCategories)',
+									filter: `!(_id in $referencedCategories)`,
 									params: {
 										referencedCategories,
 									}
@@ -312,6 +375,9 @@ function categoryBlock() {
 						},
 					}),
 				],
+				components: {
+					input: ExposedArrayFunctions,
+				},
 			}),
 		],
 		preview: {
@@ -342,76 +408,12 @@ function categoryBlock() {
 	})
 }
 
-function textBlock() {
-	return defineField({
-		name: "textBlock",
-		type: "object",
-		title: "Text",
-		icon: EditIcon,
-		fields: [
-			defineField({
-				name: "text",
-				type: "portableText",
-				title: "Text",
-				description: "",
-			}),
-		],
-		options: {
-			exposedArrayConstraints: {
-				allowExposure: false,
-			},
-		},
-		preview: {
-			select: {
-				text: "text",
-			},
-			prepare(selection) {
-				const { text } = selection
-				return {
-					title: previewPortableText(text),
-					subtitle: "Text",
-				}
-			},
-		},
-	})
-}
-
-function imageBlock() {
-	// TODO
-	return {
-		name: "imageBlock",
-		type: "image",
-		title: "Image",
-		description: "",
-		icon: ImageIcon,
-		options: {
-			exposedArrayConstraints: {
-				allowExposure: false,
-			},
-		},
-		preview: {
-			select: {
-				originalFilename: "asset.originalFilename",
-				asset: "asset",
-			},
-			prepare(selection) {
-				const { originalFilename, asset } = selection
-				return {
-					title: originalFilename,
-					subtitle: "Image",
-					media: asset ? asset : ImageIcon
-				}
-			},
-		}
-	}
-}
-
 function pageBlock() {
 	return defineField({
 		name: "pageBlock",
 		type: "object",
-		title: "Pages",
-		icon: EarthGlobeIcon,
+		title: "Page(s)",
+		icon: BillIcon,
 		fields: [
 			defineField({
 				name: "pages",
@@ -429,11 +431,14 @@ function pageBlock() {
 						},
 					}),
 				],
+				components: {
+					input: ExposedArrayFunctions,
+				},
 			}),
 		],
 		options: {
 			exposedArrayConstraints: {
-				allowExposure: false,
+				includeInExposedArray: false,
 			},
 		},
 		preview: {
