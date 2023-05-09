@@ -1,15 +1,14 @@
-import { createClient } from "@sanity/client"
+import { useMemo } from "react"
+import { useClient } from "sanity"
 
-export const projectId = "nhelboup"
-export const dataset = "production"
 export const useCdn = false
 export const apiVersion = "2023-04-05"
 
-const client = createClient({
-	projectId,
-	dataset,
-	useCdn,
-	apiVersion,
-})
 
-export default client
+export default function useSanityClient() {
+  const client = useClient({
+	useCdn,
+	apiVersion
+  })
+  return useMemo(() => client, [client])
+}

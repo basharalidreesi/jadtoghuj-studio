@@ -4,8 +4,8 @@ export default function ColourPreview(props) {
 	const withDefault = props.options?.withDefault && props.renderDefault
 	const Preview = () => (
 		<Card
-			as={(withDefault || props.id) ? "label" : "div"}
-			htmlFor={(withDefault || props.id) ? props.id : null}
+			as={(withDefault || props.id || props.options?.inputId) ? "label" : "div"}
+			htmlFor={(withDefault || props.options?.inputId || props.id) ? props.options?.inputId || props.id : null}
 			sizing="border"
 			flex={1}
 			border="true"
@@ -24,7 +24,7 @@ export default function ColourPreview(props) {
 			<Flex direction="row" wrap="nowrap" gap={1}>
 				<Preview />
 				<Box flex={3}>
-					{props.renderDefault({...props, elementProps: { ...props.elementProps, placeholder: props.schemaType?.initialValue }})}
+					{props.renderDefault({...props, elementProps: { ...props.elementProps, placeholder: props.options?.placeholder }})}
 				</Box>
 			</Flex>
 		)

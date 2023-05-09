@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react"
 import { useFormValue } from "sanity"
-import client from "../sanity.client"
+import useSanityClient from "../sanity.client"
 import { Box, Card, Flex, Spinner, Text } from "@sanity/ui"
 import { ErrorOutlineIcon } from "@sanity/icons"
 
@@ -27,18 +27,20 @@ export default function InputWithPrefixOrSuffix(props) {
 	var localSuffix = null
 	var staticPrefix = null
 	var staticSuffix = null
+	const client = useSanityClient()
 	const fetchValues = useCallback(async (document, fields) => {
 		if (!document || !fields) { return null }
 		const query = `*[_id == "${document}"][0] { ${fields.join(", ")} }`
 		try {
 			setHasError(false)
 			setIsFetching(true)
-			const data = await client.fetch(query).then(console.info("Fetching to find prefix or suffix."))
+			const data = await client.fetch(query).then(console.info("Fetching prefix or suffix."))
 			setIsFetching(false)
 			return fields.map((field) => data[`${field}`]).join("")
-		} catch {
+		} catch(error) {
 			setIsFetching(false)
 			setHasError(true)
+			console.error(error)
 		}
 	}, [])
 	if (prefix.hasPrefix && prefix.prefixFromDocument && prefix.prefixFromFields && !prefix.prefixFromString) {

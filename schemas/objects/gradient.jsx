@@ -11,9 +11,8 @@ export default defineField({
 			type: "string",
 			title: "Top",
 			description: "",
-			initialValue: "#ffffff",
 			components: {
-				input: (props) => <ColourPreview options={{ withDefault: true, colour: props.value }} {...props} />,
+				input: (props) => <ColourPreview options={{ withDefault: true, colour: props.value, placeholder: "#ffffff" }} {...props} />,
 			},
 		}),
 		defineField({
@@ -21,9 +20,8 @@ export default defineField({
 			type: "string",
 			title: "Bottom",
 			description: "",
-			initialValue: "#ffffff",
 			components: {
-				input: (props) => <ColourPreview options={{ withDefault: true, colour: props.value }} {...props} />,
+				input: (props) => <ColourPreview options={{ withDefault: true, colour: props.value, placeholder: "#ffffff" }} {...props} />,
 			},
 		}),
 		defineField({
@@ -31,9 +29,8 @@ export default defineField({
 			type: "string",
 			title: "Text",
 			description: "",
-			initialValue: "#000000",
 			components: {
-				input: (props) => <ColourPreview options={{ withDefault: true, colour: props.value }} {...props} />,
+				input: (props) => <ColourPreview options={{ withDefault: true, colour: props.value, placeholder: "#000000", }} {...props} />,
 			},
 		}),
 	],

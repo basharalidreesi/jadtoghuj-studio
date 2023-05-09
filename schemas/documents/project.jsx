@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react"
-import { defineArrayMember, defineField, defineType, useFormValue } from "sanity"
-import client, { apiVersion } from "../../sanity.client"
+import { FormField, defineArrayMember, defineField, defineType, useFormValue } from "sanity"
+import useSanityClient, { apiVersion } from "../../sanity.client"
 import { ColourPreview, ExposedArrayFunctions, InputWithPrefixOrSuffix, VideoPreview } from "../../components"
 import { checkIfValueAlreadyExistsInType, filterAlreadyReferencedDocuments, previewArrayValues, previewPortableText } from "../../lib"
 import { Box, Flex, Text, TextInput } from "@sanity/ui"
@@ -156,25 +156,7 @@ export default defineType({
 					title: "Look",
 					to: [{ type: "look" }],
 					options: {
-						// TODO
-						// filter: async ({document, parent, getClient}) => {
-						// 	const unusedLooks = await getClient({apiVersion}).fetch(`
-						// 		*[_type == "look"] {
-						// 			_id,
-						// 			"refs": count(*[references(^._id)])
-						// 		} [refs == 0]._id
-						// 	`).then(console.info("Fetching unused looks."))
-						// 	const featuredLooks = document?.lookbook?.map((image) => image?.looks?.map((look) => look?._ref))?.filter(Boolean)?.flat() || ""
-						// 	const alreadyReferencedLooks = parent?.map((look) => look._ref)?.filter(Boolean) || ""
-						// 	return Promise.resolve({
-						// 		filter: `_id in $unusedLooks || ((_id in $featuredLooks) && !(_id in $alreadyReferencedLooks))`,
-						// 		params: {
-						// 			unusedLooks,
-						// 			featuredLooks,
-						// 			alreadyReferencedLooks,
-						// 		}
-						// 	})
-						// },
+						filter: ({parent}) => filterAlreadyReferencedDocuments(parent),
 					},
 				}),
 			],
@@ -255,7 +237,6 @@ export default defineType({
 							type: "url",
 							title: "URL",
 							description: "",
-							// validation: TODO,
 							components: {
 								input: (props) => <VideoPreview options={{ withDefault: true, from: props.value, as: "iframe" }} {...props} />,
 							},
@@ -311,7 +292,6 @@ export default defineType({
 			],
 			validation: (Rule) => Rule.unique().warning("Duplicate entries found."),
 			components: {
-				field: LookbookWithColourPreview,
 				input: ExposedArrayFunctions,
 			},
 		}),
@@ -320,11 +300,9 @@ export default defineType({
 			type: "string",
 			title: "Colour",
 			description: "",
-			initialValue: "#ffffff",
-			hidden: ({parent}) => !parent?.hasCustomColour,
-			// validation: TODO,
 			components: {
-				input: (props) => <ColourPreview options={{ withDefault: true, colour: props.value }} {...props} />,
+				field: LookbookColourPreview,
+				input: (props) => <ColourPreview options={{ withDefault: true, colour: props.value, placeholder: "#ffffff", }} {...props} />,
 			},
 		}),
 		defineField({
@@ -405,7 +383,6 @@ function featuredLooks() {
 		],
 		validation: (Rule) => [
 			Rule.unique().warning("Duplicate looks found."),
-			// TODO
 		],
 		components: {
 			input: ExposedArrayFunctions,
@@ -413,12 +390,13 @@ function featuredLooks() {
 	})
 }
 
-function LookbookWithColourPreview(props) {
+function LookbookColourPreview(props) {
 	const [colour, setColour] = useState("")
 	const hasCustomColour = useFormValue(["hasCustomColour"])
 	const lookbook = useFormValue(["lookbook"])
 	const image0 = lookbook && lookbook[0]._type === "image" && lookbook[0].asset ? lookbook[0] : null
 	const ref = image0?.asset?._ref
+	const client = useSanityClient()
 	useEffect(() => {
 		async function getDefaultBackgroundColour() {
 			const defaultBackgroundColour = await client.fetch(`*[_type == "settings"].colours.bottom`).then(console.info("Fetching default background colour."))
@@ -434,24 +412,17 @@ function LookbookWithColourPreview(props) {
 			getDefaultBackgroundColour()
 		}
 	}, [ref])
-	return hasCustomColour
-		? props.renderDefault(props)
-		: (
-			<>
-				{props.renderDefault(props)}
-				<Box>
-					<Box paddingTop={2} paddingBottom={3}>
-						<Text as={"label"} htmlFor={"lookbook-with-colour-preview"} size={1} weight={"semibold"}>
-							Colour
-						</Text>
-					</Box>
-					<Flex direction="row" wrap="nowrap" gap={1}>
-						<ColourPreview options={{ colour: colour }} id={"lookbook-with-colour-preview"} />
-						<Box flex={3}>
-							<TextInput value={colour} id="lookbook-with-colour-preview" readOnly />
-						</Box>
-					</Flex>
+	if (hasCustomColour) {
+		return props.renderDefault(props)
+	}
+	return (
+		<FormField title={props.schemaType.title} description={props.schemaType.description} inputId={"lookbook-with-colour-preview"}>
+			<Flex direction="row" wrap="nowrap" gap={1}>
+				<ColourPreview options={{ colour: colour, inputId: "lookbook-with-colour-preview" }} />
+				<Box flex={3}>
+					<TextInput value={colour} id={"lookbook-with-colour-preview"} readOnly />
 				</Box>
-			</>
-		)
+			</Flex>
+		</FormField>
+	)
 }

@@ -1,6 +1,7 @@
-import { defineField, defineType } from "sanity"
+import { defineField, defineType, useFormValue } from "sanity"
 import { previewPortableText } from "../../lib"
 import { SparklesIcon } from "@sanity/icons"
+import useSanityClient from "../../sanity.client"
 
 export default defineType({
 	name: "look",
