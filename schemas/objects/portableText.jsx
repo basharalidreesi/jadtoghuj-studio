@@ -1,4 +1,5 @@
-import { defineField } from "sanity"
+import { defineField, defineType } from "sanity"
+import { Box } from "@sanity/ui"
 import { LinkIcon, UserIcon } from "@sanity/icons"
 
 export default defineField({
@@ -27,7 +28,7 @@ export default defineField({
 					},
 				],
 				annotations: [
-					{
+					defineType({
 						name: "link",
 						type: "object",
 						title: "Link",
@@ -40,7 +41,7 @@ export default defineField({
 								description: "",
 							}),
 						],
-					},
+					}),
 				],
 			},
 			of: [
@@ -48,7 +49,6 @@ export default defineField({
 					name: "entity",
 					type: "reference",
 					title: "Reference",
-					description: "",
 					icon: UserIcon,
 					to: [{ type: "entity" }],
 				}),

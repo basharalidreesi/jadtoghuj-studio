@@ -1,5 +1,6 @@
 import { defineField } from "sanity"
 import { ColourPreview, GradientPreview } from "../../components"
+import { checkIfValueIsAValidCssColour } from "../../lib"
 
 export default defineField({
 	name: "gradient",
@@ -11,6 +12,7 @@ export default defineField({
 			type: "string",
 			title: "Top",
 			description: "",
+			validation: (Rule) => Rule.custom(checkIfValueIsAValidCssColour),
 			components: {
 				input: (props) => <ColourPreview options={{ withDefault: true, colour: props.value, placeholder: "#ffffff" }} {...props} />,
 			},
@@ -20,6 +22,7 @@ export default defineField({
 			type: "string",
 			title: "Bottom",
 			description: "",
+			validation: (Rule) => Rule.custom(checkIfValueIsAValidCssColour),
 			components: {
 				input: (props) => <ColourPreview options={{ withDefault: true, colour: props.value, placeholder: "#ffffff" }} {...props} />,
 			},
@@ -29,6 +32,7 @@ export default defineField({
 			type: "string",
 			title: "Text",
 			description: "",
+			validation: (Rule) => Rule.custom(checkIfValueIsAValidCssColour),
 			components: {
 				input: (props) => <ColourPreview options={{ withDefault: true, colour: props.value, placeholder: "#000000", }} {...props} />,
 			},

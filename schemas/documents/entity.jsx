@@ -13,7 +13,7 @@ export default defineType({
 			type: "string",
 			title: "Name",
 			description: "",
-			validation: (Rule) => Rule.custom(checkIfValueAlreadyExistsInType).warning(),
+			validation: (Rule) => Rule.custom(checkIfValueAlreadyExistsInType).info(),
 		}),
 		defineField({
 			name: "url",

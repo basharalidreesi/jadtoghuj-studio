@@ -15,7 +15,7 @@ export default function ColourPreview(props) {
 				height: "100%",
 				minHeight: "2.1875rem",
 				borderRadius: "0.0625rem",
-				background: props.options?.colour || "transparent",
+				background: `white linear-gradient(to bottom, ${props.options?.colour}, ${props.options?.colour})` || "transparent",
 			}}
 		></Card>
 	)

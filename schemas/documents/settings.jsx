@@ -1,4 +1,4 @@
-import { defineField, defineType } from "sanity"
+import { defineArrayMember, defineField, defineType } from "sanity"
 import { ExposedArrayFunctions, InputWithPrefixOrSuffix } from "../../components"
 import { filterAlreadyReferencedDocuments, previewArrayValues } from "../../lib"
 import { BillIcon, BulbOutlineIcon, CogIcon, InfoOutlineIcon, TokenIcon, TruncateIcon } from "@sanity/icons"
@@ -64,7 +64,7 @@ export default defineType({
 			title: "Navigation",
 			description: "",
 			of: [
-				defineField({
+				defineArrayMember({
 					name: "group",
 					type: "object",
 					title: "Navigation Group",
@@ -76,7 +76,7 @@ export default defineType({
 							title: "Pages",
 							description: "",
 							of: [
-								defineField({
+								defineArrayMember({
 									type: "reference",
 									title: "Page",
 									icon: BillIcon,
@@ -86,7 +86,7 @@ export default defineType({
 										filter: ({parent}) => filterAlreadyReferencedDocuments(parent),
 									},
 								}),
-								defineField({
+								defineArrayMember({
 									name: "separator",
 									type: "object",
 									title: "Separator",
@@ -106,6 +106,21 @@ export default defineType({
 									},
 								}),
 							],
+							validation: (Rule) => [
+								Rule.custom((value) => {
+									if (!value) { return true }
+									const separators = value.filter((entry) => entry._type === "separator")
+									const sparatorPaths = separators.map((separator) => [{ _key: separator._key }])
+									if (separators.length > 1) {
+										return {
+											message: "Multiple separators found. Each navigation group may have a maximum of one separator.",
+											paths: sparatorPaths,
+										}
+									}
+									return true
+								}),
+								Rule.unique().warning("Duplicate pages found."),
+							],
 							components: {
 								input: ExposedArrayFunctions,
 							},
@@ -117,6 +132,9 @@ export default defineType({
 							page1Title: "pages.1.title",
 							page2Title: "pages.2.title",
 							page3Title: "pages.3.title",
+							page4Title: "pages.4.title",
+							page5Title: "pages.5.title",
+							page6Title: "pages.6.title",
 							separator0Label: "pages.0.label",
 							separator1Label: "pages.1.label",
 							separator2Label: "pages.2.label",
@@ -128,20 +146,40 @@ export default defineType({
 								page1Title,
 								page2Title,
 								page3Title,
+								page4Title,
+								page5Title,
+								page6Title,
 								separator0Label,
 								separator1Label,
 								separator2Label,
 								separator3Label
 							} = selection
-							const transformSeparator = (separator) => {
-								return separator ? `[${separator.toUpperCase()}]→` : null
+							if (separator0Label) {
+								return {
+									title: `[${previewArrayValues(page1Title, page2Title, page3Title, page4Title, { prefix: separator0Label })}]`,
+								}
+							}
+							if (separator1Label) {
+								return {
+									title: `${page0Title}, [${previewArrayValues(page1Title, page2Title, page3Title, page4Title, { prefix: separator1Label })}]`,
+								}
+							}
+							if (separator2Label) {
+								return {
+									title: `${page0Title}, ${page1Title}, [${previewArrayValues(page2Title, page3Title, page4Title, page5Title, { prefix: separator2Label })}]`,
+								}
+							}
+							if (separator3Label) {
+								return {
+									title: `${page0Title}, ${page1Title}, ${page2Title}, [${previewArrayValues(page3Title, page4Title, page5Title, page6Title, { prefix: separator3Label })}]`,
+								}
 							}
 							return {
 								title: previewArrayValues(
-									page0Title || transformSeparator(separator0Label),
-									page1Title || transformSeparator(separator1Label),
-									page2Title || transformSeparator(separator2Label),
-									page3Title || transformSeparator(separator3Label),
+									page0Title,
+									page1Title,
+									page2Title,
+									page3Title,
 								),
 							}
 						},
@@ -149,6 +187,7 @@ export default defineType({
 				}),
 			],
 			group: "presentation",
+			validation: (Rule) => Rule.unique().warning("Duplicate navigation groups found."),
 			components: {
 				input: ExposedArrayFunctions,
 			},

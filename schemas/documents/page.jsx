@@ -1,7 +1,7 @@
-import { defineField, defineType } from "sanity"
+import { defineArrayMember, defineField, defineType } from "sanity"
 import { apiVersion } from "../../sanity.client"
 import { ExposedArrayFunctions, InputWithPrefixOrSuffix } from "../../components"
-import { checkIfValueAlreadyExistsInType, filterAlreadyReferencedDocuments, previewArrayValues, previewPortableText } from "../../lib"
+import { filterAlreadyReferencedDocuments, previewArrayValues, previewPortableText } from "../../lib"
 import { BillIcon, DatabaseIcon, EditIcon, HomeIcon, ImageIcon, SparklesIcon, TagIcon } from "@sanity/icons"
 
 export default defineType({
@@ -9,13 +9,21 @@ export default defineType({
 	type: "document",
 	title: "Page",
 	icon: BillIcon,
+	fieldsets: [
+		{
+			name: "colourSettings",
+			title: "Colour Settings",
+			options: {
+				columns: 2,
+			},
+		},
+	],
 	fields: [
 		defineField({
 			name: "title",
 			type: "string",
 			title: "Title",
 			description: "",
-			validation: (Rule) => Rule.custom(checkIfValueAlreadyExistsInType).warning(),
 		}),
 		defineField({
 			name: "address",
@@ -38,10 +46,10 @@ export default defineType({
 			of: [
 				textBlock(),
 				imageBlock(),
+				pageBlock(),
 				lookBlock(),
 				projectBlock(),
 				categoryBlock(),
-				pageBlock(),
 			],
 			options: {
 				exposedArrayOptions: {
@@ -58,6 +66,15 @@ export default defineType({
 			title: "Custom Colours",
 			description: "",
 			initialValue: false,
+			fieldset: "colourSettings",
+		}),
+		defineField({
+			name: "doesAllowTinting",
+			type: "boolean",
+			title: "Allow Tinting",
+			description: "",
+			initialValue: true,
+			fieldset: "colourSettings",
 		}),
 		defineField({
 			name: "colours",
@@ -65,8 +82,46 @@ export default defineType({
 			title: "Colours",
 			description: "",
 			hidden: ({parent}) => !parent?.hasCustomColours,
+			fieldset: "colourSettings",
 		}),
 	],
+	components: {
+		input: (props) => {
+			return (
+				<>
+					<style>{`
+						fieldset[data-testid="fieldset-colourSettings"] > *:first-child {
+							display: none !important;
+						}
+						fieldset[data-testid="fieldset-colourSettings"] > *:nth-child(2) {
+							border-left: none !important;
+							padding-left: 0 !important;
+						}
+						fieldset[data-testid="field-colours"] {
+							grid-column: 1/-1;
+						}
+						[data-ui="Popover__wrapper"] [data-ui="Menu"] [data-ui="Stack"] button:nth-child(2)::after,
+						[data-ui="Popover__wrapper"] [data-ui="Menu"] [data-ui="Stack"] button:nth-child(3)::after {
+							content: "";
+							display: block;
+							position: relative;
+							top: 0.4rem;
+							left: 0.5rem;
+							height: 1px;
+							width: calc(100% - 1rem);
+							background: var(--card-shadow-outline-color);
+							pointer-events: none;
+						}
+						[data-ui="Popover__wrapper"] [data-ui="Menu"] [data-ui="Stack"] button:nth-child(3),
+						[data-ui="Popover__wrapper"] [data-ui="Menu"] [data-ui="Stack"] button:nth-child(4) {
+							margin-top: 0.5rem;
+						}
+					`}</style>
+					{props.renderDefault(props)}
+				</>
+			)
+		},
+	},
 	orderings: [
 		{
 			title: "title (a → z)",
@@ -95,7 +150,7 @@ export default defineType({
 })
 
 function textBlock() {
-	return defineField({
+	return defineArrayMember({
 		name: "textBlock",
 		type: "object",
 		title: "Text",
@@ -130,7 +185,7 @@ function textBlock() {
 
 function imageBlock() {
 	// TODO
-	return defineField({
+	return defineArrayMember({
 		name: "imageBlock",
 		type: "image",
 		title: "Image",
@@ -158,11 +213,72 @@ function imageBlock() {
 	})
 }
 
+function pageBlock() {
+	return defineArrayMember({
+		name: "pageBlock",
+		type: "object",
+		title: "Pages",
+		icon: BillIcon,
+		fields: [
+			defineField({
+				name: "pages",
+				type: "array",
+				title: "Pages",
+				description: "",
+				of: [
+					defineArrayMember({
+						type: "reference",
+						title: "Page",
+						to: [{ type: "page" }],
+						options: {
+							disableNew: true,
+							filter: ({parent}) => filterAlreadyReferencedDocuments(parent),
+						},
+					}),
+				],
+				components: {
+					input: ExposedArrayFunctions,
+				},
+			}),
+		],
+		options: {
+			exposedArrayConstraints: {
+				includeInExposedArray: false,
+			},
+		},
+		preview: {
+			select: {
+				page0Title: "pages.0.title",
+				page1Title: "pages.1.title",
+				page2Title: "pages.2.title",
+				page3Title: "pages.3.title",
+			},
+			prepare(selection) {
+				const {
+					page0Title,
+					page1Title,
+					page2Title,
+					page3Title,
+				} = selection
+				return {
+					title: previewArrayValues(
+						page0Title,
+						page1Title,
+						page2Title,
+						page3Title,
+					),
+					subtitle: page1Title ? "Pages" : "Page",
+				}
+			},
+		},
+	})
+}
+
 function lookBlock() {
-	return defineField({
+	return defineArrayMember({
 		name: "lookBlock",
 		type: "object",
-		title: "Look(s)",
+		title: "Looks",
 		icon: SparklesIcon,
 		fields: [
 			defineField({
@@ -182,7 +298,7 @@ function lookBlock() {
 				title: "Looks",
 				description: "",
 				of: [
-					defineField({
+					defineArrayMember({
 						type: "reference",
 						title: "Look",
 						to: [{ type: "look" }],
@@ -279,10 +395,10 @@ function lookBlock() {
 }
 
 function projectBlock() {
-	return defineField({
+	return defineArrayMember({
 		name: "projectBlock",
 		type: "object",
-		title: "Project(s)",
+		title: "Projects",
 		icon: DatabaseIcon,
 		fields: [
 			defineField({
@@ -291,7 +407,7 @@ function projectBlock() {
 				title: "Projects",
 				description: "",
 				of: [
-					defineField({
+					defineArrayMember({
 						type: "reference",
 						title: "Project",
 						to: [{ type: "project" }],
@@ -344,10 +460,10 @@ function projectBlock() {
 }
 
 function categoryBlock() {
-	return defineField({
+	return defineArrayMember({
 		name: "categoryBlock",
 		type: "object",
-		title: "Categor(y/ies)",
+		title: "Categories",
 		icon: TagIcon,
 		fields: [
 			defineField({
@@ -356,7 +472,7 @@ function categoryBlock() {
 				title: "Categories",
 				description: "",
 				of: [
-					defineField({
+					defineArrayMember({
 						type: "reference",
 						title: "Category",
 						to: [{ type: "category" }],
@@ -402,67 +518,6 @@ function categoryBlock() {
 						category3Title,
 					),
 					subtitle: category1Title ? "Categories" : "Category",
-				}
-			},
-		},
-	})
-}
-
-function pageBlock() {
-	return defineField({
-		name: "pageBlock",
-		type: "object",
-		title: "Page(s)",
-		icon: BillIcon,
-		fields: [
-			defineField({
-				name: "pages",
-				type: "array",
-				title: "Pages",
-				description: "",
-				of: [
-					defineField({
-						type: "reference",
-						title: "Page",
-						to: [{ type: "page" }],
-						options: {
-							disableNew: true,
-							filter: ({parent}) => filterAlreadyReferencedDocuments(parent),
-						},
-					}),
-				],
-				components: {
-					input: ExposedArrayFunctions,
-				},
-			}),
-		],
-		options: {
-			exposedArrayConstraints: {
-				includeInExposedArray: false,
-			},
-		},
-		preview: {
-			select: {
-				page0Title: "pages.0.title",
-				page1Title: "pages.1.title",
-				page2Title: "pages.2.title",
-				page3Title: "pages.3.title",
-			},
-			prepare(selection) {
-				const {
-					page0Title,
-					page1Title,
-					page2Title,
-					page3Title,
-				} = selection
-				return {
-					title: previewArrayValues(
-						page0Title,
-						page1Title,
-						page2Title,
-						page3Title,
-					),
-					subtitle: page1Title ? "Pages" : "Page",
 				}
 			},
 		},

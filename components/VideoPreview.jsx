@@ -27,7 +27,7 @@ export default function VideoPreview(props) {
 				if (query) {
 					setIsFetching(true)
 					setHasError(false)
-					const data = await fetch(query)?.then(async (response) => await response?.json()).then(console.info("Fetching video."))
+					const data = await fetch(query)?.then(async (response) => await response?.json()).then(console.info("Fetching video for preview."))
 					setData(data)
 					setIsFetching(false)
 				}

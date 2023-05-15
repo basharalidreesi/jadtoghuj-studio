@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react"
 import { FormField, defineArrayMember, defineField, defineType, useFormValue } from "sanity"
 import useSanityClient, { apiVersion } from "../../sanity.client"
-import { ColourPreview, ExposedArrayFunctions, InputWithPrefixOrSuffix, VideoPreview } from "../../components"
-import { checkIfValueAlreadyExistsInType, filterAlreadyReferencedDocuments, previewArrayValues, previewPortableText } from "../../lib"
-import { Box, Flex, Text, TextInput } from "@sanity/ui"
+import { ColourPreview, ExposedArrayFunctions, InputWithPrefixOrSuffix, ReferenceMultiSelect, VideoPreview } from "../../components"
+import { checkIfValueIsAValidCssColour, filterAlreadyReferencedDocuments, previewArrayValues, previewPortableText } from "../../lib"
+import { Box, Flex, TextInput } from "@sanity/ui"
 import { DatabaseIcon, ImageIcon, PlayIcon, UserIcon, UsersIcon } from "@sanity/icons"
 
 export default defineType({
@@ -17,7 +17,6 @@ export default defineType({
 			type: "string",
 			title: "Title",
 			description: "",
-			validation: (Rule) => Rule.custom(checkIfValueAlreadyExistsInType).warning(),
 		}),
 		defineField({
 			name: "description",
@@ -47,6 +46,7 @@ export default defineType({
 				source: "title",
 			},
 			hidden: ({document}) => !document?.isPublic,
+			validation: (Rule) => Rule.error("This address is already in use."),
 			components: {
 				input: (props) => <InputWithPrefixOrSuffix options={{ prefix: { fromDocument: "settings", fromFields: ["url", "basePath", "projectPath"] }, suffix: {fromString: "/"} }} {...props} />,
 			},
@@ -66,9 +66,11 @@ export default defineType({
 					},
 				}),
 			],
-			validation: (Rule) => Rule.unique().warning("Duplicate categories found."),
 			components: {
-				input: ExposedArrayFunctions,
+				// input: ExposedArrayFunctions,
+				input: (props) => <ReferenceMultiSelect options={{
+					query: `*[_type == "category"] | order(lower(title) asc) { _id }._id`,
+				}} {...props} />,
 			},
 		}),
 		defineField({
@@ -104,7 +106,6 @@ export default defineType({
 									},
 								}),
 							],
-							validation: (Rule) => Rule.unique().warning("Duplicate contributors found."),
 							components: {
 								input: ExposedArrayFunctions,
 							},
@@ -140,7 +141,6 @@ export default defineType({
 					},
 				}),
 			],
-			validation: (Rule) => Rule.unique().warning("Duplicate contributions found."),
 			components: {
 				input: ExposedArrayFunctions,
 			},
@@ -156,11 +156,20 @@ export default defineType({
 					title: "Look",
 					to: [{ type: "look" }],
 					options: {
-						filter: ({parent}) => filterAlreadyReferencedDocuments(parent),
+						filter: async ({document, getClient}) => {
+							const documentId = document._id.replace(/^drafts\./, "")
+							const unreferencedLooks = await getClient({apiVersion}).fetch(`
+								*[_type == "project" && !(_id in [$published])] {
+									looks[],
+								}.looks
+							`, {
+								published: documentId,
+							}).then((array) => array.flat())
+							return filterAlreadyReferencedDocuments(unreferencedLooks)
+						},
 					},
 				}),
 			],
-			validation: (Rule) => Rule.unique().warning("Duplicate looks found."),
 			components: {
 				input: ExposedArrayFunctions,
 			},
@@ -177,7 +186,7 @@ export default defineType({
 					title: "Image",
 					description: "",
 					icon: ImageIcon,
-					fields: [featuredLooks()],
+					fields: [featuredLooks("Image")],
 					preview: {
 						select: {
 							asset: "asset",
@@ -237,11 +246,30 @@ export default defineType({
 							type: "url",
 							title: "URL",
 							description: "",
+							validation: (Rule) => Rule.custom(async (value) => {
+								if (!value) { return true }
+								try {
+									var query = null
+									const url = value
+									const uri = encodeURIComponent(url)
+									const hostname = new URL(url)?.hostname?.replace("www.", "")
+									if (hostname === "youtube.com" || hostname === "youtu.be") {
+										query = `https://youtube.com/oembed?url=${uri}&format=json`
+									}
+									if (hostname === "vimeo.com") {
+										query = `https://vimeo.com/api/oembed.json?url=${uri}`
+									}
+									const data = await fetch(query)?.then(async (response) => await response?.json()).then(console.info("Fetching video for validation."))
+									if (data) { return true }
+								} catch {
+									return "No valid video found at the specified URL."
+								}
+							}),
 							components: {
 								input: (props) => <VideoPreview options={{ withDefault: true, from: props.value, as: "iframe" }} {...props} />,
 							},
 						}),
-						featuredLooks(),
+						featuredLooks("Video"),
 					],
 					preview: {
 						select: {
@@ -290,7 +318,6 @@ export default defineType({
 					},
 				}),
 			],
-			validation: (Rule) => Rule.unique().warning("Duplicate entries found."),
 			components: {
 				input: ExposedArrayFunctions,
 			},
@@ -300,6 +327,7 @@ export default defineType({
 			type: "string",
 			title: "Colour",
 			description: "",
+			validation: (Rule) => Rule.custom(checkIfValueIsAValidCssColour),
 			components: {
 				field: LookbookColourPreview,
 				input: (props) => <ColourPreview options={{ withDefault: true, colour: props.value, placeholder: "#ffffff", }} {...props} />,
@@ -354,11 +382,11 @@ export default defineType({
 	},
 })
 
-function featuredLooks() {
+function featuredLooks(type) {
 	return defineField({
 		name: "featuredLooks",
 		type: "array",
-		title: "Featured Looks",
+		title: "Looks in this " + type,
 		description: "",
 		of: [
 			defineArrayMember({
@@ -367,25 +395,34 @@ function featuredLooks() {
 				to: [{ type: "look" }],
 				options: {
 					disableNew: true,
-					filter: ({document, parent}) => {
-						const specifiedLooks = document?.looks?.map((look) => look._ref)?.filter(Boolean) || ""
-						const alreadyReferencedLooks = parent?.map((look) => look._ref)?.filter(Boolean) || ""
-						return {
-							filter: `(_id in $specifiedLooks) && !(_id in $alreadyReferencedLooks)`,
-							params: {
-								specifiedLooks,
-								alreadyReferencedLooks,
-							}
-						}
-					},
 				},
 			}),
 		],
 		validation: (Rule) => [
+			Rule.custom((value, context) => {
+				if (!value) { return true }
+				const { document } = context
+				const specifiedLooks = document?.looks?.map((look) => look._ref)?.filter(Boolean) || []
+				const unspecifiedFeaturedLooks = value.filter((look) => !specifiedLooks.includes(look._ref))
+				const unspecifiedFeaturedLookPaths = unspecifiedFeaturedLooks.map((look) => [{ _key: look._key }])
+				if (unspecifiedFeaturedLooks.length > 0) {
+					return {
+						message: "This look has not been listed within this project's list of looks.",
+						paths: unspecifiedFeaturedLookPaths,
+					}
+				}
+				return true
+			}),
 			Rule.unique().warning("Duplicate looks found."),
 		],
 		components: {
-			input: ExposedArrayFunctions,
+			input: (props) => <ReferenceMultiSelect options={{
+				query: `*[_type == "look" && (_id in $specifiedLooks || _id in $alreadyReferencedLooks)] | order(lower(title) asc) { _id }._id`,
+				params: {
+					specifiedLooks: useFormValue(["looks"])?.map((look) => look._ref)?.filter(Boolean) || [],
+					alreadyReferencedLooks: props.value?.map((look) => look._ref) || [],
+				},
+			}} {...props} />,
 		},
 	})
 }
