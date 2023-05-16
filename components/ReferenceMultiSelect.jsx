@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState } from "react"
-import { PatchEvent, Preview, TextWithTone, set } from "sanity"
+import { PatchEvent, Preview, TextWithTone, set, useEditState, useTimeAgo } from "sanity"
 import { usePaneRouter } from "sanity/desk"
 import useSanityClient from "../sanity.client"
 import { fromString as pathFromString } from "@sanity/util/paths"
 import { randomKey } from "@sanity/util/content"
 import { Box, Button, Card, Checkbox, Flex, Popover, Spinner, Text } from "@sanity/ui"
-import { EditIcon, ErrorOutlineIcon } from "@sanity/icons"
+import { EditIcon, ErrorOutlineIcon, PublishIcon } from "@sanity/icons"
 
 export default function ReferenceMultiSelect(props) {
 	const {
@@ -118,13 +118,14 @@ export default function ReferenceMultiSelect(props) {
 		if (documentIds.length > 0) {
 			return (
 				<Card {...referenceMultiSelectWithItemsWrapperProps}>
-					{referenceMultiSelectItemHoverStyles}
 					{referenceMultiSelectWrapperFocusStyles}
+					{referenceMultiSelectItemHoverStyles}
 					{documentIds.map((documentId) => (
 						<ReferenceMultiSelectItem
 							documentId={documentId}
 							errorOutlineIconProps={errorOutlineIconProps}
 							key={documentId}
+							layout={options?.layout || "default"}
 							members={members}
 							onChange={onChange}
 							schemaType={schemaType}
@@ -141,6 +142,7 @@ function ReferenceMultiSelectItem(props) {
 	const {
 		documentId,
 		errorOutlineIconProps,
+		layout,
 		members,
 		onChange,
 		schemaType,
@@ -149,16 +151,17 @@ function ReferenceMultiSelectItem(props) {
 	const isAdded = value?.some((entry) => entry._ref === documentId)
 	const errors = members?.filter((member) => member.item.value._ref === documentId)[0]?.item?.validation?.filter((validationItem) => validationItem.level === "error")
 	const errorMessages = errors?.map((error) => error.message)
-	const [publishedDocument, setPublishedDocument] = useState(null)
-	const [draftDocument, setDraftDocument] = useState(null)
-	const [currentDocument, setCurrentDocument] = useState(publishedDocument)
-	const [isErrorOutlineIconPopOverOpen, setIsErrorOutlineIconPopOverOpen] = useState(false)
-	const [isEditIconPopOverOpen, setIsEditIconPopOverOpen] = useState(false)
+	const [isErrorOutlineIconPopoverOpen, setIsErrorOutlineIconPopoverOpen] = useState(false)
+	const [isEditIconPopoverOpen, setIsEditIconPopoverOpen] = useState(false)
+	const [isPublishIconPopoverOpen, setIsPublishIconPopoverOpen] = useState(false)
 	const { routerPanesState, groupIndex, handleEditReference } = usePaneRouter()
-	const client = useSanityClient()
+	const document = useEditState(documentId)
+	const editedTimeAgo = useTimeAgo(document?.draft?._updatedAt || "", { minimal: false, agoSuffix: true })
+	const publishedTimeAgo = useTimeAgo(document?.published?._updatedAt || "", { minimal: false, agoSuffix: true })
 	const handleEdit = useCallback((id, type) => {
 		// https://github.com/sanity-io/sanity-plugin-documents-pane/blob/main/src/Documents.tsx
-		const childParams = routerPanesState[groupIndex + 1]?.[0].params || {}
+		// const childParams = routerPanesState[groupIndex + 1]?.[0].params || {}
+		const childParams = routerPanesState[1]?.[0].params || {}
 		const { parentRefPath } = childParams
 		return handleEditReference({
 			id,
@@ -185,58 +188,25 @@ function ReferenceMultiSelectItem(props) {
 		}
 	}, [value])
 	const handleErrorOutlineIconHoverStart = useCallback(() => {
-		setIsErrorOutlineIconPopOverOpen(true)
+		setIsErrorOutlineIconPopoverOpen(true)
 	}, [])
 	const handleErrorOutlineIconHoverEnd = useCallback(() => {
-		setIsErrorOutlineIconPopOverOpen(false)
+		setIsErrorOutlineIconPopoverOpen(false)
 	}, [])
 	const handleEditIconHoverStart = useCallback(() => {
-		setIsEditIconPopOverOpen(true)
+		setIsEditIconPopoverOpen(true)
 	}, [])
 	const handleEditIconHoverEnd = useCallback(() => {
-		setIsEditIconPopOverOpen(false)
+		setIsEditIconPopoverOpen(false)
 	}, [])
-	const timeAgo = (prevDate) => {
-		// https://stackoverflow.com/a/58918815
-		const diff = Number(new Date()) - prevDate
-		const minute = 60 * 1000
-		const hour = minute * 60
-		const day = hour * 24
-		const month = day * 30
-		const year = day * 365
-		switch (true) {
-			case diff < minute:
-				return "just now"
-			case diff < hour:
-				return Math.round(diff / minute) + " minutes ago"
-			case diff < day:
-				return Math.round(diff / hour) + " hours ago"
-			case diff < month:
-				return Math.round(diff / day) + " days ago"
-			case diff < year:
-				return Math.round(diff / month) + " months ago"
-			case diff > year:
-				return Math.round(diff / year) + " years ago"
-			default:
-				return ""
-		}
-	}
-	useEffect(() => {
-		async function getDocument() {
-			await client.fetch(`*[_id == $id][0]`, { id: documentId }).then(setPublishedDocument).then(console.info("Fetching published document for reference multi-select."))
-			await client.fetch(`*[_id == "drafts." + $id][0]`, { id: documentId }).then(setDraftDocument).then(console.info("Fetching draft document for reference multi-select."))
-			client.listen(`*[_id == "drafts." + $id][0]`, { id: documentId }).subscribe((update) => {
-				console.info("Listening to document changes for reference multi-select.")
-				const document = update.result
-				if (!document) {
-					setDraftDocument(null)
-				}
-				setCurrentDocument(document)
-			})
-		}
-		getDocument()
-	}, [documentId])
-	const isDraft = draftDocument || (currentDocument && currentDocument._id?.startsWith("drafts."))
+	const handlePublishIconHoverStart = useCallback(() => {
+		setIsPublishIconPopoverOpen(true)
+	}, [])
+	const handlePublishIconHoverEnd = useCallback(() => {
+		setIsPublishIconPopoverOpen(false)
+	}, [])
+	const isDraft = document?.draft
+	const isPublished = document?.published
 	return (
 		<Card
 			className={"jt-reference-multi-select-item"}
@@ -249,6 +219,7 @@ function ReferenceMultiSelectItem(props) {
 			<Flex
 				align={"center"}
 				justify={"center"}
+				gap={1}
 			>
 				<Box
 					padding={2}
@@ -265,19 +236,64 @@ function ReferenceMultiSelectItem(props) {
 					flex={1}
 				>
 					<Button
+						as={"a"}
 						onClick={() => handleEdit(documentId, document._type)}
 						padding={1}
 						paddingLeft={1}
 						mode={"bleed"}
-						style={{ display: "block", width: "100%" }}
+						style={{
+							display: "block",
+							width: "100%",
+							cursor: "pointer"
+						}}
 					>
 						<Flex gap={1} align={"center"} justify={"center"}>
 							<Box flex={1}>
 								<Preview
 									schemaType={schemaType.of[0].to[0]}
-									value={currentDocument || draftDocument || publishedDocument}
-									layout="default"
+									value={document.draft || document.published}
+									layout={layout}
 								/>
+							</Box>
+							<Box padding={2}>
+								<TextWithTone
+									muted={isPublished ? false : true}
+									tone={isPublished ? "positive" : null}
+								>
+									<Popover
+										content={
+											<Text size={1}>
+												{isPublished
+													? (
+														<>
+															Published {publishedTimeAgo}
+														</>
+													)
+													: "Not published"
+												}
+											</Text>
+										}
+										placement={"bottom"}
+										open={isPublishIconPopoverOpen}
+										tone="default"
+										padding={2}
+										shadow={1}
+										radius={2}
+										portal
+									>
+										<PublishIcon
+											onMouseEnter={handlePublishIconHoverStart}
+											onMouseLeave={handlePublishIconHoverEnd}
+											style={{
+												display: "block",
+												width: "1.3125rem",
+												height: "1.3125rem",
+												marginBlock: "-0.0625rem",
+												opacity: isPublished ? null : 0.3,
+											}}
+										/>
+									</Popover>
+								</TextWithTone>
 							</Box>
 							<Box padding={2}>
 								<TextWithTone
@@ -288,17 +304,17 @@ function ReferenceMultiSelectItem(props) {
 										content={
 											<Text size={1}>
 												{isDraft
-													? `Edited ${
-														timeAgo(new Date(currentDocument?._updatedAt)?.getTime())
-														|| timeAgo(new Date(draftDocument?._updatedAt)?.getTime())
-														|| timeAgo(new Date(publishedDocument?._updatedAt)?.getTime())
-													}`
+													? (
+														<>
+															Edited {editedTimeAgo}
+														</>
+													)
 													: "No unpublished edits"
 												}
 											</Text>
 										}
 										placement={"bottom"}
-										open={isEditIconPopOverOpen}
+										open={isEditIconPopoverOpen}
 										tone="default"
 										padding={2}
 										shadow={1}
@@ -336,7 +352,7 @@ function ReferenceMultiSelectItem(props) {
 									))
 								}
 								placement={"top"}
-								open={isErrorOutlineIconPopOverOpen}
+								open={isErrorOutlineIconPopoverOpen}
 								tone={"default"}
 								padding={3}
 								shadow={1}
