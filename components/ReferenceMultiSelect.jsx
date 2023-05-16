@@ -2,10 +2,11 @@ import { useCallback, useEffect, useState } from "react"
 import { PatchEvent, Preview, TextWithTone, set, useEditState, useTimeAgo } from "sanity"
 import { usePaneRouter } from "sanity/desk"
 import useSanityClient from "../sanity.client"
-import { fromString as pathFromString } from "@sanity/util/paths"
 import { randomKey } from "@sanity/util/content"
+import { uuid } from "@sanity/uuid"
 import { Box, Button, Card, Checkbox, Flex, Popover, Spinner, Text } from "@sanity/ui"
 import { EditIcon, ErrorOutlineIcon, PublishIcon } from "@sanity/icons"
+import { useTheme } from "styled-components"
 
 export default function ReferenceMultiSelect(props) {
 	const {
@@ -19,14 +20,26 @@ export default function ReferenceMultiSelect(props) {
 	const [isFetching, setIsFetching] = useState(false)
 	const [hasError, setHasError] = useState(false)
 	const [hasLoaded, setHasLoaded] = useState(false)
+	const [hasCreatedNew, setHasCreatedNew] = useState(false)
 	const client = useSanityClient()
+	// const handleCreateNew = useCallback(() => {
+	// 	const newDocument = {
+	// 		_id: `drafts.${uuid()}`,
+	// 		_type: schemaType?.of[0]?.to[0]?.name,
+	// 	}
+	// 	client.create(newDocument).then((document) => {
+	// 		setHasCreatedNew(true)
+	// 		console.log("Created document with id " + document._id)
+	// 	})
+	// 	setHasCreatedNew(false)
+	// }, [value])
 	useEffect(() => {
 		async function getDocumentIds() {
 			try {
 				setIsFetching(true)
 				setHasError(false)
 				const documentIds = await client.fetch(options?.query, options?.params).then(console.info("Fetching document ids for reference multi-select."))
-				setDocumentIds(documentIds.filter((id) => !id.startsWith("drafts.")))
+				setDocumentIds(documentIds.filter((documentId) => !documentId.startsWith("drafts.")))
 				setIsFetching(false)
 				setHasLoaded(true)
 			} catch {
@@ -36,14 +49,14 @@ export default function ReferenceMultiSelect(props) {
 			}
 		}
 		getDocumentIds()
-	}, [value])
-	const referenceMultiSelectWithItemsWrapperProps = {
+	}, [value, hasCreatedNew])
+	const referenceMultiSelectWrapperWithItemsProps = {
 		className: "jt-reference-multi-select-wrapper",
 		tabIndex: 0,
 		radius: 1,
 		border: true,
 	}
-	const referenceMultiSelectWithoutItemsWrapperProps = {
+	const referenceMultiSelectWrapperWithoutItemsProps = {
 		className: "jt-reference-multi-select-wrapper",
 		tabIndex: 0,
 		padding: 3,
@@ -53,14 +66,14 @@ export default function ReferenceMultiSelect(props) {
 			borderStyle: "dashed",
 		},
 	}
-	const referenceMultiSelectWrapperFocusStyles = (
+	const ReferenceMultiSelectWrapperFocusStyles = () => (
 		<style>{`
 			.jt-reference-multi-select-wrapper:focus {
 				box-shadow: inset 0 0 0 0px var(--card-border-color),0 0 0 1px var(--card-bg-color),0 0 0 3px var(--card-focus-ring-color);
 			}
 		`}</style>
 	)
-	const referenceMultiSelectItemHoverStyles = (
+	const ReferenceMultiSelectItemHoverStyles = () => (
 		<style>{`
 			.jt-reference-multi-select-item {
 				transition: border 0.5s;
@@ -73,20 +86,11 @@ export default function ReferenceMultiSelect(props) {
 			}
 		`}</style>
 	)
-	const errorOutlineIconProps = {
-		style: {
-			display: "block",
-			margin: "auto",
-			width: "1.5rem",
-			height: "1.5rem",
-			marginBlock: "-0.4rem",
-		},
-	}
 	if ((isFetching || hasError) && !hasLoaded) {
 		if (isFetching) {
 			return (
-				<Card {...referenceMultiSelectWithoutItemsWrapperProps}>
-					{referenceMultiSelectWrapperFocusStyles}
+				<Card {...referenceMultiSelectWrapperWithoutItemsProps}>
+					<ReferenceMultiSelectWrapperFocusStyles />
 					<Flex align={"center"} justify={"center"}>
 						<Spinner muted />
 					</Flex>
@@ -95,10 +99,10 @@ export default function ReferenceMultiSelect(props) {
 		}
 		if (hasError) {
 			return (
-				<Card {...referenceMultiSelectWithoutItemsWrapperProps} tone={"critical"}>
-					{referenceMultiSelectWrapperFocusStyles}
+				<Card {...referenceMultiSelectWrapperWithoutItemsProps} tone={"critical"}>
+					<ReferenceMultiSelectWrapperFocusStyles />
 					<Flex align={"center"} justify={"center"}>
-						<ErrorOutlineIcon {...errorOutlineIconProps} />
+						<ErrorOutlineIcon {...getErrorOutlineIconProps({ layout: "block", withColour: false })} />
 					</Flex>
 				</Card>
 			)
@@ -107,8 +111,8 @@ export default function ReferenceMultiSelect(props) {
 	if ((!isFetching && !hasError) || hasLoaded) {
 		if (documentIds.length === 0) {
 			return (
-				<Card {...referenceMultiSelectWithoutItemsWrapperProps}>
-					{referenceMultiSelectWrapperFocusStyles}
+				<Card {...referenceMultiSelectWrapperWithoutItemsProps}>
+					<ReferenceMultiSelectWrapperFocusStyles />
 					<Text muted size={1} align={"center"} style={{ marginBlock: "0.0625rem" }}>
 						No items
 					</Text>
@@ -117,21 +121,21 @@ export default function ReferenceMultiSelect(props) {
 		}
 		if (documentIds.length > 0) {
 			return (
-				<Card {...referenceMultiSelectWithItemsWrapperProps}>
-					{referenceMultiSelectWrapperFocusStyles}
-					{referenceMultiSelectItemHoverStyles}
+				<Card {...referenceMultiSelectWrapperWithItemsProps}>
+					<ReferenceMultiSelectWrapperFocusStyles />
+					<ReferenceMultiSelectItemHoverStyles />
 					{documentIds.map((documentId) => (
 						<ReferenceMultiSelectItem
-							documentId={documentId}
-							errorOutlineIconProps={errorOutlineIconProps}
 							key={documentId}
+							documentId={documentId}
+							item={members?.filter((member) => member?.item?.value?._ref === documentId)[0]?.item}
 							layout={options?.layout || "default"}
-							members={members}
 							onChange={onChange}
 							schemaType={schemaType}
 							value={value}
 						/>
 					))}
+					{/* <Button onClick={handleCreateNew}>Create new</Button> */}
 				</Card>
 			)
 		}
@@ -141,36 +145,25 @@ export default function ReferenceMultiSelect(props) {
 function ReferenceMultiSelectItem(props) {
 	const {
 		documentId,
-		errorOutlineIconProps,
+		item,
 		layout,
-		members,
 		onChange,
 		schemaType,
 		value,
 	} = props
 	const isAdded = value?.some((entry) => entry._ref === documentId)
-	const errors = members?.filter((member) => member.item.value._ref === documentId)[0]?.item?.validation?.filter((validationItem) => validationItem.level === "error")
+	const errors = item?.validation?.filter((validationItem) => validationItem.level === "error")
 	const errorMessages = errors?.map((error) => error.message)
-	const [isErrorOutlineIconPopoverOpen, setIsErrorOutlineIconPopoverOpen] = useState(false)
-	const [isEditIconPopoverOpen, setIsEditIconPopoverOpen] = useState(false)
+	// const [hasChanged, setHasChanged] = useState(item?.changed)
 	const [isPublishIconPopoverOpen, setIsPublishIconPopoverOpen] = useState(false)
-	const { routerPanesState, groupIndex, handleEditReference } = usePaneRouter()
-	const document = useEditState(documentId)
-	const editedTimeAgo = useTimeAgo(document?.draft?._updatedAt || "", { minimal: false, agoSuffix: true })
-	const publishedTimeAgo = useTimeAgo(document?.published?._updatedAt || "", { minimal: false, agoSuffix: true })
-	const handleEdit = useCallback((id, type) => {
-		// https://github.com/sanity-io/sanity-plugin-documents-pane/blob/main/src/Documents.tsx
-		// const childParams = routerPanesState[groupIndex + 1]?.[0].params || {}
-		const childParams = routerPanesState[1]?.[0].params || {}
-		const { parentRefPath } = childParams
-		return handleEditReference({
-			id,
-			type,
-			parentRefPath: parentRefPath ? pathFromString(parentRefPath) : [``],
-			template: { id },
-		})
-	}, [routerPanesState, groupIndex, handleEditReference])
-	const handleAdd = useCallback((event) => {
+	const [isEditIconPopoverOpen, setIsEditIconPopoverOpen] = useState(false)
+	const [isErrorOutlineIconPopoverOpen, setIsErrorOutlineIconPopoverOpen] = useState(false)
+	const { sanity } = useTheme()
+	const { routerPanesState, ReferenceChildLink } = usePaneRouter()
+	const preview = useEditState(documentId)
+	const editedTimeAgo = useTimeAgo(preview?.draft?._updatedAt || "", { minimal: false, agoSuffix: true })
+	const publishedTimeAgo = useTimeAgo(preview?.published?._updatedAt || "", { minimal: false, agoSuffix: true })
+	const handleCheck = useCallback((event) => {
 		// https://www.sanity.io/schemas/v3-version-of-display-an-array-of-references-as-a-checklist-ecfa271a
 		const inputValue = {
 			_key: randomKey(12),
@@ -178,20 +171,23 @@ function ReferenceMultiSelectItem(props) {
 			_ref: event.target.value,
 		}
 		if (value) {
-			if (value.some((document) => document._ref === inputValue._ref)) {
+			if (value.some((item) => item._ref === inputValue._ref)) {
+				// remove
 				onChange(PatchEvent.from(set(value.filter((entry) => entry._ref !== inputValue._ref))))
 			} else {
+				// add
 				onChange(PatchEvent.from(set([...value, inputValue])))
 			}
 		} else {
+			// set if missing
 			onChange(PatchEvent.from(set([inputValue])))
 		}
 	}, [value])
-	const handleErrorOutlineIconHoverStart = useCallback(() => {
-		setIsErrorOutlineIconPopoverOpen(true)
+	const handlePublishIconHoverStart = useCallback(() => {
+		setIsPublishIconPopoverOpen(true)
 	}, [])
-	const handleErrorOutlineIconHoverEnd = useCallback(() => {
-		setIsErrorOutlineIconPopoverOpen(false)
+	const handlePublishIconHoverEnd = useCallback(() => {
+		setIsPublishIconPopoverOpen(false)
 	}, [])
 	const handleEditIconHoverStart = useCallback(() => {
 		setIsEditIconPopoverOpen(true)
@@ -199,14 +195,18 @@ function ReferenceMultiSelectItem(props) {
 	const handleEditIconHoverEnd = useCallback(() => {
 		setIsEditIconPopoverOpen(false)
 	}, [])
-	const handlePublishIconHoverStart = useCallback(() => {
-		setIsPublishIconPopoverOpen(true)
+	const handleErrorOutlineIconHoverStart = useCallback(() => {
+		setIsErrorOutlineIconPopoverOpen(true)
 	}, [])
-	const handlePublishIconHoverEnd = useCallback(() => {
-		setIsPublishIconPopoverOpen(false)
+	const handleErrorOutlineIconHoverEnd = useCallback(() => {
+		setIsErrorOutlineIconPopoverOpen(false)
 	}, [])
-	const isDraft = document?.draft
-	const isPublished = document?.published
+	const isDraft = preview?.draft
+	const isPublished = preview?.published
+	const documentType = preview?.draft?._type || preview?.published?._type
+	const itemId = item?.id
+	const parentRefPath = routerPanesState[routerPanesState?.length - 1][0]?.params?.parentRefPath
+	const isSelected = (parentRefPath && parentRefPath === itemId) || routerPanesState[routerPanesState?.length - 1][0]?.id === documentId
 	return (
 		<Card
 			className={"jt-reference-multi-select-item"}
@@ -214,152 +214,122 @@ function ReferenceMultiSelectItem(props) {
 			margin={1}
 			radius={2}
 			border={true}
-			tone={errors?.length > 0 ? "critical" : (isAdded ? "transparent" : "default")}
+			tone={errors?.length > 0 ? "critical" : (value && isAdded ? "transparent" : "default")}
 		>
-			<Flex
-				align={"center"}
-				justify={"center"}
-				gap={1}
-			>
-				<Box
-					padding={2}
-				>
+			<Flex align={"center"} justify={"center"} gap={1}>
+				<Box padding={2}>
 					<Checkbox
-						onClick={handleAdd}
+						onClick={handleCheck}
 						onChange={() => {}}
 						value={documentId}
 						checked={value ? isAdded : false}
 						style={{ display: "block", width: "auto" }}
 					/>
 				</Box>
-				<Box
-					flex={1}
-				>
-					<Button
-						as={"a"}
-						onClick={() => handleEdit(documentId, document._type)}
-						padding={1}
-						paddingLeft={1}
-						mode={"bleed"}
+				<Box flex={1}>
+					<ReferenceChildLink
+						documentId={documentId}
+						documentType={documentType}
+						parentRefPath={itemId ? [itemId] : []}
 						style={{
-							display: "block",
-							width: "100%",
-							cursor: "pointer"
+							all: "unset",
+							cursor: "pointer",
 						}}
 					>
-						<Flex gap={1} align={"center"} justify={"center"}>
-							<Box flex={1}>
-								<Preview
-									schemaType={schemaType.of[0].to[0]}
-									value={document.draft || document.published}
-									layout={layout}
-								/>
-							</Box>
-							<Box padding={2}>
-								<TextWithTone
-									muted={isPublished ? false : true}
-									tone={isPublished ? "positive" : null}
-								>
-									<Popover
-										content={
-											<Text size={1}>
-												{isPublished
-													? (
-														<>
-															Published {publishedTimeAgo}
-														</>
-													)
-													: "Not published"
-												}
-											</Text>
-										}
-										placement={"bottom"}
-										open={isPublishIconPopoverOpen}
-										tone="default"
-										padding={2}
-										shadow={1}
-										radius={2}
-										portal
-									>
-										<PublishIcon
-											onMouseEnter={handlePublishIconHoverStart}
-											onMouseLeave={handlePublishIconHoverEnd}
-											style={{
-												display: "block",
-												width: "1.3125rem",
-												height: "1.3125rem",
-												marginBlock: "-0.0625rem",
-												opacity: isPublished ? null : 0.3,
-											}}
-										/>
-									</Popover>
-								</TextWithTone>
-							</Box>
-							<Box padding={2}>
-								<TextWithTone
-									muted={isDraft ? false : true}
-									tone={isDraft ? "caution" : null}
-								>
-									<Popover
-										content={
-											<Text size={1}>
-												{isDraft
-													? (
-														<>
-															Edited {editedTimeAgo}
-														</>
-													)
-													: "No unpublished edits"
-												}
-											</Text>
-										}
-										placement={"bottom"}
-										open={isEditIconPopoverOpen}
-										tone="default"
-										padding={2}
-										shadow={1}
-										radius={2}
-										portal
-									>
-										<EditIcon
-											onMouseEnter={handleEditIconHoverStart}
-											onMouseLeave={handleEditIconHoverEnd}
-											style={{
-												display: "block",
-												width: "1.3125rem",
-												height: "1.3125rem",
-												marginBlock: "-0.0625rem",
-												opacity: isDraft ? null : 0.3,
-											}}
-										/>
-									</Popover>
-								</TextWithTone>
-							</Box>
-						</Flex>
-					</Button>
+						<Button
+							as={"div"}
+							padding={1}
+							mode={isSelected ? "default" : "bleed"}
+							tone={isSelected ? "primary" : "default" }
+							style={{
+								display: "block",
+								width: "100%",
+								"--card-fg-color": isSelected ? sanity?.color?.base?.bg : null,
+								"--card-bg-color": isSelected ? sanity?.color?.solid?.primary?.enabled?.bg : null,
+								"--card-border-color": isSelected ? sanity?.color?.solid?.primary?.enabled?.bg : null,
+							}}
+						>
+							<Flex gap={1} align={"center"} justify={"center"}>
+								<Box flex={1}>
+									<Preview
+										schemaType={schemaType?.of[0]?.to[0]}
+										value={preview?.draft || preview?.published}
+										layout={layout}
+									/>
+								</Box>
+								<Box padding={2}>
+									<TextWithTone {...getPublishOrEditIconTextWithToneProps({ state: isPublished, ifTrue: "positive" })}>
+										<Popover
+											content={
+												<Text size={1}>
+													{isPublished
+														? (
+															<>
+																Published {publishedTimeAgo}
+															</>
+														)
+														: "Not published"
+													}
+												</Text>
+											}
+											{...getPublishOrEditIconPopoverProps({ handler: isPublishIconPopoverOpen })}
+										>
+											<PublishIcon
+												onMouseEnter={handlePublishIconHoverStart}
+												onMouseLeave={handlePublishIconHoverEnd}
+												{...getPublishOrEditIconProps({ state: isPublished, isSelected: isSelected, ifSelected: sanity?.color?.base?.bg })}
+											/>
+										</Popover>
+									</TextWithTone>
+								</Box>
+								<Box padding={2}>
+									<TextWithTone {...getPublishOrEditIconTextWithToneProps({ state: isDraft, ifTrue: "caution" })}>
+										<Popover
+											content={
+												<Text size={1}>
+													{isDraft
+														? (
+															<>
+																Edited {editedTimeAgo}
+															</>
+														)
+														: "No unpublished edits"
+													}
+												</Text>
+											}
+											{...getPublishOrEditIconPopoverProps({ handler: isEditIconPopoverOpen })}
+										>
+											<EditIcon
+												onMouseEnter={handleEditIconHoverStart}
+												onMouseLeave={handleEditIconHoverEnd}
+												{...getPublishOrEditIconProps({ state: isDraft, isSelected: isSelected, ifSelected: sanity?.color?.base?.bg })}
+											/>
+										</Popover>
+									</TextWithTone>
+								</Box>
+							</Flex>
+						</Button>
+					</ReferenceChildLink>
 				</Box>
 				{errors?.length > 0
 					? (
-						<Box
-							key={documentId}
-							paddingLeft={2}
-							paddingRight={1}
-						>
+						<Box padding={1}>
 							<Popover
 								content={
 									errorMessages.map((message, index) => (
-										<Text key={index} size={1} muted><ErrorOutlineIcon color="rgb(240, 62, 47)" style={{ paddingRight: "0.5rem" }} />{message}</Text>
+										<Text key={index} size={1} muted>
+											<ErrorOutlineIcon {...getErrorOutlineIconProps({ layout: "inline", withColour: true })} />
+											{message}
+										</Text>
 									))
 								}
-								placement={"top"}
-								open={isErrorOutlineIconPopoverOpen}
-								tone={"default"}
-								padding={3}
-								shadow={1}
-								radius={2}
-								portal
+								{...getErrorOutlineIconPopoverProps({ handler: isErrorOutlineIconPopoverOpen })}
 							>
-								<ErrorOutlineIcon {...errorOutlineIconProps} onMouseEnter={handleErrorOutlineIconHoverStart} onMouseLeave={handleErrorOutlineIconHoverEnd} color={"rgb(240, 62, 47)"} />
+								<ErrorOutlineIcon
+									onMouseEnter={handleErrorOutlineIconHoverStart}
+									onMouseLeave={handleErrorOutlineIconHoverEnd}
+									{...getErrorOutlineIconProps({ layout: "block", withColour: true })}
+								/>
 							</Popover>
 						</Box>
 					)
@@ -368,4 +338,90 @@ function ReferenceMultiSelectItem(props) {
 			</Flex>
 		</Card>
 	)
+}
+
+function getPublishOrEditIconTextWithToneProps(params = {}) {
+	const {
+		state = false,
+		ifTrue = null,
+	} = params
+	return {
+		muted: state ? false : true,
+		tone: state ? ifTrue : null,
+	}
+}
+
+function getPublishOrEditIconPopoverProps(params = {}) {
+	const {
+		handler = null,
+	} = params
+	return {
+		placement: "bottom",
+		tone: "default",
+		padding: 2,
+		radius: 2,
+		shadow: 1,
+		open: handler,
+		portal: true,
+	}
+}
+
+function getPublishOrEditIconProps(params = {}) {
+	const {
+		state = false,
+		isSelected = false,
+		ifSelected = null,
+	} = params
+	return {
+		style: {
+			display: "block",
+			width: "1.3125rem",
+			height: "1.3125rem",
+			marginBlock: "-0.0625rem",
+			opacity: state ? null : 0.3,
+			color: isSelected ? ifSelected : null,
+		},
+	}
+}
+
+function getErrorOutlineIconPopoverProps(params = {}) {
+	const {
+		handler = null
+	} = params
+	return {
+		placement: "top",
+		tone: "default",
+		padding: 3,
+		radius: 2,
+		shadow: 1,
+		open: handler,
+		portal: true,
+	}
+}
+
+function getErrorOutlineIconProps(params = {}) {
+	const {
+		layout = "block",
+		withColour = false,
+	} = params
+	function resolveStyles() {
+		if (layout === "block") {
+			return {
+				display: "block",
+				margin: "auto",
+				width: "1.5rem",
+				height: "1.5rem",
+				marginBlock: "-0.4rem",
+			}
+		}
+		if (layout === "inline") {
+			return {
+				paddingRight: "0.5rem",
+			}
+		}
+	}
+	return {
+		style: resolveStyles(),
+		color: withColour ? "rgb(240, 62, 47)" : null,
+	}
 }
