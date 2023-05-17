@@ -60,8 +60,10 @@ export default function ReferenceMultiSelect(props) {
 				setIsFetching(true)
 				setHasError(false)
 				const documentIds = await client.fetch(options?.query, options?.params).then(console.info("Fetching document ids for reference multi-select."))
+				const alreadyReferencedDocumentIds = value?.map((item) => item._ref)
 				// setDocumentIds(documentIds.filter((documentId) => !documentId.startsWith("drafts.")))
-				setDocumentIds([...new Set(documentIds?.map((documentId) => getPublishedId(documentId)))])
+				// setDocumentIds([...new Set(documentIds?.map((documentId) => getPublishedId(documentId)))])
+				setDocumentIds([...new Set([...documentIds?.map((documentId) => getPublishedId(documentId)), ...alreadyReferencedDocumentIds])])
 				setIsFetching(false)
 				setHasLoaded(true)
 			} catch {
@@ -216,6 +218,12 @@ function ReferenceMultiSelectItem(props) {
 	const documentPresence = useDocumentPresence(documentId)
 	const editedTimeAgo = useTimeAgo(preview?.draft?._updatedAt || "", { minimal: false, agoSuffix: true })
 	const publishedTimeAgo = useTimeAgo(preview?.published?._updatedAt || "", { minimal: false, agoSuffix: true })
+	const isDraft = preview?.draft
+	const isPublished = preview?.published
+	const documentType = preview?.draft?._type || preview?.published?._type
+	const itemId = item?.id
+	const parentRefPath = routerPanesState[routerPanesState?.length - 1][0]?.params?.parentRefPath
+	const isSelected = (parentRefPath && parentRefPath === itemId) || routerPanesState[routerPanesState?.length - 1][0]?.id === documentId
 	const handleCheck = useCallback((event) => {
 		// https://www.sanity.io/schemas/v3-version-of-display-an-array-of-references-as-a-checklist-ecfa271a
 		const inputValue = {
@@ -265,7 +273,9 @@ function ReferenceMultiSelectItem(props) {
 		if (
 			documentOperationEvent?.op === "delete" &&
 			documentOperationEvent?.type === "success" &&
-			documentOperationEvent?.id === documentId
+			documentOperationEvent?.id === documentId &&
+			!isSelected &&
+			!isAdded
 		) {
 			if (value && value.length > 1) {
 				// remove
@@ -275,13 +285,7 @@ function ReferenceMultiSelectItem(props) {
 				onChange(PatchEvent.from(set([])))
 			}
 		}
-	}, [documentOperationEvent])
-	const isDraft = preview?.draft
-	const isPublished = preview?.published
-	const documentType = preview?.draft?._type || preview?.published?._type
-	const itemId = item?.id
-	const parentRefPath = routerPanesState[routerPanesState?.length - 1][0]?.params?.parentRefPath
-	const isSelected = (parentRefPath && parentRefPath === itemId) || routerPanesState[routerPanesState?.length - 1][0]?.id === documentId
+	}, [documentOperationEvent, routerPanesState])
 	return (
 		<Card
 			className={"jt-reference-multi-select-item"}
@@ -318,13 +322,13 @@ function ReferenceMultiSelectItem(props) {
 							as={"div"}
 							padding={1}
 							mode={isSelected ? "default" : "bleed"}
-							tone={isSelected && errors?.length === 0 ? "primary" : "default" }
+							tone={isSelected ? (errors?.length >= 1 ? "critical" : "primary") : "default" }
 							style={{
 								display: "block",
 								width: "100%",
-								"--card-fg-color": isSelected && errors?.length === 0 ? sanity?.color?.base?.bg : null,
-								"--card-bg-color": isSelected && errors?.length === 0 ? sanity?.color?.solid?.primary?.enabled?.bg : null,
-								"--card-border-color": isSelected && errors?.length === 0 ? sanity?.color?.solid?.primary?.enabled?.bg : null,
+								"--card-fg-color": isSelected ? (errors?.length >= 1 ? sanity?.color?.solid?.critical?.enabled?.accent?.fg : sanity?.color?.base?.bg) : null,
+								"--card-bg-color": isSelected ? (errors?.length >= 1 ? sanity?.color?.solid?.critical?.enabled?.bg : sanity?.color?.solid?.primary?.enabled?.bg) : null,
+								"--card-border-color": isSelected ? (errors?.length >= 1 ? sanity?.color?.solid?.critical?.enabled?.bg : sanity?.color?.solid?.primary?.enabled?.bg) : null,
 							}}
 						>
 							<Flex gap={1} align={"center"} justify={"center"}>
@@ -356,7 +360,7 @@ function ReferenceMultiSelectItem(props) {
 											<PublishIcon
 												onMouseEnter={handlePublishIconHoverStart}
 												onMouseLeave={handlePublishIconHoverEnd}
-												{...getPublishOrEditIconProps({ state: isPublished, isSelected: isSelected, ifSelected: sanity?.color?.base?.bg })}
+												{...getPublishOrEditIconProps({ state: isPublished, isSelected: isSelected, ifSelected: errors?.length >= 1 ? sanity?.color?.solid?.critical?.enabled?.accent?.fg : sanity?.color?.base?.bg })}
 											/>
 										</Popover>
 									</TextWithTone>
@@ -381,7 +385,7 @@ function ReferenceMultiSelectItem(props) {
 											<EditIcon
 												onMouseEnter={handleEditIconHoverStart}
 												onMouseLeave={handleEditIconHoverEnd}
-												{...getPublishOrEditIconProps({ state: isDraft, isSelected: isSelected, ifSelected: sanity?.color?.base?.bg })}
+												{...getPublishOrEditIconProps({ state: isDraft, isSelected: isSelected, ifSelected: errors?.length >= 1 ? sanity?.color?.solid?.critical?.enabled?.accent?.fg : sanity?.color?.base?.bg })}
 											/>
 										</Popover>
 									</TextWithTone>

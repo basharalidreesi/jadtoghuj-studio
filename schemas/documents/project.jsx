@@ -417,10 +417,9 @@ function featuredLooks() {
 		],
 		components: {
 			input: (props) => <ReferenceMultiSelect options={{
-				query: `*[_type == "look" && (_id in $specifiedLooks || _id in $alreadyReferencedLooks)] | order(lower(title) asc) { _id }._id`,
+				query: `*[_type == "look" && _id in $specifiedLooks] | order(lower(title) asc) { _id }._id`,
 				params: {
 					specifiedLooks: useFormValue(["looks"])?.map((look) => look._ref)?.filter(Boolean) || [],
-					alreadyReferencedLooks: props.value?.map((look) => look._ref) || [],
 				},
 			}} {...props} />,
 		},
