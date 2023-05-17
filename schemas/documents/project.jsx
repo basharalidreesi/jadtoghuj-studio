@@ -186,7 +186,7 @@ export default defineType({
 					title: "Image",
 					description: "",
 					icon: ImageIcon,
-					fields: [featuredLooks("Image")],
+					fields: [featuredLooks()],
 					preview: {
 						select: {
 							asset: "asset",
@@ -269,7 +269,7 @@ export default defineType({
 								input: (props) => <VideoPreview options={{ withDefault: true, from: props.value, as: "iframe" }} {...props} />,
 							},
 						}),
-						featuredLooks("Video"),
+						featuredLooks(),
 					],
 					preview: {
 						select: {
@@ -382,11 +382,11 @@ export default defineType({
 	},
 })
 
-function featuredLooks(type) {
+function featuredLooks() {
 	return defineField({
 		name: "featuredLooks",
 		type: "array",
-		title: "Looks in this " + type,
+		title: "Featured Looks",
 		description: "",
 		of: [
 			defineArrayMember({
@@ -454,9 +454,15 @@ function LookbookColourPreview(props) {
 	}
 	return (
 		<FormField title={props.schemaType.title} description={props.schemaType.description} inputId={"lookbook-with-colour-preview"}>
-			<Flex direction="row" wrap="nowrap" gap={1}>
+			<Flex direction="row" wrap="nowrap">
 				<ColourPreview options={{ colour: colour, inputId: "lookbook-with-colour-preview" }} />
 				<Box flex={3}>
+					<style>{`
+						#lookbook-with-colour-preview + span {
+							border-top-left-radius: 0;
+							border-bottom-left-radius: 0;
+						}
+					`}</style>
 					<TextInput value={colour} id={"lookbook-with-colour-preview"} readOnly />
 				</Box>
 			</Flex>

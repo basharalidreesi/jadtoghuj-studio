@@ -82,7 +82,6 @@ export default defineType({
 			title: "Colours",
 			description: "",
 			hidden: ({parent}) => !parent?.hasCustomColours,
-			fieldset: "colourSettings",
 		}),
 	],
 	components: {
@@ -97,8 +96,11 @@ export default defineType({
 							border-left: none !important;
 							padding-left: 0 !important;
 						}
-						fieldset[data-testid="field-colours"] {
-							grid-column: 1/-1;
+						fieldset[data-testid="field-colours"] > *:nth-child(2) {
+							border: 1px solid var(--card-border-color) !important;
+							padding-inline: 0.75rem !important;
+							padding-top: 0.5rem !important;
+							padding-bottom: 1rem !important;
 						}
 						[data-ui="Popover__wrapper"] [data-ui="Menu"] [data-ui="Stack"] button:nth-child(2)::after,
 						[data-ui="Popover__wrapper"] [data-ui="Menu"] [data-ui="Stack"] button:nth-child(3)::after {

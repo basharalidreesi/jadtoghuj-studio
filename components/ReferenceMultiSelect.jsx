@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useState } from "react"
-import { PatchEvent, Preview, TextWithTone, set, useEditState, useTimeAgo } from "sanity"
+import { ChangeIndicator, FieldPresenceInner, PatchEvent, Preview, TextWithTone, getPublishedId, set, unset, useDocumentOperationEvent, useDocumentPresence, useEditState, useTimeAgo } from "sanity"
 import { usePaneRouter } from "sanity/desk"
 import useSanityClient from "../sanity.client"
 import { randomKey } from "@sanity/util/content"
-import { uuid } from "@sanity/uuid"
-import { Box, Button, Card, Checkbox, Flex, Popover, Spinner, Text } from "@sanity/ui"
-import { EditIcon, ErrorOutlineIcon, PublishIcon } from "@sanity/icons"
+import { Box, Button, Card, Checkbox, Flex, Grid, Popover, Spinner, Text } from "@sanity/ui"
+import { AddIcon, EditIcon, ErrorOutlineIcon, PublishIcon } from "@sanity/icons"
 import { useTheme } from "styled-components"
+import { uuid } from "@sanity/uuid"
 
 export default function ReferenceMultiSelect(props) {
 	const {
@@ -20,26 +20,48 @@ export default function ReferenceMultiSelect(props) {
 	const [isFetching, setIsFetching] = useState(false)
 	const [hasError, setHasError] = useState(false)
 	const [hasLoaded, setHasLoaded] = useState(false)
-	const [hasCreatedNew, setHasCreatedNew] = useState(false)
 	const client = useSanityClient()
-	// const handleCreateNew = useCallback(() => {
-	// 	const newDocument = {
-	// 		_id: `drafts.${uuid()}`,
-	// 		_type: schemaType?.of[0]?.to[0]?.name,
-	// 	}
-	// 	client.create(newDocument).then((document) => {
-	// 		setHasCreatedNew(true)
-	// 		console.log("Created document with id " + document._id)
-	// 	})
-	// 	setHasCreatedNew(false)
-	// }, [value])
+	const { handleEditReference } = usePaneRouter()
+	const handleCreateNew = useCallback(() => {
+		const newDocument = {
+			_id: `drafts.${uuid()}`,
+			_type: schemaType?.of[0]?.to[0]?.name,
+		}
+		client.create(newDocument).then((document) => {
+			const documentId = getPublishedId(document._id)
+			const documentType = document._type
+			console.info(`Created ${documentType} with published id ${documentId}`)
+			const inputValue = {
+				_key: randomKey(12),
+				_type: "reference",
+				_ref: documentId,
+				_weak: true,
+				_strengthenOnPublish: { type: documentType }
+			}
+			if (value && value.length >= 1) {
+				// add
+				onChange(PatchEvent.from(set([...value, inputValue])))
+			} else {
+				// initial set
+				onChange(PatchEvent.from(set([inputValue])))
+			}
+			const itemId = members?.filter((member) => member?.item?.value?._ref === documentId)[0]?.item?.id
+			handleEditReference({
+				id: documentId,
+				type: documentType,
+				template: documentType,
+				parentRefPath: itemId ? [itemId] : [],
+			})
+		})
+	}, [value])
 	useEffect(() => {
 		async function getDocumentIds() {
 			try {
 				setIsFetching(true)
 				setHasError(false)
 				const documentIds = await client.fetch(options?.query, options?.params).then(console.info("Fetching document ids for reference multi-select."))
-				setDocumentIds(documentIds.filter((documentId) => !documentId.startsWith("drafts.")))
+				// setDocumentIds(documentIds.filter((documentId) => !documentId.startsWith("drafts.")))
+				setDocumentIds([...new Set(documentIds?.map((documentId) => getPublishedId(documentId)))])
 				setIsFetching(false)
 				setHasLoaded(true)
 			} catch {
@@ -49,7 +71,7 @@ export default function ReferenceMultiSelect(props) {
 			}
 		}
 		getDocumentIds()
-	}, [value, hasCreatedNew])
+	}, [value])
 	const referenceMultiSelectWrapperWithItemsProps = {
 		className: "jt-reference-multi-select-wrapper",
 		tabIndex: 0,
@@ -86,6 +108,30 @@ export default function ReferenceMultiSelect(props) {
 			}
 		`}</style>
 	)
+	const ReferenceMultiSelectItemChangeIndicatorStyles = () => (
+		<style>{`
+			.jt-reference-multi-select-item-change-indicator-wrapper * {
+				height: 100%;
+			}
+		`}</style>
+	)
+	function CreateNewButton(props = {}) {
+		const {} = props
+		return (
+			<Box>
+				<Button
+					icon={AddIcon}
+					mode="ghost"
+					padding={3}
+					text="Create new"
+					onClick={handleCreateNew}
+					style={{
+						width: "100%",
+					}}
+				/>
+			</Box>
+		)
+	}
 	if ((isFetching || hasError) && !hasLoaded) {
 		if (isFetching) {
 			return (
@@ -111,32 +157,38 @@ export default function ReferenceMultiSelect(props) {
 	if ((!isFetching && !hasError) || hasLoaded) {
 		if (documentIds.length === 0) {
 			return (
-				<Card {...referenceMultiSelectWrapperWithoutItemsProps}>
-					<ReferenceMultiSelectWrapperFocusStyles />
-					<Text muted size={1} align={"center"} style={{ marginBlock: "0.0625rem" }}>
-						No items
-					</Text>
-				</Card>
+				<Grid columns={1} gap={3}>
+					<Card {...referenceMultiSelectWrapperWithoutItemsProps}>
+						<ReferenceMultiSelectWrapperFocusStyles />
+						<Text muted size={1} align={"center"} style={{ marginBlock: "0.0625rem" }}>
+							No items
+						</Text>
+					</Card>
+					{!schemaType?.of[0]?.options?.disableNew ? <CreateNewButton /> : ""}
+				</Grid>
 			)
 		}
 		if (documentIds.length > 0) {
 			return (
-				<Card {...referenceMultiSelectWrapperWithItemsProps}>
-					<ReferenceMultiSelectWrapperFocusStyles />
-					<ReferenceMultiSelectItemHoverStyles />
-					{documentIds.map((documentId) => (
-						<ReferenceMultiSelectItem
-							key={documentId}
-							documentId={documentId}
-							item={members?.filter((member) => member?.item?.value?._ref === documentId)[0]?.item}
-							layout={options?.layout || "default"}
-							onChange={onChange}
-							schemaType={schemaType}
-							value={value}
-						/>
-					))}
-					{/* <Button onClick={handleCreateNew}>Create new</Button> */}
-				</Card>
+				<Grid columns={1} gap={3}>
+					<Card {...referenceMultiSelectWrapperWithItemsProps}>
+						<ReferenceMultiSelectWrapperFocusStyles />
+						<ReferenceMultiSelectItemHoverStyles />
+						<ReferenceMultiSelectItemChangeIndicatorStyles />
+						{documentIds.map((documentId) => (
+							<ReferenceMultiSelectItem
+								key={documentId}
+								documentId={documentId}
+								item={members?.filter((member) => member?.item?.value?._ref === documentId)[0]?.item}
+								layout={options?.layout || "default"}
+								onChange={onChange}
+								schemaType={schemaType}
+								value={value}
+							/>
+						))}
+					</Card>
+					{!schemaType?.of[0]?.options?.disableNew ? <CreateNewButton /> : ""}
+				</Grid>
 			)
 		}
 	}
@@ -154,13 +206,14 @@ function ReferenceMultiSelectItem(props) {
 	const isAdded = value?.some((entry) => entry._ref === documentId)
 	const errors = item?.validation?.filter((validationItem) => validationItem.level === "error")
 	const errorMessages = errors?.map((error) => error.message)
-	// const [hasChanged, setHasChanged] = useState(item?.changed)
 	const [isPublishIconPopoverOpen, setIsPublishIconPopoverOpen] = useState(false)
 	const [isEditIconPopoverOpen, setIsEditIconPopoverOpen] = useState(false)
 	const [isErrorOutlineIconPopoverOpen, setIsErrorOutlineIconPopoverOpen] = useState(false)
 	const { sanity } = useTheme()
 	const { routerPanesState, ReferenceChildLink } = usePaneRouter()
 	const preview = useEditState(documentId)
+	const documentOperationEvent = useDocumentOperationEvent(documentId, schemaType?.of[0]?.to[0]?.name)
+	const documentPresence = useDocumentPresence(documentId)
 	const editedTimeAgo = useTimeAgo(preview?.draft?._updatedAt || "", { minimal: false, agoSuffix: true })
 	const publishedTimeAgo = useTimeAgo(preview?.published?._updatedAt || "", { minimal: false, agoSuffix: true })
 	const handleCheck = useCallback((event) => {
@@ -169,17 +222,24 @@ function ReferenceMultiSelectItem(props) {
 			_key: randomKey(12),
 			_type: "reference",
 			_ref: event.target.value,
+			_weak: true,
+			_strengthenOnPublish: { type: schemaType?.of[0]?.to[0]?.name }
 		}
 		if (value) {
 			if (value.some((item) => item._ref === inputValue._ref)) {
-				// remove
-				onChange(PatchEvent.from(set(value.filter((entry) => entry._ref !== inputValue._ref))))
+				if (value.length <= 1) {
+					// unset if last one
+					onChange(PatchEvent.from(set([])))
+				} else {
+					// remove
+					onChange(PatchEvent.from(set(value.filter((entry) => entry._ref !== inputValue._ref))))
+				}
 			} else {
 				// add
 				onChange(PatchEvent.from(set([...value, inputValue])))
 			}
 		} else {
-			// set if missing
+			// initial set
 			onChange(PatchEvent.from(set([inputValue])))
 		}
 	}, [value])
@@ -201,6 +261,21 @@ function ReferenceMultiSelectItem(props) {
 	const handleErrorOutlineIconHoverEnd = useCallback(() => {
 		setIsErrorOutlineIconPopoverOpen(false)
 	}, [])
+	useEffect(() => {
+		if (
+			documentOperationEvent?.op === "delete" &&
+			documentOperationEvent?.type === "success" &&
+			documentOperationEvent?.id === documentId
+		) {
+			if (value && value.length > 1) {
+				// remove
+				onChange(PatchEvent.from(set(value.filter((entry) => entry?._ref !== documentId))))
+			} else {
+				// unset
+				onChange(PatchEvent.from(set([])))
+			}
+		}
+	}, [documentOperationEvent])
 	const isDraft = preview?.draft
 	const isPublished = preview?.published
 	const documentType = preview?.draft?._type || preview?.published?._type
@@ -215,6 +290,9 @@ function ReferenceMultiSelectItem(props) {
 			radius={2}
 			border={true}
 			tone={errors?.length > 0 ? "critical" : (value && isAdded ? "transparent" : "default")}
+			style={{
+				position: "relative",
+			}}
 		>
 			<Flex align={"center"} justify={"center"} gap={1}>
 				<Box padding={2}>
@@ -240,13 +318,13 @@ function ReferenceMultiSelectItem(props) {
 							as={"div"}
 							padding={1}
 							mode={isSelected ? "default" : "bleed"}
-							tone={isSelected ? "primary" : "default" }
+							tone={isSelected && errors?.length === 0 ? "primary" : "default" }
 							style={{
 								display: "block",
 								width: "100%",
-								"--card-fg-color": isSelected ? sanity?.color?.base?.bg : null,
-								"--card-bg-color": isSelected ? sanity?.color?.solid?.primary?.enabled?.bg : null,
-								"--card-border-color": isSelected ? sanity?.color?.solid?.primary?.enabled?.bg : null,
+								"--card-fg-color": isSelected && errors?.length === 0 ? sanity?.color?.base?.bg : null,
+								"--card-bg-color": isSelected && errors?.length === 0 ? sanity?.color?.solid?.primary?.enabled?.bg : null,
+								"--card-border-color": isSelected && errors?.length === 0 ? sanity?.color?.solid?.primary?.enabled?.bg : null,
 							}}
 						>
 							<Flex gap={1} align={"center"} justify={"center"}>
@@ -257,6 +335,7 @@ function ReferenceMultiSelectItem(props) {
 										layout={layout}
 									/>
 								</Box>
+								{ documentPresence && documentPresence?.length > 0 ? <FieldPresenceInner presence={documentPresence} /> : null}
 								<Box padding={2}>
 									<TextWithTone {...getPublishOrEditIconTextWithToneProps({ state: isPublished, ifTrue: "positive" })}>
 										<Popover
@@ -331,6 +410,22 @@ function ReferenceMultiSelectItem(props) {
 									{...getErrorOutlineIconProps({ layout: "block", withColour: true })}
 								/>
 							</Popover>
+						</Box>
+					)
+					: ""
+				}
+				{item && item.path
+					? (
+						<Box
+							className="jt-reference-multi-select-item-change-indicator-wrapper"
+							style={{
+								position: "absolute",
+								top: 0,
+								right: "calc(-0.2rem - 2px)",
+								height: "calc(100% + 2px)",
+							}}
+						>
+							<ChangeIndicator path={item?.path} isChanged={item?.changed} hasFocus={true} />
 						</Box>
 					)
 					: ""
