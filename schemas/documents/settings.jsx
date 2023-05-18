@@ -234,6 +234,23 @@ export default defineType({
 			group: "configuration",
 		}),
 	],
+	components: {
+		input: (props) => {
+			return (
+				<>
+					<style>{`
+						fieldset[data-testid="field-colours"] > *:nth-child(2) {
+							border: 1px solid var(--card-border-color) !important;
+							padding-inline: 0.75rem !important;
+							padding-top: 0.5rem !important;
+							padding-bottom: 1rem !important;
+						}
+					`}</style>
+					{props.renderDefault(props)}
+				</>
+			)
+		},
+	},
 	preview: {
 		prepare() {
 			return {

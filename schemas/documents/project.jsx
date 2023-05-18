@@ -67,7 +67,6 @@ export default defineType({
 				}),
 			],
 			components: {
-				// input: ExposedArrayFunctions,
 				input: (props) => <ReferenceMultiSelect options={{
 					query: `*[_type == "category"] | order(lower(title) asc) { _id }._id`,
 				}} {...props} />,

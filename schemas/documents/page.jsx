@@ -102,22 +102,6 @@ export default defineType({
 							padding-top: 0.5rem !important;
 							padding-bottom: 1rem !important;
 						}
-						[data-ui="Popover__wrapper"] [data-ui="Menu"] [data-ui="Stack"] button:nth-child(2)::after,
-						[data-ui="Popover__wrapper"] [data-ui="Menu"] [data-ui="Stack"] button:nth-child(3)::after {
-							content: "";
-							display: block;
-							position: relative;
-							top: 0.4rem;
-							left: 0.5rem;
-							height: 1px;
-							width: calc(100% - 1rem);
-							background: var(--card-shadow-outline-color);
-							pointer-events: none;
-						}
-						[data-ui="Popover__wrapper"] [data-ui="Menu"] [data-ui="Stack"] button:nth-child(3),
-						[data-ui="Popover__wrapper"] [data-ui="Menu"] [data-ui="Stack"] button:nth-child(4) {
-							margin-top: 0.5rem;
-						}
 					`}</style>
 					{props.renderDefault(props)}
 				</>

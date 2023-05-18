@@ -8,8 +8,7 @@ export default function GradientPreview(props) {
 		<>
 			{props.options?.withDefault && props.renderDefault ? props.renderDefault(props) : ""}
 			<Card
-				sizing="border"
-				border="true"
+				shadow={1}
 				radius={1}
 				style={{
 					position: "relative",

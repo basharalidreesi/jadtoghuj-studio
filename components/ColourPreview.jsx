@@ -6,19 +6,18 @@ export default function ColourPreview(props) {
 		<Card
 			as={(withDefault || props.id || props.options?.inputId) ? "label" : "div"}
 			htmlFor={(withDefault || props.options?.inputId || props.id) ? props.options?.inputId || props.id : null}
-			sizing={"border"}
 			flex={1}
-			border={"true"}
+			shadow={1}
+			radius={1}
 			style={{
 				display: "block",
 				width: "100%",
 				height: "100%",
-				minHeight: "2.1875rem",
-				borderRadius: "0.0625rem",
+				minHeight: "calc(2.1875rem - 2px)",
 				background: `white linear-gradient(to bottom, ${props.options?.colour}, ${props.options?.colour})` || "transparent",
-				borderRight: 0,
 				borderTopRightRadius: 0,
 				borderBottomRightRadius: 0,
+				marginTop: "1px",
 			}}
 		></Card>
 	)

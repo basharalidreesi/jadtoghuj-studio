@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
-import { ChangeIndicator, FieldPresenceInner, PatchEvent, Preview, TextWithTone, getPublishedId, set, unset, useDocumentOperationEvent, useDocumentPresence, useEditState, useTimeAgo } from "sanity"
+import { ChangeIndicator, FieldPresenceInner, PatchEvent, Preview, TextWithTone, getPublishedId, set, useDocumentOperationEvent, useDocumentPresence, useEditState, useTimeAgo } from "sanity"
 import { usePaneRouter } from "sanity/desk"
 import useSanityClient from "../sanity.client"
 import { randomKey } from "@sanity/util/content"
@@ -21,38 +21,72 @@ export default function ReferenceMultiSelect(props) {
 	const [hasError, setHasError] = useState(false)
 	const [hasLoaded, setHasLoaded] = useState(false)
 	const client = useSanityClient()
-	const { handleEditReference } = usePaneRouter()
+	const { routerPanesState, groupIndex, handleEditReference } = usePaneRouter()
 	const handleCreateNew = useCallback(() => {
-		const newDocument = {
-			_id: `drafts.${uuid()}`,
-			_type: schemaType?.of[0]?.to[0]?.name,
-		}
-		client.create(newDocument).then((document) => {
-			const documentId = getPublishedId(document._id)
-			const documentType = document._type
-			console.info(`Created ${documentType} with published id ${documentId}`)
-			const inputValue = {
-				_key: randomKey(12),
-				_type: "reference",
-				_ref: documentId,
-				_weak: true,
-				_strengthenOnPublish: { type: documentType }
-			}
-			if (value && value.length >= 1) {
-				// add
-				onChange(PatchEvent.from(set([...value, inputValue])))
-			} else {
-				// initial set
-				onChange(PatchEvent.from(set([inputValue])))
-			}
-			const itemId = members?.filter((member) => member?.item?.value?._ref === documentId)[0]?.item?.id
-			handleEditReference({
-				id: documentId,
+		const documentId = uuid()
+		const documentType = schemaType?.of[0]?.to[0]?.name
+		const inputValue = {
+			_key: randomKey(12),
+			_type: "reference",
+			_ref: documentId,
+			_weak: true,
+			_strengthenOnPublish: {
 				type: documentType,
-				template: documentType,
-				parentRefPath: itemId ? [itemId] : [],
-			})
+				template: {
+					id: documentType,
+				},
+			},
+		}
+		if (value && value.length >= 1) {
+			// add
+			onChange(PatchEvent.from(set([...value, inputValue])))
+		} else {
+			// initial set
+			onChange(PatchEvent.from(set([inputValue])))
+		}
+		const itemId = members?.filter((member) => member?.item?.value?._ref === documentId)[0]?.item?.id
+		handleEditReference({
+			id: documentId,
+			type: documentType,
+			template: documentType,
+			parentRefPath: itemId ? [itemId] : [],
 		})
+		// the below is not needed seeing as handleEditReference can handle a document that doesn't exist (which seems to be the default behaviour in any case)
+		// const newDocument = {
+		// 	_id: `drafts.${uuid()}`,
+		// 	_type: schemaType?.of[0]?.to[0]?.name,
+		// }
+		// client.create(newDocument).then((document) => {
+		// 	const documentId = getPublishedId(document._id)
+		// 	const documentType = document._type
+		// 	console.info(`Created ${documentType} with published id ${documentId}`)
+		// 	const inputValue = {
+		// 		_key: randomKey(12),
+		// 		_type: "reference",
+		// 		_ref: documentId,
+		// 		_weak: true,
+		// 		_strengthenOnPublish: {
+		// 			type: documentType,
+		// 			template: {
+		// 				id: documentType,
+		// 			},
+		// 		},
+		// 	}
+		// 	if (value && value.length >= 1) {
+		// 		// add
+		// 		onChange(PatchEvent.from(set([...value, inputValue])))
+		// 	} else {
+		// 		// initial set
+		// 		onChange(PatchEvent.from(set([inputValue])))
+		// 	}
+		// 	const itemId = members?.filter((member) => member?.item?.value?._ref === documentId)[0]?.item?.id
+		// 	handleEditReference({
+		// 		id: documentId,
+		// 		type: documentType,
+		// 		template: documentType,
+		// 		parentRefPath: itemId ? [itemId] : [],
+		// 	})
+		// })
 	}, [value])
 	useEffect(() => {
 		async function getDocumentIds() {
@@ -60,20 +94,26 @@ export default function ReferenceMultiSelect(props) {
 				setIsFetching(true)
 				setHasError(false)
 				const documentIds = await client.fetch(options?.query, options?.params).then(console.info("Fetching document ids for reference multi-select."))
-				const alreadyReferencedDocumentIds = value?.map((item) => item._ref)
+				const alreadyReferencedDocumentIds = value ? value?.map((item) => item._ref) : [null]
+				const documentInPaneRouterDocumentId =
+					routerPanesState[groupIndex + 1]?.[0]?.id
+					&& routerPanesState[groupIndex + 1]?.[0]?.params?.type === schemaType?.of[0]?.to[0]?.name
+					? routerPanesState[groupIndex + 1]?.[0]?.id
+					: null
 				// setDocumentIds(documentIds.filter((documentId) => !documentId.startsWith("drafts.")))
 				// setDocumentIds([...new Set(documentIds?.map((documentId) => getPublishedId(documentId)))])
-				setDocumentIds([...new Set([...documentIds?.map((documentId) => getPublishedId(documentId)), ...alreadyReferencedDocumentIds])])
+				setDocumentIds([...new Set([...documentIds?.map((documentId) => getPublishedId(documentId)), ...alreadyReferencedDocumentIds, documentInPaneRouterDocumentId].filter(Boolean))])
 				setIsFetching(false)
 				setHasLoaded(true)
-			} catch {
+			} catch (error) {
 				setIsFetching(false)
 				setHasError(true)
 				setHasLoaded(false)
+				console.error(error)
 			}
 		}
 		getDocumentIds()
-	}, [value])
+	}, [value, routerPanesState])
 	const referenceMultiSelectWrapperWithItemsProps = {
 		className: "jt-reference-multi-select-wrapper",
 		tabIndex: 0,
@@ -181,7 +221,7 @@ export default function ReferenceMultiSelect(props) {
 							<ReferenceMultiSelectItem
 								key={documentId}
 								documentId={documentId}
-								item={members?.filter((member) => member?.item?.value?._ref === documentId)[0]?.item}
+								item={members?.filter((member) => member?.item?.value?._ref === documentId)?.[0]?.item}
 								layout={options?.layout || "default"}
 								onChange={onChange}
 								schemaType={schemaType}
@@ -205,9 +245,6 @@ function ReferenceMultiSelectItem(props) {
 		schemaType,
 		value,
 	} = props
-	const isAdded = value?.some((entry) => entry._ref === documentId)
-	const errors = item?.validation?.filter((validationItem) => validationItem.level === "error")
-	const errorMessages = errors?.map((error) => error.message)
 	const [isPublishIconPopoverOpen, setIsPublishIconPopoverOpen] = useState(false)
 	const [isEditIconPopoverOpen, setIsEditIconPopoverOpen] = useState(false)
 	const [isErrorOutlineIconPopoverOpen, setIsErrorOutlineIconPopoverOpen] = useState(false)
@@ -218,25 +255,33 @@ function ReferenceMultiSelectItem(props) {
 	const documentPresence = useDocumentPresence(documentId)
 	const editedTimeAgo = useTimeAgo(preview?.draft?._updatedAt || "", { minimal: false, agoSuffix: true })
 	const publishedTimeAgo = useTimeAgo(preview?.published?._updatedAt || "", { minimal: false, agoSuffix: true })
+	const isAdded = value?.some((entry) => entry._ref === documentId)
+	const errors = item?.validation?.filter((validationItem) => validationItem.level === "error")
+	const errorMessages = errors?.map((error) => error.message)
 	const isDraft = preview?.draft
 	const isPublished = preview?.published
-	const documentType = preview?.draft?._type || preview?.published?._type
+	const documentType = schemaType?.of[0]?.to[0]?.name
 	const itemId = item?.id
-	const parentRefPath = routerPanesState[routerPanesState?.length - 1][0]?.params?.parentRefPath
-	const isSelected = (parentRefPath && parentRefPath === itemId) || routerPanesState[routerPanesState?.length - 1][0]?.id === documentId
-	const handleCheck = useCallback((event) => {
+	const parentRefPath = routerPanesState[routerPanesState?.length - 1]?.[0]?.params?.parentRefPath
+	const isSelected = (parentRefPath && parentRefPath === itemId) || routerPanesState[routerPanesState?.length - 1]?.[0]?.id === documentId
+	const handleAdd = useCallback((event) => {
 		// https://www.sanity.io/schemas/v3-version-of-display-an-array-of-references-as-a-checklist-ecfa271a
 		const inputValue = {
 			_key: randomKey(12),
 			_type: "reference",
 			_ref: event.target.value,
 			_weak: true,
-			_strengthenOnPublish: { type: schemaType?.of[0]?.to[0]?.name }
+			_strengthenOnPublish: {
+				type: documentType,
+				template: {
+					id: documentType,
+				},
+			},
 		}
 		if (value) {
 			if (value.some((item) => item._ref === inputValue._ref)) {
 				if (value.length <= 1) {
-					// unset if last one
+					// set to empty array if last one (to prevent undefined and trigger a value change)
 					onChange(PatchEvent.from(set([])))
 				} else {
 					// remove
@@ -271,11 +316,11 @@ function ReferenceMultiSelectItem(props) {
 	}, [])
 	useEffect(() => {
 		if (
-			documentOperationEvent?.op === "delete" &&
-			documentOperationEvent?.type === "success" &&
-			documentOperationEvent?.id === documentId &&
-			!isSelected &&
-			!isAdded
+			documentOperationEvent?.op === "delete"
+			&& documentOperationEvent?.type === "success"
+			&& documentOperationEvent?.id === documentId
+			&& !isSelected
+			&& !isAdded
 		) {
 			if (value && value.length > 1) {
 				// remove
@@ -301,7 +346,7 @@ function ReferenceMultiSelectItem(props) {
 			<Flex align={"center"} justify={"center"} gap={1}>
 				<Box padding={2}>
 					<Checkbox
-						onClick={handleCheck}
+						onClick={handleAdd}
 						onChange={() => {}}
 						value={documentId}
 						checked={value ? isAdded : false}
@@ -322,13 +367,13 @@ function ReferenceMultiSelectItem(props) {
 							as={"div"}
 							padding={1}
 							mode={isSelected ? "default" : "bleed"}
-							tone={isSelected ? (errors?.length >= 1 ? "critical" : "primary") : "default" }
+							tone={isSelected ? (errors?.length > 0 ? "critical" : "primary") : "default" }
 							style={{
 								display: "block",
 								width: "100%",
-								"--card-fg-color": isSelected ? (errors?.length >= 1 ? sanity?.color?.solid?.critical?.enabled?.accent?.fg : sanity?.color?.base?.bg) : null,
-								"--card-bg-color": isSelected ? (errors?.length >= 1 ? sanity?.color?.solid?.critical?.enabled?.bg : sanity?.color?.solid?.primary?.enabled?.bg) : null,
-								"--card-border-color": isSelected ? (errors?.length >= 1 ? sanity?.color?.solid?.critical?.enabled?.bg : sanity?.color?.solid?.primary?.enabled?.bg) : null,
+								"--card-fg-color": isSelected ? (errors?.length > 0 ? sanity?.color?.solid?.critical?.enabled?.accent?.fg : sanity?.color?.base?.bg) : null,
+								"--card-bg-color": isSelected ? (errors?.length > 0 ? sanity?.color?.solid?.critical?.enabled?.bg : sanity?.color?.solid?.primary?.enabled?.bg) : null,
+								"--card-border-color": isSelected ? (errors?.length > 0 ? sanity?.color?.solid?.critical?.enabled?.bg : sanity?.color?.solid?.primary?.enabled?.bg) : null,
 							}}
 						>
 							<Flex gap={1} align={"center"} justify={"center"}>
@@ -339,57 +384,64 @@ function ReferenceMultiSelectItem(props) {
 										layout={layout}
 									/>
 								</Box>
-								{ documentPresence && documentPresence?.length > 0 ? <FieldPresenceInner presence={documentPresence} /> : null}
-								<Box padding={2}>
-									<TextWithTone {...getPublishOrEditIconTextWithToneProps({ state: isPublished, ifTrue: "positive" })}>
-										<Popover
-											content={
-												<Text size={1}>
-													{isPublished
-														? (
-															<>
-																Published {publishedTimeAgo}
-															</>
-														)
-														: "Not published"
-													}
-												</Text>
-											}
-											{...getPublishOrEditIconPopoverProps({ handler: isPublishIconPopoverOpen })}
-										>
-											<PublishIcon
-												onMouseEnter={handlePublishIconHoverStart}
-												onMouseLeave={handlePublishIconHoverEnd}
-												{...getPublishOrEditIconProps({ state: isPublished, isSelected: isSelected, ifSelected: errors?.length >= 1 ? sanity?.color?.solid?.critical?.enabled?.accent?.fg : sanity?.color?.base?.bg })}
-											/>
-										</Popover>
-									</TextWithTone>
-								</Box>
-								<Box padding={2}>
-									<TextWithTone {...getPublishOrEditIconTextWithToneProps({ state: isDraft, ifTrue: "caution" })}>
-										<Popover
-											content={
-												<Text size={1}>
-													{isDraft
-														? (
-															<>
-																Edited {editedTimeAgo}
-															</>
-														)
-														: "No unpublished edits"
-													}
-												</Text>
-											}
-											{...getPublishOrEditIconPopoverProps({ handler: isEditIconPopoverOpen })}
-										>
-											<EditIcon
-												onMouseEnter={handleEditIconHoverStart}
-												onMouseLeave={handleEditIconHoverEnd}
-												{...getPublishOrEditIconProps({ state: isDraft, isSelected: isSelected, ifSelected: errors?.length >= 1 ? sanity?.color?.solid?.critical?.enabled?.accent?.fg : sanity?.color?.base?.bg })}
-											/>
-										</Popover>
-									</TextWithTone>
-								</Box>
+								{documentPresence && documentPresence?.length > 0 ? <FieldPresenceInner presence={documentPresence} /> : null}
+								{preview?.draft || preview?.published
+									? (
+										<>
+											<Box padding={2}>
+												<TextWithTone {...getPublishOrEditIconTextWithToneProps({ state: isPublished, ifTrue: "positive" })}>
+													<Popover
+														content={
+															<Text size={1}>
+																{isPublished
+																	? (
+																		<>
+																			Published {publishedTimeAgo}
+																		</>
+																	)
+																	: "Not published"
+																}
+															</Text>
+														}
+														{...getPublishOrEditIconPopoverProps({ handler: isPublishIconPopoverOpen })}
+													>
+														<PublishIcon
+															onMouseEnter={handlePublishIconHoverStart}
+															onMouseLeave={handlePublishIconHoverEnd}
+															{...getPublishOrEditIconProps({ state: isPublished, isSelected: isSelected, ifSelected: errors?.length > 0 ? sanity?.color?.solid?.critical?.enabled?.accent?.fg : sanity?.color?.base?.bg })}
+														/>
+													</Popover>
+												</TextWithTone>
+											</Box>
+											<Box padding={2}>
+												<TextWithTone {...getPublishOrEditIconTextWithToneProps({ state: isDraft, ifTrue: "caution" })}>
+													<Popover
+														content={
+															<Text size={1}>
+																{isDraft
+																	? (
+																		<>
+																			Edited {editedTimeAgo}
+																		</>
+																	)
+																	: "No unpublished edits"
+																}
+															</Text>
+														}
+														{...getPublishOrEditIconPopoverProps({ handler: isEditIconPopoverOpen })}
+													>
+														<EditIcon
+															onMouseEnter={handleEditIconHoverStart}
+															onMouseLeave={handleEditIconHoverEnd}
+															{...getPublishOrEditIconProps({ state: isDraft, isSelected: isSelected, ifSelected: errors?.length > 0 ? sanity?.color?.solid?.critical?.enabled?.accent?.fg : sanity?.color?.base?.bg })}
+														/>
+													</Popover>
+												</TextWithTone>
+											</Box>
+										</>
+									)
+									: ""
+								}
 							</Flex>
 						</Button>
 					</ReferenceChildLink>
