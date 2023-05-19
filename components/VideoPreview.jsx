@@ -77,7 +77,7 @@ export default function VideoPreview(props) {
 	}
 	if (!isFetching && !hasError) {
 		if (asImg) {
-			return <img src={data["thumbnail_url"]} style={{ objectFit: "cover", height: "150%", marginTop: "-25%" }} />
+			return <img src={data["thumbnail_url"]} style={{ objectFit: "cover", height: "100%" }} />
 		}
 		if (asIframe) {
 			return (

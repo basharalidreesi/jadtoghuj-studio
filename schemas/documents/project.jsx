@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react"
 import { FormField, defineArrayMember, defineField, defineType, useFormValue } from "sanity"
 import useSanityClient, { apiVersion } from "../../sanity.client"
-import { ColourPreview, ExposedArrayFunctions, InputWithPrefixOrSuffix, ReferenceMultiSelect, VideoPreview } from "../../components"
+import { ColourPreview, ExposedArrayFunctions, FetchTitleFromUrl, InputWithPrefixOrSuffix, ReferenceMultiSelect, VideoPreview } from "../../components"
 import { checkIfValueIsAValidCssColour, filterAlreadyReferencedDocuments, previewArrayValues, previewPortableText } from "../../lib"
 import { Box, Flex, TextInput } from "@sanity/ui"
-import { DatabaseIcon, ImageIcon, PlayIcon, UserIcon, UsersIcon } from "@sanity/icons"
+import { DatabaseIcon, ImageIcon, LinkIcon, PlayIcon, UserIcon, UsersIcon } from "@sanity/icons"
 
 export default defineType({
 	name: "project",
@@ -60,6 +60,7 @@ export default defineType({
 				defineArrayMember({
 					type: "reference",
 					title: "Category",
+					description: "",
 					to: [{ type: "category" }],
 					options: {
 						filter: ({parent}) => filterAlreadyReferencedDocuments(parent),
@@ -99,6 +100,7 @@ export default defineType({
 								defineArrayMember({
 									type: "reference",
 									title: "Reference",
+									description: "",
 									to: [{ type: "entity" }],
 									options: {
 										filter: ({parent}) => filterAlreadyReferencedDocuments(parent),
@@ -153,6 +155,7 @@ export default defineType({
 				defineArrayMember({
 					type: "reference",
 					title: "Look",
+					description: "",
 					to: [{ type: "look" }],
 					options: {
 						filter: async ({document, getClient}) => {
@@ -339,6 +342,53 @@ export default defineType({
 			description: "",
 			initialValue: false,
 		}),
+		defineField({
+			name: "references",
+			type: "array",
+			title: "References",
+			description: "",
+			of: [
+				defineArrayMember({
+					type: "object",
+					title: "Reference",
+					icon: LinkIcon,
+					fields: [
+						defineField({
+							name: "url",
+							type: "url",
+							title: "URL",
+							description: "",
+						}),
+						defineField({
+							name: "title",
+							type: "string",
+							title: "Title",
+							description: "",
+							components: {
+								input: FetchTitleFromUrl,
+							},
+						}),
+					],
+					preview: {
+						select: {
+							url: "url",
+							title: "title",
+						},
+						prepare(selection) {
+							const { url, title } = selection
+							var subtitle = null
+							try {
+								subtitle = new URL(url)?.hostname?.replace("www.", "")
+							} catch {}
+							return {
+								title: title || url || null,
+								subtitle: subtitle,
+							}
+						},
+					},
+				}),
+			],
+		}),
 	],
 	orderings: [
 		{
@@ -391,6 +441,7 @@ function featuredLooks() {
 			defineArrayMember({
 				type: "reference",
 				title: "Look",
+				description: "",
 				to: [{ type: "look" }],
 				options: {
 					disableNew: true,

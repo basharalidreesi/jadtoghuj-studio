@@ -78,7 +78,7 @@ export default function InputWithPrefixOrSuffix(props) {
 	const Extension = (props) => {
 		if (!props.text && !isFetching && !hasError) { return null }
 		return (
-			<Card sizing={"border"} padding={2} radius={2} tone={!isFetching && !hasError ? "transparent" : "critical"} style={{ display: "flex", alignItems: "center", maxWidth: "25%", minHeight: "2.1875rem" }}>
+			<Card sizing={"border"} padding={2} radius={2} tone={hasError ? "critical" : "transparent"} style={{ display: "flex", alignItems: "center", maxWidth: "25%", minHeight: "2.1875rem" }}>
 				{isFetching
 					? <Spinner muted />
 					: ""
