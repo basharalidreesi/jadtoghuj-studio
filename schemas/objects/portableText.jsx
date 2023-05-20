@@ -1,6 +1,5 @@
 import { defineField, defineType } from "sanity"
-import { Box } from "@sanity/ui"
-import { LinkIcon, UserIcon } from "@sanity/icons"
+import { DatabaseIcon, LinkIcon, SparklesIcon, UserIcon } from "@sanity/icons"
 
 export default defineField({
 	name: "portableText",
@@ -19,11 +18,11 @@ export default defineField({
 			marks: {
 				decorators: [
 					{
-						title: "Strong",
+						title: "Bold",
 						value: "strong",
 					},
 					{
-						title: "Emphasis",
+						title: "Italic",
 						value: "em",
 					},
 				],
@@ -51,6 +50,14 @@ export default defineField({
 					title: "Reference",
 					icon: UserIcon,
 					to: [{ type: "entity" }],
+				}),
+				defineField({
+					name: "project",
+					type: "reference",
+					title: "Project",
+					icon: DatabaseIcon,
+					to: [{ type: "project" }],
+					// TODO FILTER
 				}),
 			],
 		}),

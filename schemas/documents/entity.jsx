@@ -5,7 +5,7 @@ import { UserIcon } from "@sanity/icons"
 export default defineType({
 	name: "entity",
 	type: "document",
-	title: "Entity",
+	title: "Reference",
 	icon: UserIcon,
 	fields: [
 		defineField({
@@ -13,7 +13,7 @@ export default defineType({
 			type: "string",
 			title: "Name",
 			description: "",
-			validation: (Rule) => Rule.custom(checkIfValueAlreadyExistsInType).info(),
+			validation: (Rule) => Rule.custom(checkIfValueAlreadyExistsInType).warning(),
 		}),
 		defineField({
 			name: "url",

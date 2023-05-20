@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react"
 import { FormField, defineArrayMember, defineField, defineType, useFormValue } from "sanity"
 import useSanityClient, { apiVersion } from "../../sanity.client"
-import { ColourPreview, ExposedArrayFunctions, FetchTitleFromUrl, InputWithPrefixOrSuffix, ReferenceMultiSelect, VideoPreview } from "../../components"
+import { ColourPreview, ExposedArrayFunctions, InputWithPrefixOrSuffix, ReferenceMultiSelect, VideoPreview } from "../../components"
 import { checkIfValueIsAValidCssColour, filterAlreadyReferencedDocuments, previewArrayValues, previewPortableText } from "../../lib"
 import { Box, Flex, TextInput } from "@sanity/ui"
-import { DatabaseIcon, ImageIcon, LinkIcon, PlayIcon, UserIcon, UsersIcon } from "@sanity/icons"
+import { DatabaseIcon, ImageIcon, PlayIcon, UserIcon, UsersIcon } from "@sanity/icons"
 
 export default defineType({
 	name: "project",
@@ -99,8 +99,7 @@ export default defineType({
 							of: [
 								defineArrayMember({
 									type: "reference",
-									title: "Reference",
-									description: "",
+									title: "Contributor",
 									to: [{ type: "entity" }],
 									options: {
 										filter: ({parent}) => filterAlreadyReferencedDocuments(parent),
@@ -229,7 +228,7 @@ export default defineType({
 										prefix: assetOriginalFilename,
 										prepend: " (",
 										append: ")",
-										untitledLabel: "Untitled Look",
+										untitledLabel: "Untitled",
 									}
 								),
 								media: asset ? asset : null,
@@ -311,7 +310,7 @@ export default defineType({
 										prefix: url,
 										prepend: " (",
 										append: ")",
-										untitledLabel: "Untitled Look",
+										untitledLabel: "Untitled",
 									}
 								),
 								media: url ? <VideoPreview options={{ from: url, as: "img" }} /> : null,
@@ -347,47 +346,7 @@ export default defineType({
 			type: "array",
 			title: "References",
 			description: "",
-			of: [
-				defineArrayMember({
-					type: "object",
-					title: "Reference",
-					icon: LinkIcon,
-					fields: [
-						defineField({
-							name: "url",
-							type: "url",
-							title: "URL",
-							description: "",
-						}),
-						defineField({
-							name: "title",
-							type: "string",
-							title: "Title",
-							description: "",
-							components: {
-								input: FetchTitleFromUrl,
-							},
-						}),
-					],
-					preview: {
-						select: {
-							url: "url",
-							title: "title",
-						},
-						prepare(selection) {
-							const { url, title } = selection
-							var subtitle = null
-							try {
-								subtitle = new URL(url)?.hostname?.replace("www.", "")
-							} catch {}
-							return {
-								title: title || url || null,
-								subtitle: subtitle,
-							}
-						},
-					},
-				}),
-			],
+			of: [{ type: "_reference", }],
 		}),
 	],
 	orderings: [
@@ -497,7 +456,7 @@ function LookbookColourPreview(props) {
 		} else {
 			getDefaultBackgroundColour()
 		}
-	}, [ref])
+	}, [image0])
 	if (hasCustomColour) {
 		return props.renderDefault(props)
 	}

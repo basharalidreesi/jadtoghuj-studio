@@ -2,7 +2,7 @@ import { PatchEvent, set, useFormValue } from "sanity"
 import { Box, Button, Flex, useToast } from "@sanity/ui"
 import { useCallback, useState } from "react"
 
-export default function FetchTitleFromUrl(props) {
+export default function TitleFromUrl(props) {
 	const {
 		onChange,
 		path,
@@ -15,8 +15,9 @@ export default function FetchTitleFromUrl(props) {
 	const handleClick = useCallback(async () => {
 		if (!url) { return }
 		setIsFetching(true)
+		// https://cors-anywhere.herokuapp.com/
 		try {
-			const response = await fetch(`https://cors-anywhere.herokuapp.com/${url}`).then(console.info("Fetching title."))
+			const response = await fetch(url).then(console.info("Fetching title."))
 			const text = await response.text()
 			const title = text?.match(/<title>(.*?)<\/title>/)?.[1]
 			if (title) {
@@ -37,8 +38,13 @@ export default function FetchTitleFromUrl(props) {
 			}
 			setIsFetching(false)
 		} catch (error) {
-			console.error(error)
 			setIsFetching(false)
+			console.error(error)
+			toast.push({
+				status: "error",
+				title: "URL could not be reached",
+				closable: true,
+			})
 		}
 	}, [url])
 	return (

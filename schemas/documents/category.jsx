@@ -13,7 +13,7 @@ export default defineType({
 			type: "string",
 			title: "Title",
 			description: "",
-			validation: (Rule) => Rule.custom(checkIfValueAlreadyExistsInType).info(),
+			validation: (Rule) => Rule.custom(checkIfValueAlreadyExistsInType).warning(),
 		}),
 	],
 	orderings: [

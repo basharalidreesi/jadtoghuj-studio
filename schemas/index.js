@@ -7,6 +7,7 @@ import project from "./documents/project"
 import settings from "./documents/settings"
 
 // Objects
+import _reference from "./objects/_reference"
 import gradient from "./objects/gradient"
 import portableText from "./objects/portableText"
 
@@ -21,6 +22,7 @@ export const schemaTypes = [
 	settings,
 
 	// Objects
+	_reference,
 	gradient,
 	portableText,
 

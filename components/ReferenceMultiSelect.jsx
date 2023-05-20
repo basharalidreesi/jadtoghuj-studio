@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from "react"
-import { ChangeIndicator, FieldPresenceInner, PatchEvent, Preview, TextWithTone, getPublishedId, set, useDocumentOperationEvent, useDocumentPresence, useEditState, useTimeAgo } from "sanity"
+import { ChangeIndicator, FieldPresenceInner, FormFieldValidationStatus, PatchEvent, Preview, TextWithTone, getPublishedId, set, useDocumentOperationEvent, useDocumentPresence, useEditState, useTimeAgo } from "sanity"
 import { usePaneRouter } from "sanity/desk"
 import useSanityClient from "../sanity.client"
 import { randomKey } from "@sanity/util/content"
@@ -10,10 +10,12 @@ import { uuid } from "@sanity/uuid"
 
 export default function ReferenceMultiSelect(props) {
 	const {
+		elementProps,
 		members,
 		onChange,
 		options,
 		schemaType,
+		renderPreview,
 		value,
 	} = props
 	const [documentIds, setDocumentIds] = useState([])
@@ -51,42 +53,6 @@ export default function ReferenceMultiSelect(props) {
 			template: documentType,
 			parentRefPath: itemId ? [itemId] : [],
 		})
-		// the below is not needed seeing as handleEditReference can handle a document that doesn't exist (which seems to be the default behaviour in any case)
-		// const newDocument = {
-		// 	_id: `drafts.${uuid()}`,
-		// 	_type: schemaType?.of[0]?.to[0]?.name,
-		// }
-		// client.create(newDocument).then((document) => {
-		// 	const documentId = getPublishedId(document._id)
-		// 	const documentType = document._type
-		// 	console.info(`Created ${documentType} with published id ${documentId}`)
-		// 	const inputValue = {
-		// 		_key: randomKey(12),
-		// 		_type: "reference",
-		// 		_ref: documentId,
-		// 		_weak: true,
-		// 		_strengthenOnPublish: {
-		// 			type: documentType,
-		// 			template: {
-		// 				id: documentType,
-		// 			},
-		// 		},
-		// 	}
-		// 	if (value && value.length >= 1) {
-		// 		// add
-		// 		onChange(PatchEvent.from(set([...value, inputValue])))
-		// 	} else {
-		// 		// initial set
-		// 		onChange(PatchEvent.from(set([inputValue])))
-		// 	}
-		// 	const itemId = members?.filter((member) => member?.item?.value?._ref === documentId)[0]?.item?.id
-		// 	handleEditReference({
-		// 		id: documentId,
-		// 		type: documentType,
-		// 		template: documentType,
-		// 		parentRefPath: itemId ? [itemId] : [],
-		// 	})
-		// })
 	}, [value])
 	useEffect(() => {
 		async function getDocumentIds() {
@@ -100,8 +66,6 @@ export default function ReferenceMultiSelect(props) {
 					&& routerPanesState[groupIndex + 1]?.[0]?.params?.type === schemaType?.of[0]?.to[0]?.name
 					? routerPanesState[groupIndex + 1]?.[0]?.id
 					: null
-				// setDocumentIds(documentIds.filter((documentId) => !documentId.startsWith("drafts.")))
-				// setDocumentIds([...new Set(documentIds?.map((documentId) => getPublishedId(documentId)))])
 				setDocumentIds([...new Set([...documentIds?.map((documentId) => getPublishedId(documentId)), ...alreadyReferencedDocumentIds, documentInPaneRouterDocumentId].filter(Boolean))])
 				setIsFetching(false)
 				setHasLoaded(true)
@@ -177,7 +141,7 @@ export default function ReferenceMultiSelect(props) {
 	if ((isFetching || hasError) && !hasLoaded) {
 		if (isFetching) {
 			return (
-				<Card {...referenceMultiSelectWrapperWithoutItemsProps}>
+				<Card {...referenceMultiSelectWrapperWithoutItemsProps} {...elementProps}>
 					<ReferenceMultiSelectWrapperFocusStyles />
 					<Flex align={"center"} justify={"center"}>
 						<Spinner muted />
@@ -187,10 +151,16 @@ export default function ReferenceMultiSelect(props) {
 		}
 		if (hasError) {
 			return (
-				<Card {...referenceMultiSelectWrapperWithoutItemsProps} tone={"critical"}>
+				<Card tone={"critical"} {...referenceMultiSelectWrapperWithoutItemsProps} {...elementProps}>
 					<ReferenceMultiSelectWrapperFocusStyles />
 					<Flex align={"center"} justify={"center"}>
-						<ErrorOutlineIcon {...getErrorOutlineIconProps({ layout: "block", withColour: false })} />
+						<ErrorOutlineIcon style={{
+							display: "block",
+							margin: "auto",
+							width: "1.5rem",
+							height: "1.5rem",
+							marginBlock: "-0.4rem",
+						}} />
 					</Flex>
 				</Card>
 			)
@@ -200,7 +170,7 @@ export default function ReferenceMultiSelect(props) {
 		if (documentIds.length === 0) {
 			return (
 				<Grid columns={1} gap={3}>
-					<Card {...referenceMultiSelectWrapperWithoutItemsProps}>
+					<Card {...referenceMultiSelectWrapperWithoutItemsProps} {...elementProps}>
 						<ReferenceMultiSelectWrapperFocusStyles />
 						<Text muted size={1} align={"center"} style={{ marginBlock: "0.0625rem" }}>
 							No items
@@ -213,7 +183,7 @@ export default function ReferenceMultiSelect(props) {
 		if (documentIds.length > 0) {
 			return (
 				<Grid columns={1} gap={3}>
-					<Card {...referenceMultiSelectWrapperWithItemsProps}>
+					<Card {...referenceMultiSelectWrapperWithItemsProps} {...elementProps}>
 						<ReferenceMultiSelectWrapperFocusStyles />
 						<ReferenceMultiSelectItemHoverStyles />
 						<ReferenceMultiSelectItemChangeIndicatorStyles />
@@ -224,6 +194,7 @@ export default function ReferenceMultiSelect(props) {
 								item={members?.filter((member) => member?.item?.value?._ref === documentId)?.[0]?.item}
 								layout={options?.layout || "default"}
 								onChange={onChange}
+								renderPreview={renderPreview}
 								schemaType={schemaType}
 								value={value}
 							/>
@@ -243,21 +214,20 @@ function ReferenceMultiSelectItem(props) {
 		layout,
 		onChange,
 		schemaType,
+		renderPreview,
 		value,
 	} = props
 	const [isPublishIconPopoverOpen, setIsPublishIconPopoverOpen] = useState(false)
 	const [isEditIconPopoverOpen, setIsEditIconPopoverOpen] = useState(false)
-	const [isErrorOutlineIconPopoverOpen, setIsErrorOutlineIconPopoverOpen] = useState(false)
-	const { sanity } = useTheme()
 	const { routerPanesState, ReferenceChildLink } = usePaneRouter()
 	const preview = useEditState(documentId)
 	const documentOperationEvent = useDocumentOperationEvent(documentId, schemaType?.of[0]?.to[0]?.name)
 	const documentPresence = useDocumentPresence(documentId)
 	const editedTimeAgo = useTimeAgo(preview?.draft?._updatedAt || "", { minimal: false, agoSuffix: true })
 	const publishedTimeAgo = useTimeAgo(preview?.published?._updatedAt || "", { minimal: false, agoSuffix: true })
+	const { sanity } = useTheme()
 	const isAdded = value?.some((entry) => entry._ref === documentId)
-	const errors = item?.validation?.filter((validationItem) => validationItem.level === "error")
-	const errorMessages = errors?.map((error) => error.message)
+	const hasError = item?.validation?.some((validationItem) => validationItem.level === "error")
 	const isDraft = preview?.draft
 	const isPublished = preview?.published
 	const documentType = schemaType?.of[0]?.to[0]?.name
@@ -308,12 +278,6 @@ function ReferenceMultiSelectItem(props) {
 	const handleEditIconHoverEnd = useCallback(() => {
 		setIsEditIconPopoverOpen(false)
 	}, [])
-	const handleErrorOutlineIconHoverStart = useCallback(() => {
-		setIsErrorOutlineIconPopoverOpen(true)
-	}, [])
-	const handleErrorOutlineIconHoverEnd = useCallback(() => {
-		setIsErrorOutlineIconPopoverOpen(false)
-	}, [])
 	useEffect(() => {
 		if (
 			documentOperationEvent?.op === "delete"
@@ -338,7 +302,7 @@ function ReferenceMultiSelectItem(props) {
 			margin={1}
 			radius={2}
 			border={true}
-			tone={errors?.length > 0 ? "critical" : (value && isAdded ? "transparent" : "default")}
+			tone={hasError ? "critical" : (value && isAdded ? "transparent" : "default")}
 			style={{
 				position: "relative",
 			}}
@@ -367,24 +331,32 @@ function ReferenceMultiSelectItem(props) {
 							as={"div"}
 							padding={1}
 							mode={isSelected ? "default" : "bleed"}
-							tone={isSelected ? (errors?.length > 0 ? "critical" : "primary") : "default" }
+							tone={isSelected ? (hasError ? "critical" : "primary") : "default" }
 							style={{
 								display: "block",
 								width: "100%",
-								"--card-fg-color": isSelected ? (errors?.length > 0 ? sanity?.color?.solid?.critical?.enabled?.accent?.fg : sanity?.color?.base?.bg) : null,
-								"--card-bg-color": isSelected ? (errors?.length > 0 ? sanity?.color?.solid?.critical?.enabled?.bg : sanity?.color?.solid?.primary?.enabled?.bg) : null,
-								"--card-border-color": isSelected ? (errors?.length > 0 ? sanity?.color?.solid?.critical?.enabled?.bg : sanity?.color?.solid?.primary?.enabled?.bg) : null,
+								"--card-fg-color": isSelected ? (hasError ? sanity?.color?.solid?.critical?.enabled?.accent?.fg : sanity?.color?.base?.bg) : null,
+								"--card-bg-color": isSelected ? (hasError ? sanity?.color?.solid?.critical?.enabled?.bg : sanity?.color?.solid?.primary?.enabled?.bg) : null,
+								"--card-border-color": isSelected ? (hasError ? sanity?.color?.solid?.critical?.enabled?.bg : sanity?.color?.solid?.primary?.enabled?.bg) : null,
+								"--card-muted-fg-color": isSelected ? (hasError ? sanity?.color?.solid?.critical?.enabled?.muted?.fg : sanity?.color?.solid?.primary?.enabled?.muted?.fg) : null,
 							}}
 						>
 							<Flex gap={1} align={"center"} justify={"center"}>
 								<Box flex={1}>
-									<Preview
-										schemaType={schemaType?.of[0]?.to[0]}
-										value={preview?.draft || preview?.published}
-										layout={layout}
-									/>
+									{renderPreview({
+										value: preview?.draft || preview?.published,
+										schemaType: schemaType?.of[0]?.to[0],
+										layout: layout,
+									})}
 								</Box>
-								{documentPresence && documentPresence?.length > 0 ? <FieldPresenceInner presence={documentPresence} /> : null}
+								{documentPresence && documentPresence?.length > 0
+									? (
+										<Box>
+											<FieldPresenceInner presence={documentPresence} maxAvatars={1} />
+										</Box>
+									)
+									: ""
+								}
 								{preview?.draft || preview?.published
 									? (
 										<>
@@ -408,7 +380,7 @@ function ReferenceMultiSelectItem(props) {
 														<PublishIcon
 															onMouseEnter={handlePublishIconHoverStart}
 															onMouseLeave={handlePublishIconHoverEnd}
-															{...getPublishOrEditIconProps({ state: isPublished, isSelected: isSelected, ifSelected: errors?.length > 0 ? sanity?.color?.solid?.critical?.enabled?.accent?.fg : sanity?.color?.base?.bg })}
+															{...getPublishOrEditIconProps({ state: isPublished, isSelected: isSelected, ifSelected: hasError ? sanity?.color?.solid?.critical?.enabled?.accent?.fg : sanity?.color?.base?.bg })}
 														/>
 													</Popover>
 												</TextWithTone>
@@ -433,7 +405,7 @@ function ReferenceMultiSelectItem(props) {
 														<EditIcon
 															onMouseEnter={handleEditIconHoverStart}
 															onMouseLeave={handleEditIconHoverEnd}
-															{...getPublishOrEditIconProps({ state: isDraft, isSelected: isSelected, ifSelected: errors?.length > 0 ? sanity?.color?.solid?.critical?.enabled?.accent?.fg : sanity?.color?.base?.bg })}
+															{...getPublishOrEditIconProps({ state: isDraft, isSelected: isSelected, ifSelected: hasError ? sanity?.color?.solid?.critical?.enabled?.accent?.fg : sanity?.color?.base?.bg })}
 														/>
 													</Popover>
 												</TextWithTone>
@@ -446,26 +418,10 @@ function ReferenceMultiSelectItem(props) {
 						</Button>
 					</ReferenceChildLink>
 				</Box>
-				{errors?.length > 0
+				{hasError
 					? (
 						<Box padding={1}>
-							<Popover
-								content={
-									errorMessages.map((message, index) => (
-										<Text key={index} size={1} muted>
-											<ErrorOutlineIcon {...getErrorOutlineIconProps({ layout: "inline", withColour: true })} />
-											{message}
-										</Text>
-									))
-								}
-								{...getErrorOutlineIconPopoverProps({ handler: isErrorOutlineIconPopoverOpen })}
-							>
-								<ErrorOutlineIcon
-									onMouseEnter={handleErrorOutlineIconHoverStart}
-									onMouseLeave={handleErrorOutlineIconHoverEnd}
-									{...getErrorOutlineIconProps({ layout: "block", withColour: true })}
-								/>
-							</Popover>
+							<FormFieldValidationStatus validation={item?.validation} />
 						</Box>
 					)
 					: ""
@@ -532,47 +488,5 @@ function getPublishOrEditIconProps(params = {}) {
 			opacity: state ? null : 0.3,
 			color: isSelected ? ifSelected : null,
 		},
-	}
-}
-
-function getErrorOutlineIconPopoverProps(params = {}) {
-	const {
-		handler = null
-	} = params
-	return {
-		placement: "top",
-		tone: "default",
-		padding: 3,
-		radius: 2,
-		shadow: 1,
-		open: handler,
-		portal: true,
-	}
-}
-
-function getErrorOutlineIconProps(params = {}) {
-	const {
-		layout = "block",
-		withColour = false,
-	} = params
-	function resolveStyles() {
-		if (layout === "block") {
-			return {
-				display: "block",
-				margin: "auto",
-				width: "1.5rem",
-				height: "1.5rem",
-				marginBlock: "-0.4rem",
-			}
-		}
-		if (layout === "inline") {
-			return {
-				paddingRight: "0.5rem",
-			}
-		}
-	}
-	return {
-		style: resolveStyles(),
-		color: withColour ? "rgb(240, 62, 47)" : null,
 	}
 }
