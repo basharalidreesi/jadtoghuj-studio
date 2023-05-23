@@ -39,9 +39,9 @@ export default defineType({
 			readOnly: ({document}) => ["homepage", "drafts.homepage"].includes(document._id) ? true : false,
 		}),
 		defineField({
-			name: "contents",
+			name: "content",
 			type: "array",
-			title: "Contents",
+			title: "Content",
 			description: "",
 			of: [
 				textBlock(),
@@ -293,7 +293,7 @@ function lookBlock() {
 							filter: async ({document, parent, parentPath, getClient}) => {
 								// TODO
 								const currentKey = parentPath?.find((item) => item?._key)?._key
-								const referencedProject = document?.contents?.find((item) => item?._key === currentKey)?.project?._ref || ""
+								const referencedProject = document?.content?.find((item) => item?._key === currentKey)?.project?._ref || ""
 								const looksInReferencedProject = await getClient({apiVersion}).fetch(`*[_id == $referencedProject].looks[]->_id`, {
 									referencedProject,
 								})
@@ -313,7 +313,7 @@ function lookBlock() {
 								const { document, path, getClient } = context
 								const currentKey = path?.find((item) => item?._key)?._key
 								const referencedLook = value._ref
-								const referencedProject = document?.contents?.find((item) => item?._key === currentKey)?.project?._ref || ""
+								const referencedProject = document?.content?.find((item) => item?._key === currentKey)?.project?._ref || ""
 								const looksInReferencedProject = await getClient({apiVersion}).fetch(`*[_id == $referencedProject].looks[]->_id`, {
 									referencedProject,
 								})
@@ -401,7 +401,7 @@ function projectBlock() {
 							disableNew: true,
 							filter: async ({document}) => {
 								// TODO
-								const referencedProjects = document?.contents?.filter((block) => block?._type === "projectBlock")?.map((document) => document?.projects?.map((project) => project?._ref))?.filter(Boolean)?.flat() || ""
+								const referencedProjects = document?.content?.filter((block) => block?._type === "projectBlock")?.map((document) => document?.projects?.map((project) => project?._ref))?.filter(Boolean)?.flat() || ""
 								return {
 									filter: `!(_id in $referencedProjects) && isPublic == true && defined(address.current)`,
 									params: {
@@ -466,7 +466,7 @@ function categoryBlock() {
 							disableNew: true,
 							filter: async ({document}) => {
 								// TODO
-								const referencedCategories = document?.contents?.filter((block) => block?._type === "categoryBlock")?.map((document) => document?.categories?.map((category) => category?._ref))?.filter(Boolean)?.flat() || ""
+								const referencedCategories = document?.content?.filter((block) => block?._type === "categoryBlock")?.map((document) => document?.categories?.map((category) => category?._ref))?.filter(Boolean)?.flat() || ""
 								return {
 									filter: `!(_id in $referencedCategories)`,
 									params: {

@@ -71,12 +71,13 @@ export default defineType({
 					icon: TokenIcon,
 					fields: [
 						defineField({
-							name: "pages",
+							name: "members",
 							type: "array",
-							title: "Pages",
+							title: "Members",
 							description: "",
 							of: [
 								defineArrayMember({
+									name: "page",
 									type: "reference",
 									title: "Page",
 									icon: BillIcon,
@@ -128,17 +129,17 @@ export default defineType({
 					],
 					preview: {
 						select: {
-							page0Title: "pages.0.title",
-							page1Title: "pages.1.title",
-							page2Title: "pages.2.title",
-							page3Title: "pages.3.title",
-							page4Title: "pages.4.title",
-							page5Title: "pages.5.title",
-							page6Title: "pages.6.title",
-							separator0Label: "pages.0.label",
-							separator1Label: "pages.1.label",
-							separator2Label: "pages.2.label",
-							separator3Label: "pages.3.label",
+							page0Title: "members.0.title",
+							page1Title: "members.1.title",
+							page2Title: "members.2.title",
+							page3Title: "members.3.title",
+							page4Title: "members.4.title",
+							page5Title: "members.5.title",
+							page6Title: "members.6.title",
+							separator0Label: "members.0.label",
+							separator1Label: "members.1.label",
+							separator2Label: "members.2.label",
+							separator3Label: "members.3.label",
 						},
 						prepare(selection) {
 							const {
