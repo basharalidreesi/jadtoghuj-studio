@@ -17,7 +17,7 @@ function ArrayFunctions(props) {
 		if (!typeConstraints) { return true }
 		const typePassesIncludeInExposedArray = () => {
 			const includeInExposedArray = typeConstraints.includeInExposedArray
-			if (includeInExposedArray === false) {
+			if (props.schemaType.of.length > 1 && includeInExposedArray === false) {
 				return false
 			}
 			return true

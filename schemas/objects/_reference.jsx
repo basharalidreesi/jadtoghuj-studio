@@ -38,6 +38,11 @@ export default defineField({
 			fieldset: "titleAndSource",
 		}),
 	],
+	options: {
+		exposedArrayConstraints: {
+			includeInExposedArray: false,
+		},
+	},
 	components: {
 		input: (props) => {
 			return (

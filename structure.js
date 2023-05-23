@@ -49,11 +49,11 @@ export const structure = (S, context) => {
 						.defaultOrdering([{ field: "title", direction: "asc" }])
 				),
 			S.listItem()
-				.title("References")
+				.title("Entities")
 				.icon(UsersIcon)
 				.child(
 					S.documentTypeList("entity")
-						.title("References")
+						.title("Entities")
 						.menuItems([])
 						.defaultOrdering([{ field: "name", direction: "asc" }])
 				),

@@ -100,6 +100,7 @@ export default defineType({
 								defineArrayMember({
 									type: "reference",
 									title: "Contributor",
+									description: "Reference to Entity",
 									to: [{ type: "entity" }],
 									options: {
 										filter: ({parent}) => filterAlreadyReferencedDocuments(parent),
@@ -347,6 +348,9 @@ export default defineType({
 			title: "References",
 			description: "",
 			of: [{ type: "_reference", }],
+			components: {
+				input: ExposedArrayFunctions,
+			},
 		}),
 	],
 	orderings: [

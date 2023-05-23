@@ -47,7 +47,7 @@ export default defineField({
 				defineField({
 					name: "entity",
 					type: "reference",
-					title: "Reference",
+					title: "Entity",
 					icon: UserIcon,
 					to: [{ type: "entity" }],
 				}),

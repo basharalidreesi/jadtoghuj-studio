@@ -46,6 +46,7 @@ export default defineType({
 			of: [
 				textBlock(),
 				imageBlock(),
+				{ type: "_reference" },
 				pageBlock(),
 				lookBlock(),
 				projectBlock(),
