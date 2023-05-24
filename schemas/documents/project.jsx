@@ -344,31 +344,21 @@ export default defineType({
 			initialValue: false,
 		}),
 		defineField({
-			name: "news",
+			name: "press",
 			type: "array",
-			title: "News",
+			title: "Press",
 			description: "",
 			of: [
 				defineArrayMember({
 					type: "reference",
-					title: "News",
+					title: "Press",
 					description: "",
-					to: [{ type: "news" }],
+					to: [{ type: "press" }],
 					options: {
 						filter: ({parent}) => filterAlreadyReferencedDocuments(parent),
 					},
 				}),
 			],
-			components: {
-				input: ExposedArrayFunctions,
-			},
-		}),
-		defineField({
-			name: "references",
-			type: "array",
-			title: "References",
-			description: "",
-			of: [{ type: "_reference", }],
 			components: {
 				input: ExposedArrayFunctions,
 			},

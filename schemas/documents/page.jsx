@@ -2,7 +2,7 @@ import { defineArrayMember, defineField, defineType } from "sanity"
 import { apiVersion } from "../../sanity.client"
 import { ExposedArrayFunctions, InputWithPrefixOrSuffix } from "../../components"
 import { customSlugify, filterAlreadyReferencedDocuments, previewArrayValues, previewPortableText } from "../../lib"
-import { BillIcon, DatabaseIcon, EditIcon, HomeIcon, ImageIcon, LeaveIcon, RocketIcon, SparklesIcon, TagIcon } from "@sanity/icons"
+import { BillIcon, DatabaseIcon, EditIcon, HomeIcon, IceCreamIcon, ImageIcon, LeaveIcon, SparklesIcon, TagIcon } from "@sanity/icons"
 
 export default defineType({
 	name: "page",
@@ -75,7 +75,7 @@ export default defineType({
 			of: [
 				textBlock(),
 				imageBlock(),
-				newsBlock(),
+				pressBlock(),
 				pageBlock(),
 				lookBlock(),
 				projectBlock(),
@@ -237,23 +237,23 @@ function imageBlock() {
 	})
 }
 
-function newsBlock() {
+function pressBlock() {
 	return defineArrayMember({
-		name: "newsBlock",
+		name: "pressBlock",
 		type: "object",
-		title: "News",
-		icon: RocketIcon,
+		title: "Press",
+		icon: IceCreamIcon,
 		fields: [
 			defineField({
-				name: "news",
+				name: "press",
 				type: "array",
-				title: "News",
+				title: "Press",
 				description: "",
 				of: [
 					defineArrayMember({
 						type: "reference",
-						title: "News",
-						to: [{ type: "news" }],
+						title: "Press",
+						to: [{ type: "press" }],
 						options: {
 							disableNew: true,
 							filter: ({parent}) => filterAlreadyReferencedDocuments(parent),
@@ -272,29 +272,29 @@ function newsBlock() {
 		},
 		preview: {
 			select: {
-				news0Title: "news.0.title",
-				news1Title: "news.1.title",
-				news2Title: "news.2.title",
-				news3Title: "news.3.title",
-				news0Ref: "news.0.url",
-				news1Ref: "news.1.url",
-				news2Ref: "news.2.url",
-				news3Ref: "news.3.url",
+				press0Title: "press.0.title",
+				press1Title: "press.1.title",
+				press2Title: "press.2.title",
+				press3Title: "press.3.title",
+				press0Ref: "press.0.url",
+				press1Ref: "press.1.url",
+				press2Ref: "press.2.url",
+				press3Ref: "press.3.url",
 			},
 			prepare(selection) {
 				const {
-					news0Title,
-					news1Title,
-					news2Title,
-					news3Title,
-					news0Ref,
-					news1Ref,
-					news2Ref,
-					news3Ref,
+					press0Title,
+					press1Title,
+					press2Title,
+					press3Title,
+					press0Ref,
+					press1Ref,
+					press2Ref,
+					press3Ref,
 				} = selection
 				const limit = (string) => {
 					if (!string) { return null }
-					if (!news1Ref) { return string }
+					if (!press1Ref) { return string }
 					const maxLength = 22
 					const trimmedString = string?.substring(0, maxLength)
 					return string?.length <= maxLength
@@ -303,19 +303,19 @@ function newsBlock() {
 				}
 				return {
 					title: previewArrayValues(
-						limit(news0Title),
-						limit(news1Title),
-						limit(news2Title),
-						limit(news3Title),
+						limit(press0Title),
+						limit(press1Title),
+						limit(press2Title),
+						limit(press3Title),
 						{
-							ref0: news0Ref,
-							ref1: news1Ref,
-							ref2: news2Ref,
-							ref3: news3Ref,
+							ref0: press0Ref,
+							ref1: press1Ref,
+							ref2: press2Ref,
+							ref3: press3Ref,
 							untitledLabel: "Untitled",
 						},
 					),
-					subtitle: "News",
+					subtitle: "Press",
 				}
 			},
 		},

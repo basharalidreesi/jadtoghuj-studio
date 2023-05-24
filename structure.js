@@ -1,5 +1,5 @@
 import { apiVersion } from "./sanity.client"
-import { BillIcon, CogIcon, DatabaseIcon, FilterIcon, HomeIcon, RocketIcon, SparklesIcon, TagIcon, UsersIcon } from "@sanity/icons"
+import { BillIcon, CogIcon, DatabaseIcon, FilterIcon, HomeIcon, IceCreamIcon, SparklesIcon, TagIcon, UsersIcon } from "@sanity/icons"
 
 // TODO
 
@@ -7,7 +7,7 @@ const hiddenTypes = new Set([
 	"category",
 	"look",
 	"entity",
-	"news",
+	"press",
 	"page",
 	"project",
 	"settings",
@@ -51,11 +51,11 @@ export const structure = (S, context) => {
 				),
 			S.divider(),
 			S.listItem()
-				.title("News")
-				.icon(RocketIcon)
+				.title("Press")
+				.icon(IceCreamIcon)
 				.child(
-					S.documentTypeList("news")
-						.title("News")
+					S.documentTypeList("press")
+						.title("Press")
 						.menuItems([])
 						.defaultOrdering([
 							{ field: "datePublished", direction: "desc" },

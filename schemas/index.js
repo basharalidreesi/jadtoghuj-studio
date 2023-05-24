@@ -2,13 +2,12 @@
 import category from "./documents/category"
 import entity from "./documents/entity"
 import look from "./documents/look"
-import news from "./documents/news"
 import page from "./documents/page"
+import press from "./documents/press"
 import project from "./documents/project"
 import settings from "./documents/settings"
 
 // Objects
-import _reference from "./objects/_reference"
 import gradient from "./objects/gradient"
 import portableText from "./objects/portableText"
 
@@ -18,13 +17,12 @@ export const schemaTypes = [
 	category,
 	entity,
 	look,
-	news,
 	page,
+	press,
 	project,
 	settings,
 
 	// Objects
-	_reference,
 	gradient,
 	portableText,
 

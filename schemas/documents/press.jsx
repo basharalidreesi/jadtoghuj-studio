@@ -1,11 +1,11 @@
-import { RocketIcon } from "@sanity/icons"
+import { IceCreamIcon } from "@sanity/icons"
 import { defineField, defineType } from "sanity"
 
 export default defineType({
-	name: "news",
+	name: "press",
 	type: "document",
-	title: "News",
-	icon: RocketIcon,
+	title: "Press",
+	icon: IceCreamIcon,
 	fields: [
 		defineField({
 			name: "url",
