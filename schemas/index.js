@@ -2,6 +2,7 @@
 import category from "./documents/category"
 import entity from "./documents/entity"
 import look from "./documents/look"
+import news from "./documents/news"
 import page from "./documents/page"
 import project from "./documents/project"
 import settings from "./documents/settings"
@@ -17,6 +18,7 @@ export const schemaTypes = [
 	category,
 	entity,
 	look,
+	news,
 	page,
 	project,
 	settings,

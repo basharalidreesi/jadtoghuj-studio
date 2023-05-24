@@ -2,7 +2,7 @@ import { useEffect, useState } from "react"
 import { FormField, defineArrayMember, defineField, defineType, useFormValue } from "sanity"
 import useSanityClient, { apiVersion } from "../../sanity.client"
 import { ColourPreview, ExposedArrayFunctions, InputWithPrefixOrSuffix, ReferenceMultiSelect, VideoPreview } from "../../components"
-import { checkIfValueIsAValidCssColour, filterAlreadyReferencedDocuments, previewArrayValues, previewPortableText } from "../../lib"
+import { checkIfValueIsAValidCssColour, customSlugify, filterAlreadyReferencedDocuments, previewArrayValues, previewPortableText } from "../../lib"
 import { Box, Flex, TextInput } from "@sanity/ui"
 import { DatabaseIcon, ImageIcon, PlayIcon, UserIcon, UsersIcon } from "@sanity/icons"
 
@@ -44,6 +44,7 @@ export default defineType({
 			description: "",
 			options: {
 				source: "title",
+				slugify: customSlugify,
 			},
 			hidden: ({document}) => !document?.isPublic,
 			validation: (Rule) => Rule.error("This address is already in use."),
@@ -341,6 +342,26 @@ export default defineType({
 			title: "Custom Colour",
 			description: "",
 			initialValue: false,
+		}),
+		defineField({
+			name: "news",
+			type: "array",
+			title: "News",
+			description: "",
+			of: [
+				defineArrayMember({
+					type: "reference",
+					title: "News",
+					description: "",
+					to: [{ type: "news" }],
+					options: {
+						filter: ({parent}) => filterAlreadyReferencedDocuments(parent),
+					},
+				}),
+			],
+			components: {
+				input: ExposedArrayFunctions,
+			},
 		}),
 		defineField({
 			name: "references",

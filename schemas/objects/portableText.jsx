@@ -1,5 +1,5 @@
 import { defineField, defineType } from "sanity"
-import { DatabaseIcon, LinkIcon, SparklesIcon, UserIcon } from "@sanity/icons"
+import { DatabaseIcon, LinkIcon, RocketIcon, SparklesIcon, UserIcon } from "@sanity/icons"
 
 export default defineField({
 	name: "portableText",
@@ -58,6 +58,13 @@ export default defineField({
 					icon: DatabaseIcon,
 					to: [{ type: "project" }],
 					// TODO FILTER
+				}),
+				defineField({
+					name: "news",
+					type: "reference",
+					title: "News",
+					icon: RocketIcon,
+					to: [{ type: "news" }],
 				}),
 			],
 		}),

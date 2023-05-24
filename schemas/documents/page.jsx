@@ -1,8 +1,8 @@
 import { defineArrayMember, defineField, defineType } from "sanity"
 import { apiVersion } from "../../sanity.client"
 import { ExposedArrayFunctions, InputWithPrefixOrSuffix } from "../../components"
-import { filterAlreadyReferencedDocuments, previewArrayValues, previewPortableText } from "../../lib"
-import { BillIcon, DatabaseIcon, EditIcon, HomeIcon, ImageIcon, SparklesIcon, TagIcon } from "@sanity/icons"
+import { customSlugify, filterAlreadyReferencedDocuments, previewArrayValues, previewPortableText } from "../../lib"
+import { BillIcon, DatabaseIcon, EditIcon, HomeIcon, ImageIcon, LeaveIcon, RocketIcon, SparklesIcon, TagIcon } from "@sanity/icons"
 
 export default defineType({
 	name: "page",
@@ -26,17 +26,46 @@ export default defineType({
 			description: "",
 		}),
 		defineField({
+			name: "target",
+			type: "string",
+			title: "Target",
+			description: "",
+			options: {
+				list: [
+					{
+						value: "internal",
+						title: "Internal",
+					},
+					{
+						value: "external",
+						title: "External",
+					},
+				],
+				layout: "radio",
+			},
+			initialValue: "internal",
+		}),
+		defineField({
+			name: "url",
+			type: "url",
+			title: "URL",
+			description: "",
+			hidden: ({document}) => document?.target && document?.target === "external" ? false : true
+		}),
+		defineField({
 			name: "address",
 			type: "slug",
 			title: "Address",
 			description: "",
 			options: {
 				source: "title",
+				slugify: customSlugify,
 			},
 			components: {
 				input: (props) => <InputWithPrefixOrSuffix options={{ prefix: { fromDocument: "settings", fromFields: ["url", "basePath"] }, suffix: {fromString: "/"} }} {...props} />,
 			},
 			readOnly: ({document}) => ["homepage", "drafts.homepage"].includes(document._id) ? true : false,
+			hidden: ({document}) => document?.target && document?.target === "internal" ? false : true,
 		}),
 		defineField({
 			name: "content",
@@ -46,7 +75,7 @@ export default defineType({
 			of: [
 				textBlock(),
 				imageBlock(),
-				{ type: "_reference" },
+				newsBlock(),
 				pageBlock(),
 				lookBlock(),
 				projectBlock(),
@@ -60,6 +89,7 @@ export default defineType({
 			components: {
 				input: ExposedArrayFunctions,
 			},
+			hidden: ({document}) => document?.target && document?.target === "internal" ? false : true,
 		}),
 		defineField({
 			name: "hasCustomColours",
@@ -68,6 +98,7 @@ export default defineType({
 			description: "",
 			initialValue: false,
 			fieldset: "colourSettings",
+			hidden: ({document}) => document?.target && document?.target === "internal" ? false : true,
 		}),
 		defineField({
 			name: "doesAllowTinting",
@@ -76,13 +107,14 @@ export default defineType({
 			description: "",
 			initialValue: true,
 			fieldset: "colourSettings",
+			hidden: ({document}) => document?.target && document?.target === "internal" ? false : true,
 		}),
 		defineField({
 			name: "colours",
 			type: "gradient",
 			title: "Colours",
 			description: "",
-			hidden: ({parent}) => !parent?.hasCustomColours,
+			hidden: ({document}) => !document?.hasCustomColours,
 		}),
 	],
 	components: {
@@ -125,12 +157,17 @@ export default defineType({
 		select: {
 			id: "_id",
 			title: "title",
+			target: "target",
 		},
 		prepare(selection) {
-			const { id, title } = selection
+			const {
+				id,
+				title,
+				target,
+			} = selection
 			return {
 				title: title,
-				media: id.replace(/^drafts\./, "") === "homepage" ? HomeIcon : null,
+				media: id.replace(/^drafts\./, "") === "homepage" ? HomeIcon : (target === "external" ? LeaveIcon : null),
 			}
 		},
 	},
@@ -197,6 +234,91 @@ function imageBlock() {
 				}
 			},
 		}
+	})
+}
+
+function newsBlock() {
+	return defineArrayMember({
+		name: "newsBlock",
+		type: "object",
+		title: "News",
+		icon: RocketIcon,
+		fields: [
+			defineField({
+				name: "news",
+				type: "array",
+				title: "News",
+				description: "",
+				of: [
+					defineArrayMember({
+						type: "reference",
+						title: "News",
+						to: [{ type: "news" }],
+						options: {
+							disableNew: true,
+							filter: ({parent}) => filterAlreadyReferencedDocuments(parent),
+						},
+					}),
+				],
+				components: {
+					input: ExposedArrayFunctions,
+				},
+			}),
+		],
+		options: {
+			exposedArrayConstraints: {
+				includeInExposedArray: false,
+			},
+		},
+		preview: {
+			select: {
+				news0Title: "news.0.title",
+				news1Title: "news.1.title",
+				news2Title: "news.2.title",
+				news3Title: "news.3.title",
+				news0Ref: "news.0.url",
+				news1Ref: "news.1.url",
+				news2Ref: "news.2.url",
+				news3Ref: "news.3.url",
+			},
+			prepare(selection) {
+				const {
+					news0Title,
+					news1Title,
+					news2Title,
+					news3Title,
+					news0Ref,
+					news1Ref,
+					news2Ref,
+					news3Ref,
+				} = selection
+				const limit = (string) => {
+					if (!string) { return null }
+					if (!news1Ref) { return string }
+					const maxLength = 22
+					const trimmedString = string?.substring(0, maxLength)
+					return string?.length <= maxLength
+						? string
+						: string.substring(0, Math.min(trimmedString.length, trimmedString.lastIndexOf(" "))) + "..."
+				}
+				return {
+					title: previewArrayValues(
+						limit(news0Title),
+						limit(news1Title),
+						limit(news2Title),
+						limit(news3Title),
+						{
+							ref0: news0Ref,
+							ref1: news1Ref,
+							ref2: news2Ref,
+							ref3: news3Ref,
+							untitledLabel: "Untitled",
+						},
+					),
+					subtitle: "News",
+				}
+			},
+		},
 	})
 }
 

@@ -4,7 +4,6 @@ import GradientPreview from "./GradientPreview"
 import InputWithPrefixOrSuffix from "./InputWithPrefixOrSuffix"
 import Logo from "./Logo"
 import ReferenceMultiSelect from "./ReferenceMultiSelect"
-import TitleFromUrl from "./TitleFromUrl"
 import VideoPreview from "./VideoPreview"
 
 export {
@@ -14,6 +13,5 @@ export {
 	InputWithPrefixOrSuffix,
 	Logo,
 	ReferenceMultiSelect,
-	TitleFromUrl,
 	VideoPreview,
 }

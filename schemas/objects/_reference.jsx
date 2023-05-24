@@ -1,6 +1,5 @@
 import { LinkIcon } from "@sanity/icons"
 import { defineField } from "sanity"
-import { TitleFromUrl } from "../../components/"
 
 export default defineField({
 	name: "_reference",

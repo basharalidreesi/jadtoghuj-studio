@@ -1,5 +1,5 @@
 import { apiVersion } from "./sanity.client"
-import { BillIcon, CogIcon, DatabaseIcon, FilterIcon, HomeIcon, SparklesIcon, TagIcon, UsersIcon } from "@sanity/icons"
+import { BillIcon, CogIcon, DatabaseIcon, FilterIcon, HomeIcon, RocketIcon, SparklesIcon, TagIcon, UsersIcon } from "@sanity/icons"
 
 // TODO
 
@@ -7,6 +7,7 @@ const hiddenTypes = new Set([
 	"category",
 	"look",
 	"entity",
+	"news",
 	"page",
 	"project",
 	"settings",
@@ -48,6 +49,20 @@ export const structure = (S, context) => {
 						.menuItems([])
 						.defaultOrdering([{ field: "title", direction: "asc" }])
 				),
+			S.divider(),
+			S.listItem()
+				.title("News")
+				.icon(RocketIcon)
+				.child(
+					S.documentTypeList("news")
+						.title("News")
+						.menuItems([])
+						.defaultOrdering([
+							{ field: "datePublished", direction: "desc" },
+							{ field: "publisher", direction: "asc" },
+							{ field: "title", direction: "asc" },
+						])
+				),
 			S.listItem()
 				.title("Entities")
 				.icon(UsersIcon)
@@ -75,7 +90,6 @@ export const structure = (S, context) => {
 						.schemaType("page")
 						.documentId("homepage")
 				),
-			S.divider(),
 			S.listItem()
 				.title("Settings")
 				.icon(CogIcon)
