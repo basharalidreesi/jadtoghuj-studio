@@ -215,6 +215,27 @@ function imageBlock() {
 		title: "Image",
 		description: "",
 		icon: ImageIcon,
+		fields: [
+			defineField({
+				name: "displayMethod",
+				type: "string",
+				title: "Display Method",
+				description: "",
+				options: {
+					list: [
+						{
+							value: "inline",
+							title: "Inline",
+						},
+						{
+							value: "block",
+							title: "Block",
+						},
+					],
+					layout: "radio",
+				},
+			}),
+		],
 		options: {
 			exposedArrayConstraints: {
 				includeInExposedArray: false,

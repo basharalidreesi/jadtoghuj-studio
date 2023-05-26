@@ -1,5 +1,5 @@
 import { defineField, defineType } from "sanity"
-import { DatabaseIcon, IceCreamIcon, LinkIcon, UserIcon } from "@sanity/icons"
+import { DatabaseIcon, IceCreamIcon, LinkIcon, TransferIcon, UserIcon } from "@sanity/icons"
 
 export default defineField({
 	name: "portableText",
@@ -24,6 +24,12 @@ export default defineField({
 					{
 						title: "Italic",
 						value: "em",
+					},
+					{
+						title: "Bidirectional Input",
+						value: "bdi",
+						icon: TransferIcon,
+						component: (props) => <bdi style={{ textDecoration: "underline", textDecorationStyle: "wavy" }}>{props.children}</bdi>,
 					},
 				],
 				annotations: [

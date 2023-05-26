@@ -34,6 +34,35 @@ export default defineType({
 				dateFormat: "MMMM D, YYYY",
 			},
 		}),
+		defineField({
+			name: "image",
+			type: "image",
+			title: "Image",
+			description: "",
+			options: {
+				storeOriginalFilename: false,
+			},
+		}),
+	],
+	orderings: [
+		{
+			title: "date published (new → old)",
+			name: "datePublishedDesc",
+			by: [
+				{
+					field: "datePublished",
+					direction: "desc",
+				},
+				{
+					field: "publisher",
+					direction: "asc",
+				},
+				{
+					field: "title",
+					direction: "asc",
+				},
+			],
+		},
 	],
 	preview: {
 		select: {
@@ -41,6 +70,7 @@ export default defineType({
 			title: "title",
 			publisher: "publisher",
 			datePublished: "datePublished",
+			image: "image"
 		},
 		prepare(selection) {
 			const {
@@ -48,10 +78,18 @@ export default defineType({
 				title,
 				publisher,
 				datePublished,
+				image,
 			} = selection
+			var hostname = null
+			if (!publisher) {
+				try {
+					hostname = new URL(url)?.hostname?.replace("www.", "")
+				} catch {}
+			}
 			return {
 				title: title || url,
-				subtitle: [publisher || new URL(url)?.hostname?.replace("www.", "") || null, datePublished?.split("-")?.[0]]?.filter(Boolean)?.join(", "),
+				subtitle: [publisher || hostname, datePublished?.split("-")?.[0]]?.filter(Boolean)?.join(", "),
+				media: image,
 			}
 		},
 	},
