@@ -44,7 +44,7 @@ export default defineType({
 			name: "content",
 			type: "array",
 			title: "Content",
-			description: "", // TODO
+			description: "This content of this Listing. This field is required. At least one item must be added.",
 			of: [
 				defineArrayMember({
 					name: "contentItem_text",
@@ -56,7 +56,6 @@ export default defineType({
 							name: "text",
 							type: "portableText",
 							title: "Text",
-							description: "", // TODO
 							validation: (Rule) => Rule.required(),
 						}),
 					],
@@ -88,11 +87,7 @@ export default defineType({
 					},
 				}),
 			],
-			hidden: ({ document }) => document?._id?.replace("drafts.", "") !== HOMEPAGE_ID,
-			validation: (Rule) => Rule.custom((value, context) => {
-				if ((!value || value.length === 0) && context.document?._id?.replace("drafts.", "") === HOMEPAGE_ID) { return "Required"; };
-				return true;
-			}),
+			validation: (Rule) => Rule.required().min(1),
 		}),
 	],
 	preview: {
