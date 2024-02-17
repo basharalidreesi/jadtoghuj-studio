@@ -28,6 +28,20 @@ export default defineType({
 			rows: 5,
 		}),
 		defineField({
+			name: "author",
+			type: "string",
+			title: "Author",
+			description: "The person associated with this Website. This field is required.",
+			validation: (Rule) => Rule.custom(stringConfig.requireString),
+		}),
+		defineField({
+			name: "instagram",
+			type: "url",
+			title: "Instagram Link",
+			description: "The URL linking to the Instagram associated with this Website. This field is required.",
+			validation: (Rule) => Rule.required(),
+		}),
+		defineField({
 			name: "keywords",
 			type: "array",
 			title: "Website Keywords",
