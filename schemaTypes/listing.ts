@@ -1,6 +1,7 @@
 import { HomeIcon, UlistIcon } from "@sanity/icons";
 import { defineArrayMember, defineField, defineType } from "sanity";
 import { portableTextConfig, slugConfig, stringConfig } from "../util";
+import { LINK_ICON } from "./link";
 
 export const LISTING_ICON = UlistIcon;
 export const HOMEPAGE_ID = "6e0dca37-eb1e-4329-916d-b1a09c7426bf";
@@ -78,6 +79,7 @@ export default defineType({
 					name: "contentItem_reference",
 					type: "reference",
 					title: "Reference",
+					icon: LINK_ICON,
 					to: [
 						{ type: "project" },
 						{ type: "press" },

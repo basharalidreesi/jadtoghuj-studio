@@ -1,9 +1,13 @@
+import { LinkIcon } from "@sanity/icons";
 import { ValidationContext, defineField, defineType } from "sanity";
+
+export const LINK_ICON = LinkIcon;
 
 export default defineType({
 	name: "link",
 	type: "object",
 	title: "Link",
+	icon: LINK_ICON,
 	fields: [
 		defineField({
 			name: "target",
