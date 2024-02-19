@@ -13,7 +13,7 @@ export default defineType({
 			name: "target",
 			type: "string",
 			title: "Target Type",
-			description: "Specifies whether the target of this link is internal or external. This field is required.",
+			description: "Specifies whether the target of this link is internal or external.",
 			options: {
 				list: [
 					{
@@ -35,12 +35,9 @@ export default defineType({
 			name: "externalTarget",
 			type: "url",
 			title: "Target",
-			description: "The external target of this link. This field is required.",
+			description: "The external target of this link. This field is optional.",
 			hidden: ({ parent }) => parent?.target !== "external",
-			validation: (Rule) => Rule.custom((value, context: ValidationContext & { parent?: any }) => {
-				if (!value && context?.parent?.target === "external") { return "Required"; };
-				return true;
-			}).uri({
+			validation: (Rule) => Rule.uri({
 				scheme: ["http", "https", "mailto", "tel"],
 			}),
 		}),
@@ -48,7 +45,7 @@ export default defineType({
 			name: "internalTarget",
 			type: "reference",
 			title: "Target",
-			description: "The internal target of this link. This field is required.",
+			description: "The internal target of this link. This field is optional.",
 			to: [
 				{ type: "project", },
 				{ type: "press", },
@@ -59,10 +56,6 @@ export default defineType({
 				disableNew: true,
 			},
 			hidden: ({ parent }) => parent?.target !== "internal",
-			validation: (Rule) => Rule.custom((value, context: ValidationContext & { parent?: any }) => {
-				if (!value && context?.parent?.target === "internal") { return "Required"; };
-				return true;
-			}),
 		}),
 	],
 });

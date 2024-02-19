@@ -1,7 +1,8 @@
 import { HomeIcon, UlistIcon } from "@sanity/icons";
 import { defineArrayMember, defineField, defineType } from "sanity";
-import { portableTextConfig, slugConfig, stringConfig } from "../util";
+import { imageConfig, portableTextConfig, slugConfig, stringConfig } from "../util";
 import { LINK_ICON } from "./link";
+import { EMBED_ICON, IMAGE_ICON } from "./project";
 
 export const LISTING_ICON = UlistIcon;
 export const HOMEPAGE_ID = "6e0dca37-eb1e-4329-916d-b1a09c7426bf";
@@ -87,6 +88,36 @@ export default defineType({
 					options: {
 						disableNew: true,
 					},
+				}),
+				defineArrayMember({
+					name: "contentItem_image",
+					type: "image",
+					title: "Image",
+					icon: IMAGE_ICON,
+					options: imageConfig.options,
+					fields: [
+						defineField({
+							name: "link",
+							type: "link",
+							title: "Link",
+						}),
+					],
+					validation: (Rule) => Rule.custom(imageConfig.requireAsset),
+				}),
+				defineArrayMember({
+					name: "contentItem_embed",
+					type: "object",
+					title: "Embed",
+					icon: EMBED_ICON,
+					fields: [
+						defineField({
+							name: "url",
+							type: "url",
+							title: "URL",
+							description: "",
+							validation: (Rule) => Rule.required(),
+						}),
+					],
 				}),
 			],
 			validation: (Rule) => Rule.required().min(1),

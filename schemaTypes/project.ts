@@ -7,7 +7,7 @@ import { SanityAsset } from "@sanity/image-url/lib/types/types";
 export const PROJECT_TITLE = "Project";
 export const PROJECT_ICON = DiamondIcon;
 export const IMAGE_ICON = ImageIcon;
-export const VIDEO_ICON = AsteriskIcon;
+export const EMBED_ICON = AsteriskIcon;
 export const LOOK_ICON = SparklesIcon;
 
 export default defineType({
@@ -99,7 +99,7 @@ export default defineType({
 					name: "video",
 					type: "object",
 					title: "Video",
-					icon: VIDEO_ICON,
+					icon: EMBED_ICON,
 					fields: [
 						defineField({
 							name: "url",
@@ -144,7 +144,7 @@ export default defineType({
 								...props,
 								title: `Slide ${currentIndex + 1}`,
 								/** @ts-ignore */
-								media: thumbnail || VIDEO_ICON,
+								media: thumbnail || EMBED_ICON,
 								description: "Video",
 								layout: "detail",
 							});
