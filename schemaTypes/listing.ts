@@ -1,6 +1,6 @@
 import { HomeIcon, UlistIcon } from "@sanity/icons";
-import { defineArrayMember, defineField, defineType } from "sanity";
-import { imageConfig, portableTextConfig, slugConfig, stringConfig } from "../util";
+import { PreviewProps, defineArrayMember, defineField, defineType } from "sanity";
+import { imageConfig, portableTextConfig, slugConfig, stringConfig, urlConfig } from "../util";
 import { LINK_ICON } from "./link";
 import { EMBED_ICON, IMAGE_ICON } from "./project";
 
@@ -97,12 +97,62 @@ export default defineType({
 					options: imageConfig.options,
 					fields: [
 						defineField({
+							name: "size",
+							type: "string",
+							title: "Size",
+							description: "The display size of this image. Default value: Large.",
+							options: {
+								list: [
+									{
+										value: "small",
+										title: "Small",
+									},
+									{
+										value: "medium",
+										title: "Medium",
+									},
+									{
+										value: "large",
+										title: "Large",
+									},
+								],
+								layout: "radio",
+								direction: "horizontal",
+							},
+							initialValue: "large",
+							validation: (Rule) => Rule.required(),
+						}),
+						defineField({
 							name: "link",
 							type: "link",
 							title: "Link",
+							description: "The link to which this image leads. This field is optional.",
 						}),
 					],
 					validation: (Rule) => Rule.custom(imageConfig.requireAsset),
+					preview: {
+						select: {
+							asset: "asset",
+							size: "size",
+							target: "link.target",
+							externalTarget: "link.externalTarget",
+							internalTargetTitle: "link.internalTarget.title",
+						},
+						prepare(selection) {
+							const {
+								asset,
+								size,
+								target,
+								externalTarget,
+								internalTargetTitle,
+							} = selection;
+							return {
+								title: "Image",
+								subtitle: [`${size?.charAt(0)?.toUpperCase()}${size?.slice(1)}`, target === "external" && externalTarget && `→ ${externalTarget}`, target === "internal" && internalTargetTitle && `→ ${internalTargetTitle}`]?.filter(Boolean)?.join(", "),
+								media: asset,
+							};
+						},
+					},
 				}),
 				defineArrayMember({
 					name: "contentItem_embed",
@@ -115,7 +165,7 @@ export default defineType({
 							type: "url",
 							title: "URL",
 							description: "The URL linking to this embed. This field is required. Only YouTube, Vimeo, Spotify, Instagram, and TikTok URLs are supported.",
-							validation: (Rule) => Rule.required(),
+							validation: (Rule) => Rule.custom((value) => urlConfig.validateUrlByHosts(value, ["YouTube", "Vimeo", "Spotify", "Instagram", "TikTok"])),
 						}),
 						defineField({
 							name: "aspectRatio",
@@ -126,6 +176,24 @@ export default defineType({
 							validation: (Rule) => Rule.required(),
 						}),
 					],
+					preview: {
+						select: {
+							url: "url",
+							aspectRatio: "aspectRatio",
+						},
+					},
+					components: {
+						preview: (props: PreviewProps & { url?: string; aspectRatio?: string; }) => {
+							const thumbnail = props.url ? urlConfig.getThumbnailFromVideoUrl(props.url, "cover") : null;
+							return props.renderDefault({
+								...props,
+								title: "Embed",
+								subtitle: [props.aspectRatio, props.url && `→ ${props.url}`]?.filter(Boolean)?.join(", "),
+								/** @ts-ignore */
+								media: thumbnail || EMBED_ICON,
+							});
+						},
+					},
 				}),
 			],
 			validation: (Rule) => Rule.required().min(1),

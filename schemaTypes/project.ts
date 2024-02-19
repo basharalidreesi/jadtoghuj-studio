@@ -106,18 +106,7 @@ export default defineType({
 							type: "url",
 							title: "URL",
 							description: "The URL linking to this video. This field is required. Only YouTube and Vimeo URLs are supported.",
-							validation: (Rule) => Rule.custom((value) => {
-								if (!value) { return "Required"; };
-								try {
-									const hostname = new URL(value)?.hostname?.replace("www.", "");
-									if (hostname !== "youtube.com" && hostname !== "youtu.be" && hostname !== "vimeo.com") {
-										return "Not a valid YouTube or Vimeo URL";
-									};
-								} catch {
-									return "Not a valid URL";
-								};
-								return true;
-							}),
+							validation: (Rule) => Rule.custom((value) => urlConfig.validateUrlByHosts(value, ["YouTube", "Vimeo"])),
 						}),
 						defineField({
 							name: "aspectRatio",
@@ -139,7 +128,7 @@ export default defineType({
 						preview: (props: PreviewProps & { _key?: string; url?: string; }) => {
 							const mediaArray = useFormValue(["media"]) as { _key?: string; }[];
 							const currentIndex = mediaArray?.findIndex((mediaArrayItem) => mediaArrayItem._key === props._key);
-							const thumbnail = props.url ? urlConfig.getThumbnailFromVideoUrl(props?.url, "contain") : null;
+							const thumbnail = props.url ? urlConfig.getThumbnailFromVideoUrl(props.url, "contain") : null;
 							return props.renderDefault({
 								...props,
 								title: `Slide ${currentIndex + 1}`,

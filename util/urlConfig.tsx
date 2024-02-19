@@ -1,4 +1,27 @@
 const urlConfig = {
+	validateUrlByHosts: function(value: string | undefined | null, hosts: ("YouTube" | "Vimeo" | "Spotify" | "Instagram" | "TikTok")[] = []) {
+		if (!value) { return "Required"; };
+		try {
+			var doesMatchAKnownHost = false;
+			const hostname = new URL(value)?.hostname?.replace("www.", "");
+			hosts?.forEach((host) => {
+				switch(host) {
+					case "YouTube": if (hostname === "youtube.com" || hostname === "youtu.be") { doesMatchAKnownHost = true; return; };
+					case "Vimeo": if (hostname === "vimeo.com") { doesMatchAKnownHost = true; return; };
+					case "Spotify":
+					case "Instagram":
+					case "TikTok":
+					default: return;
+				};
+			});
+			if (!doesMatchAKnownHost) {
+				return `Not a valid ${new Intl.ListFormat("en", { type: "disjunction" }).format(hosts)} URL.`;
+			};
+		} catch {
+			return "Not a valid URL";
+		};
+		return true;
+	},
 	getThumbnailFromVideoUrl: function(value: string, objectFit: "cover" | "contain" = "cover") {
 		if (!value) { return null; };
 		try {
