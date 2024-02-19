@@ -136,6 +136,7 @@ export default defineType({
 							size: "size",
 							target: "link.target",
 							externalTarget: "link.externalTarget",
+							title: "link.title",
 							internalTargetTitle: "link.internalTarget.title",
 						},
 						prepare(selection) {
@@ -144,10 +145,11 @@ export default defineType({
 								size,
 								target,
 								externalTarget,
+								title,
 								internalTargetTitle,
 							} = selection;
 							return {
-								title: "Image",
+								title: ["Image", title && `(${title})`]?.filter(Boolean)?.join(" "),
 								subtitle: [`${size?.charAt(0)?.toUpperCase()}${size?.slice(1)}`, target === "external" && externalTarget && `→ ${externalTarget}`, target === "internal" && internalTargetTitle && `→ ${internalTargetTitle}`]?.filter(Boolean)?.join(", "),
 								media: asset,
 							};
