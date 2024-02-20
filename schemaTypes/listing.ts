@@ -1,4 +1,4 @@
-import { HomeIcon, UlistIcon } from "@sanity/icons";
+import { HomeIcon, RemoveIcon, UlistIcon } from "@sanity/icons";
 import { PreviewProps, defineArrayMember, defineField, defineType } from "sanity";
 import { imageConfig, portableTextConfig, slugConfig, stringConfig, urlConfig } from "../util";
 import { LINK_ICON } from "./link";
@@ -7,6 +7,8 @@ import { EMBED_ICON, IMAGE_ICON } from "./project";
 export const LISTING_ICON = UlistIcon;
 export const HOMEPAGE_ID = "6e0dca37-eb1e-4329-916d-b1a09c7426bf";
 export const HOMEPAGE_TITLE = "Homepage";
+
+const BREAK_ICON = RemoveIcon;
 
 export default defineType({
 	name: "listing",
@@ -115,6 +117,10 @@ export default defineType({
 										value: "large",
 										title: "Large",
 									},
+									{
+										value: "largest",
+										title: "Largest",
+									},
 								],
 								layout: "radio",
 								direction: "horizontal",
@@ -194,6 +200,28 @@ export default defineType({
 								/** @ts-ignore */
 								media: thumbnail || EMBED_ICON,
 							});
+						},
+					},
+				}),
+				defineArrayMember({
+					name: "contentItem_break",
+					type: "object",
+					title: "Break",
+					icon: BREAK_ICON,
+					fields: [
+						defineField({
+							name: "blank",
+							type: "string",
+							initialValue: "blank",
+							readOnly: true,
+							hidden: true,
+						}),
+					],
+					preview: {
+						prepare() {
+							return {
+								title: "Break",
+							}
 						},
 					},
 				}),

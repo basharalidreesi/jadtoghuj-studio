@@ -51,7 +51,7 @@ export default defineType({
 			name: "title",
 			type: "string",
 			title: "Title",
-			description: "The title of this external link. This field is optional.",
+			description: "The title of this external link.",
 			hidden: ({ parent }) => parent?.target !== "external",
 		}),
 		defineField({
