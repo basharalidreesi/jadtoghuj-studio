@@ -1,4 +1,4 @@
-import { defineField } from "sanity";
+import { defineField, PortableTextBlock, PortableTextChild } from "sanity";
 
 export const styles = {
 	normal: {
@@ -46,12 +46,11 @@ export const annotations = {
 };
 
 export const portableTextToPlainText = (blocks = []) => {
-	return blocks.map((block) => {
-		// @ts-ignore
+	return blocks.map((block: PortableTextBlock) => {
 		if (block._type !== "block" || !block.children) {
 			return "";
 		};
 		// @ts-ignore
-		return block.children.map((child) => child.text).join("");
+		return block.children?.map((child: PortableTextChild) => child.text).join("");
 	}).join("\n\n");
 };

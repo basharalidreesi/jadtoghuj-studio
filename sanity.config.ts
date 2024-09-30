@@ -19,10 +19,8 @@ export default defineConfig({
 	name: "default",
 	title: "Jad Toghuj",
 	icon: JadToghujIcon,
-
 	projectId: "r5iw9ewg",
 	dataset: "production",
-
 	plugins: [
 		structureTool({
 			structure: (S) => {
@@ -30,11 +28,9 @@ export default defineConfig({
 					S.documentTypeListItem("project").title("Projects"),
 					S.documentTypeListItem("article").title("Articles"),
 					S.documentTypeListItem("pressItem").title("Press"),
-					// S.divider(),
 					S.documentTypeListItem("category").title("Categories"),
 					S.divider(),
 					singletonListItem(S, "studioInformation", "Studio").icon(studioInformationIcon),
-					// S.divider(),
 					singletonListItem(S, "homePage", "Home Page").icon(homePageIcon),
 					singletonListItem(S, "recommendedItems", "Recommended Items").icon(recommendedItemsIcons),
 					singletonListItem(S, "websiteGlobals", "Website Globals").icon(websiteGlobalsIcon),
@@ -44,20 +40,17 @@ export default defineConfig({
 		media(),
 		visionTool(),
 	],
-
 	schema: {
 		types: schemaTypes,
 		templates: (templates) => {
 			return templates.filter(({ schemaType }) => !singletonTypes.has(schemaType));
 		},
 	},
-
 	document: {
 		actions: (input, context) => {
 			return singletonTypes.has(context.schemaType) ? input.filter(({ action }) => action && singletonActions.has(action)) : input;
 		},
 	},
-
 	form: {
 		image: {
 			assetSources: previousAssetSources => {

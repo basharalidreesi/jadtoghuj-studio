@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { useFormValue } from "sanity";
+import { StringInputProps, useFormValue } from "sanity";
 
-export const AsyncSelectInput = (props: any) => {
+export const AsyncSelectInput = (props: StringInputProps) => {
 	const { schemaType, renderDefault, path } = props;
 	const { options } = schemaType;
+	// @ts-ignore
 	const { url, formatResponse, sourceField } = options;
 
 	const [listItems, setListItems] = useState([]);
