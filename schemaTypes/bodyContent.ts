@@ -68,7 +68,7 @@ export default defineType({
 					options: {
 						layout: "checkbox",
 					},
-					initialValue: true,
+					initialValue: false,
 				}),
 			],
 		}),
