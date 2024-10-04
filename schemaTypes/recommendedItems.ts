@@ -8,6 +8,7 @@ export default defineType({
 	type: "document",
 	title: "Recommended Items",
 	icon: recommendedItemsIcons,
+	__experimental_omnisearch_visibility: false,
 	fields: [
 		defineField({
 			name: "recommendedItems",

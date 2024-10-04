@@ -8,6 +8,7 @@ import { studioInformationIcon } from "./schemaTypes/studioInformation";
 import { homePageIcon } from "./schemaTypes/homePage";
 import { recommendedItemsIcons } from "./schemaTypes/recommendedItems";
 import { websiteGlobalsIcon } from "./schemaTypes/websiteGlobals";
+import "./custom.css";
 
 const singletonActions = new Set(["publish", "discardChanges", "restore"]);
 const singletonTypes = new Set(["homePage", "recommendedItems", "studioInformation", "websiteGlobals", "media.tag"]);

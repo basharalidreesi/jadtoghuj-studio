@@ -8,6 +8,7 @@ export default defineType({
 	type: "document",
 	title: "Studio Information",
 	icon: studioInformationIcon,
+	__experimental_omnisearch_visibility: false,
 	fields: [
 		defineField({
 			name: "name",

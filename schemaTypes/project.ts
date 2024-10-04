@@ -140,7 +140,7 @@ export default defineType({
 			} = selection;
 			return {
 				title: title,
-				subtitle: [categoryName, [isoDateToReadableDate(startDate, true), isoDateToReadableDate(endDate, true)]?.filter(Boolean)?.join(" – ") || null]?.filter(Boolean)?.join(" • "),
+				subtitle: [categoryName, [isoDateToReadableDate(startDate, true), isoDateToReadableDate(endDate, true)]?.filter(Boolean)?.join(" – ") || null]?.filter(Boolean)?.join(" · "),
 				media: heroImage,
 				description: portableTextToPlainText(introduction),
 			};

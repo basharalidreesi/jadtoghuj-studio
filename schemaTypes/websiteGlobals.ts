@@ -8,6 +8,7 @@ export default defineType({
 	type: "document",
 	title: "Website Globals",
 	icon: websiteGlobalsIcon,
+	__experimental_omnisearch_visibility: false,
 	fields: [
 		defineField({
 			name: "temp",

@@ -128,7 +128,7 @@ export default defineType({
 			} = selection;
 			return {
 				title: headline,
-				subtitle: [categoryName, isoDateToReadableDate(date, true)]?.filter(Boolean)?.join(" • "),
+				subtitle: [categoryName, isoDateToReadableDate(date, true)]?.filter(Boolean)?.join(" · "),
 				media: heroImage,
 				description: portableTextToPlainText(introduction),
 			};
