@@ -1,7 +1,7 @@
-import { defineArrayMember, defineField, defineType } from "sanity";
+import { defineArrayMember, defineField, defineType, useFormValue, ValidationContext } from "sanity";
 import { styles, lists, decorators, annotations } from "../utils/portableTextUtils";
 import { ImageIcon } from "@sanity/icons";
-import { AsyncSelectInput } from "../components";
+import { AsyncSelectInput, SelectedMediaContentPreview } from "../components";
 
 export default defineType({
 	name: "bodyContent",
@@ -31,7 +31,7 @@ export default defineType({
 			},
 		}),
 		defineArrayMember({
-			name: "selectedMedia",
+			name: "selectedMediaContent",
 			type: "object",
 			title: "Selected Media",
 			icon: ImageIcon,
@@ -49,9 +49,9 @@ export default defineType({
 								// @ts-ignore
 								sourceField: "/mediaContent",
 								// @ts-ignore
-								formatResponse: (res) => res.map((item) => ({
-									title: "{" + item + "}",
-									value: item.toLowerCase().split(" ").join("-"),
+								formatResponse: (res) => res?.map((item) => ({
+									title: item.referenceName || "Untitled",
+									value: `{"mediaContentItemKey":"${item._key}"}`,
 								})),
 							},
 							components: {
@@ -71,6 +71,14 @@ export default defineType({
 					initialValue: false,
 				}),
 			],
+			preview: {
+				select: {
+					selectedMediaContentItems: "selectedMediaContentItems",
+				},
+			},
+			components: {
+				preview: SelectedMediaContentPreview,
+			},
 		}),
 	],
 });

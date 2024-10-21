@@ -3,6 +3,7 @@ import { JadToghujIcon } from "./components";
 import { StructureBuilder, structureTool } from "sanity/structure";
 import { media, mediaAssetSource } from "sanity-plugin-media";
 import { visionTool } from "@sanity/vision";
+import { imageHotspotArrayPlugin } from "sanity-plugin-hotspot-array";
 import { schemaTypes } from "./schemaTypes";
 import { studioInformationIcon } from "./schemaTypes/studioInformation";
 import { homePageIcon } from "./schemaTypes/homePage";
@@ -40,6 +41,7 @@ export default defineConfig({
 		}),
 		media(),
 		visionTool(),
+		imageHotspotArrayPlugin(),
 	],
 	schema: {
 		types: schemaTypes,
