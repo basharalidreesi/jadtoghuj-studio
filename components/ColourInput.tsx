@@ -14,6 +14,7 @@ export const ColourInput = (props: InputProps) => {
 					right: "1px",
 					width: "33.333%",
 					height: "calc(100% - 2px)",
+					// @ts-ignore
 					backgroundColor: props.value,
 					borderRadius: "0.125em",
 					borderTop: "unset",

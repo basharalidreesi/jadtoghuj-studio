@@ -8,8 +8,10 @@ export const MediaContentItem = (props: ObjectItemProps & { value: any; }) => {
 		renderDefault,
 		inputProps,
 	} = props;
+
 	const referenceName = value?.referenceName;
 	const isMarkedAsNewLook = value?.isMarkedAsNewLook;
+	
 	return renderDefault({
 		...props,
 		inputProps: {

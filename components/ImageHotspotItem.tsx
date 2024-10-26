@@ -9,9 +9,11 @@ export const ImageHotspotItem = (props: ObjectItemProps & { value: any; }) => {
 		inputProps,
 		index,
 	} = props;
+
 	const details = value?.details;
 	const x = value?.x;
 	const y = value?.y;
+	
 	return renderDefault({
 		...props,
 		inputProps: {
@@ -26,3 +28,6 @@ export const ImageHotspotItem = (props: ObjectItemProps & { value: any; }) => {
 		},
 	});
 };
+
+// Areas for improvement
+// - Update index number when re-ordering

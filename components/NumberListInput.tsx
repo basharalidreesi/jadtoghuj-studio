@@ -11,7 +11,7 @@ export const NumberListInput = (props: NumberInputProps) => {
 	const {
 		validation = [],
 	} = schemaType;
-	
+
 	const range = useMemo(() => generateRange(validation as any[]), [validation]);
 	
 	const handleScore = useCallback((event: any) => {

@@ -1,5 +1,5 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
-import { ImageHotspotPreview, MediaContentItem, StringListInput } from "../components";
+import { MediaContentItem } from "../components";
 
 export default defineType({
 	name: "mediaContent",
@@ -41,19 +41,14 @@ export default defineType({
 			fields: [
 				defineField({
 					name: "referenceName",
-					type: "string",
+					type: "referenceName",
 					title: "Reference Name",
 					// description
 				}),
 				defineField({
 					name: "isMarkedAsNewLook",
-					type: "boolean",
+					type: "isMarkedAsNewLook",
 					title: "Mark as new look?",
-					// description
-					options: {
-						layout: "checkbox",
-					},
-					initialValue: false,
 				}),
 				defineField({
 					name: "image",
@@ -67,17 +62,12 @@ export default defineType({
 				}),
 				defineField({
 					name: "imageHotspots",
-					type: "array",
-					of: [
-						defineArrayMember({
-							type: "imageHotspot",
-						}),
-					],
+					type: "imageHotspots",
+					title: "Image Hotspots",
 					options: {
 						imageHotspot: {
 							pathRoot: "parent",
 							imagePath: "image",
-							tooltip: ImageHotspotPreview,
 						},
 					},
 					fieldset: "graphic",
@@ -91,66 +81,14 @@ export default defineType({
 				}),
 				defineField({
 					name: "headlinePlacement",
-					type: "string",
+					type: "headlinePlacement",
 					title: "Headline Placement",
-					// description
-					options: {
-						list: [
-							{
-								value: "above",
-								title: "Above",
-							},
-							{
-								value: "below",
-								title: "Below",
-							},
-							{
-								value: "inside-top",
-								title: "In-Top",
-							},
-							{
-								value: "inside-bottom",
-								title: "In-Bottom",
-							},
-							{
-								value: "inside-left",
-								title: "In-Left",
-							},
-							{
-								value: "inside-right",
-								title: "In-Right",
-							},
-						],
-						layout: "radio",
-					},
-					initialValue: "above",
-					components: {
-						input: StringListInput,
-					},
 					fieldset: "text",
 				}),
 				defineField({
 					name: "headlineStyle",
-					type: "string",
+					type: "headlineStyle",
 					title: "Headline Style",
-					// description
-					options: {
-						list: [
-							{
-								value: "var1",
-								title: "Variant 1",
-							},
-							{
-								value: "var2",
-								title: "Variant 2",
-							},
-						],
-						layout: "radio",
-					},
-					initialValue: "var1",
-					components: {
-						input: StringListInput,
-					},
 					fieldset: "text",
 				}),
 				defineField({
@@ -176,13 +114,8 @@ export default defineType({
 				}),
 				defineField({
 					name: "doesHaveBorder",
-					type: "boolean",
+					type: "doesHaveBorder",
 					title: "Add border around image?",
-					// description
-					options: {
-						layout: "checkbox",
-					},
-					initialValue: false,
 					fieldset: "styling",
 				}),
 			],
@@ -190,5 +123,132 @@ export default defineType({
 				item: MediaContentItem,
 			},
 		}),
+		// defineArrayMember({
+		// 	name: "diptych",
+		// 	type: "object",
+		// 	title: "Diptych",
+		// 	// icon
+		// 	fieldsets: [
+		// 		{
+		// 			name: "leftGraphic",
+		// 			title: "Left Graphic",
+		// 			options: {
+		// 				collapsible: true,
+		// 				collapsed: true,
+		// 			},
+		// 		},
+		// 		{
+		// 			name: "rightGraphic",
+		// 			title: "Right Graphic",
+		// 			options: {
+		// 				collapsible: true,
+		// 				collapsed: true,
+		// 			},
+		// 		},
+		// 		{
+		// 			name: "text",
+		// 			title: "Text",
+		// 			options: {
+		// 				collapsible: true,
+		// 				collapsed: true,
+		// 			},
+		// 		},
+		// 		{
+		// 			name: "styling",
+		// 			title: "Styling",
+		// 			options: {
+		// 				collapsible: true,
+		// 				collapsed: true,
+		// 			},
+		// 		},
+		// 	],
+		// 	fields: [
+		// 		defineField({
+		// 			name: "referenceName",
+		// 			type: "referenceName",
+		// 			title: "Reference Name",
+		// 			// description
+		// 		}),
+		// 		defineField({
+		// 			name: "isMarkedAsNewLook",
+		// 			type: "isMarkedAsNewLook",
+		// 			title: "Mark as new look?",
+		// 		}),
+		// 		defineField({
+		// 			name: "leftImage",
+		// 			type: "image",
+		// 			title: "Image",
+		// 			// description
+		// 			options: {
+		// 				storeOriginalFilename: false,
+		// 			},
+		// 			fieldset: "leftGraphic",
+		// 		}),
+		// 		defineField({
+		// 			name: "leftImageHotspots",
+		// 			type: "imageHotspots",
+		// 			title: "Image Hotspots",
+		// 			options: {
+		// 				imageHotspot: {
+		// 					pathRoot: "parent",
+		// 					imagePath: "leftImage",
+		// 				},
+		// 			},
+		// 			fieldset: "leftGraphic",
+		// 		}),
+		// 		defineField({
+		// 			name: "rightImage",
+		// 			type: "image",
+		// 			title: "Image",
+		// 			// description
+		// 			options: {
+		// 				storeOriginalFilename: false,
+		// 			},
+		// 			fieldset: "rightGraphic",
+		// 		}),
+		// 		defineField({
+		// 			name: "rightImageHotspots",
+		// 			type: "imageHotspots",
+		// 			title: "Image Hotspots",
+		// 			options: {
+		// 				imageHotspot: {
+		// 					pathRoot: "parent",
+		// 					imagePath: "rightImage",
+		// 				},
+		// 			},
+		// 			fieldset: "rightGraphic",
+		// 		}),
+		// 		defineField({
+		// 			name: "headline",
+		// 			type: "string",
+		// 			title: "Headline",
+		// 			// description
+		// 			fieldset: "text",
+		// 		}),
+		// 		defineField({
+		// 			name: "headlineStyle",
+		// 			type: "headlineStyle",
+		// 			title: "Headline Style",
+		// 			fieldset: "text",
+		// 		}),
+		// 		defineField({
+		// 			name: "leftCaption",
+		// 			type: "simplePortableText",
+		// 			title: "Left Caption",
+		// 			// description
+		// 			fieldset: "text",
+		// 		}),
+		// 		defineField({
+		// 			name: "rightCaption",
+		// 			type: "simplePortableText",
+		// 			title: "Right Caption",
+		// 			// description
+		// 			fieldset: "text",
+		// 		}),
+		// 	],
+		// 	components: {
+		// 		item: MediaContentItem,
+		// 	},
+		// }),
 	],
 });

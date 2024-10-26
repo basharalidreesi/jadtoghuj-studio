@@ -59,6 +59,21 @@ export default defineType({
 							},
 						},
 					],
+					validation: (Rule) => Rule.custom((value, context) => {
+							const sourceFieldItems = context.document?.mediaContent || [];
+							const selectedKeys = value?.map((item) => {
+								try {
+									// @ts-ignore
+									const parsed = JSON.parse(item);
+									return parsed.mediaContentItemKey;
+								} catch (error) {
+									return null;
+								};
+							}).filter(Boolean);
+							// @ts-ignore
+							const missingItems = selectedKeys?.filter((key) => !sourceFieldItems.some((item) => item._key === key));
+							return missingItems?.length === 0 ? true : "One or more selected items are no longer available in the media field";
+					}).warning(),
 				}),
 				defineField({
 					name: "isConstrainedIfSingleToBody",

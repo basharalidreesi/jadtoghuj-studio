@@ -10,13 +10,16 @@ export const StringListInput = (props: StringInputProps) => {
 		schemaType,
 		renderDefault,
 	} = props;
+
 	const handleClick = useCallback((event: React.MouseEvent<HTMLButtonElement>) => {
 		const nextValue = event.currentTarget.value
 		onChange(set(nextValue))
 	}, [onChange]);
+
 	const list = schemaType.options?.list;
+	
 	return list && list.length > 0 ? (
-		<Grid columns={list.length} gap={3}>
+		<Grid columns={list.length} gap={2}>
 			{list.map((listItem) => (
 				<Button
 					// @ts-ignore
