@@ -1,5 +1,5 @@
 import { defineArrayMember, defineField, defineType } from "sanity";
-import { ImageHotspotPreview } from "../components";
+import { ImageHotspotPreview, MediaContentItem, StringListInput } from "../components";
 
 export default defineType({
 	name: "mediaContent",
@@ -94,6 +94,39 @@ export default defineType({
 					type: "string",
 					title: "Headline Placement",
 					// description
+					options: {
+						list: [
+							{
+								value: "above",
+								title: "Above",
+							},
+							{
+								value: "below",
+								title: "Below",
+							},
+							{
+								value: "inside-top",
+								title: "In-Top",
+							},
+							{
+								value: "inside-bottom",
+								title: "In-Bottom",
+							},
+							{
+								value: "inside-left",
+								title: "In-Left",
+							},
+							{
+								value: "inside-right",
+								title: "In-Right",
+							},
+						],
+						layout: "radio",
+					},
+					initialValue: "above",
+					components: {
+						input: StringListInput,
+					},
 					fieldset: "text",
 				}),
 				defineField({
@@ -101,6 +134,23 @@ export default defineType({
 					type: "string",
 					title: "Headline Style",
 					// description
+					options: {
+						list: [
+							{
+								value: "var1",
+								title: "Variant 1",
+							},
+							{
+								value: "var2",
+								title: "Variant 2",
+							},
+						],
+						layout: "radio",
+					},
+					initialValue: "var1",
+					components: {
+						input: StringListInput,
+					},
 					fieldset: "text",
 				}),
 				defineField({
@@ -136,19 +186,8 @@ export default defineType({
 					fieldset: "styling",
 				}),
 			],
-			preview: {
-				select: {
-					referenceName: "referenceName",
-				},
-				prepare(selection) {
-					const {
-						referenceName,
-					} = selection;
-					return {
-						title: referenceName,
-						subtitle: "Single Spread",
-					};
-				},
+			components: {
+				item: MediaContentItem,
 			},
 		}),
 	],
