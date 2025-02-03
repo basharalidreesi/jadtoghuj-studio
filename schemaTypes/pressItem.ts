@@ -1,5 +1,5 @@
 import { defineField, defineType } from "sanity";
-import { ConfettiIcon } from "@sanity/icons";
+import { ConfettiIcon, LockIcon } from "@sanity/icons";
 import { isoDateToReadableDate } from "../utils/dateUtils";
 
 export default defineType({
@@ -94,6 +94,7 @@ export default defineType({
 	preview: {
 		select: {
 			headline: "headline",
+			isHiddenFromListings: "isHiddenFromListings",
 			date: "date",
 			categoryName: "category.name",
 			publisher: "publisher",
@@ -102,6 +103,7 @@ export default defineType({
 		prepare(selection) {
 			const {
 				headline,
+				isHiddenFromListings,
 				date,
 				categoryName,
 				publisher,
@@ -110,7 +112,7 @@ export default defineType({
 			return {
 				title: headline || undefined,
 				subtitle: [categoryName, publisher, isoDateToReadableDate(date, { isAbbreviated: true, })]?.filter(Boolean)?.join(" · ") || undefined,
-				media: heroImage || undefined,
+				media: isHiddenFromListings ? LockIcon : (heroImage || undefined),
 			};
 		},
 	},

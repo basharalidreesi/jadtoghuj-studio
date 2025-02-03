@@ -1,5 +1,5 @@
 import { defineField, defineType } from "sanity";
-import { BookIcon } from "@sanity/icons";
+import { BookIcon, LockIcon } from "@sanity/icons";
 import { isoDateToReadableDate } from "../utils/dateUtils";
 import { portableTextToPlainText } from "../utils/portableTextUtils";
 
@@ -129,10 +129,10 @@ export default defineType({
 				heroImage,
 			} = selection;
 			return {
-				title: [isHiddenFromListings ? "🔑" : null, headline ? headline : "Untitled", metadata?.title ? `(${metadata.title})` : null]?.filter(Boolean)?.join(" ") || undefined,
+				title: [headline ? headline : "Untitled", metadata?.title ? `(${metadata.title})` : null]?.filter(Boolean)?.join(" ") || undefined,
 				subtitle: [categoryName, isoDateToReadableDate(date, { isAbbreviated: true, })]?.filter(Boolean)?.join(" · ") || undefined,
 				description: portableTextToPlainText(introduction) || metadata?.description || undefined,
-				media: heroImage || metadata?.openGraphImage || metadata?.twitterImage || undefined,
+				media: isHiddenFromListings ? LockIcon : (heroImage || metadata?.openGraphImage || metadata?.twitterImage || undefined),
 			};
 		},
 	},

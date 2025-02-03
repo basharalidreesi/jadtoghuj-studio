@@ -1,5 +1,5 @@
 import { defineField, defineType } from "sanity";
-import { SparklesIcon } from "@sanity/icons";
+import { LockIcon, SparklesIcon } from "@sanity/icons";
 import { isoDateToReadableDate } from "../utils/dateUtils";
 
 export default defineType({
@@ -120,10 +120,10 @@ export default defineType({
 				metadata,
 			} = selection;
 			return {
-				title: [isHiddenFromListings ? "🔑" : null, title ? title : "Untitled", metadata?.title ? `(${metadata.title})` : null]?.filter(Boolean)?.join(" ") || undefined,
+				title: [title ? title : "Untitled", metadata?.title ? `(${metadata.title})` : null]?.filter(Boolean)?.join(" ") || undefined,
 				subtitle: [categoryName, client, isoDateToReadableDate(date, { isAbbreviated: true, doesIncludeDay: false, doesIncludeMonth: false, }) || null]?.filter(Boolean)?.join(" · ") || undefined,
 				description: metadata?.description || undefined,
-				media: metadata?.openGraphImage || metadata?.twitterImage || undefined,
+				media: isHiddenFromListings ? LockIcon : (metadata?.openGraphImage || metadata?.twitterImage || undefined),
 			};
 		},
 	},
