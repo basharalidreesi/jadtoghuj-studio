@@ -4,10 +4,9 @@ import { StringListInput } from "../components";
 export default defineType({
 	name: "headlinePlacement",
 	type: "string",
-	title: "Headline Placement",
-	// description
+	// TODO description
 	options: {
-		list: [
+		list: [ // TODO define
 			{
 				value: "above",
 				title: "Above",

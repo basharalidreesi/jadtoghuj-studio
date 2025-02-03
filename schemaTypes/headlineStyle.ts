@@ -4,10 +4,9 @@ import { StringListInput } from "../components";
 export default defineType({
 	name: "headlineStyle",
 	type: "string",
-	title: "Headline Style",
-	// description
+	// TODO description
 	options: {
-		list: [
+		list: [ // TODO define
 			{
 				value: "var1",
 				title: "Variant 1",

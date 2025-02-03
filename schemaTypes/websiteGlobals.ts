@@ -14,7 +14,7 @@ export default defineType({
 			name: "analyticsSnippet",
 			type: "string",
 			title: "Analytics Snippet",
-			// description
+			// TODO description
 		}),
 		// TODO
 	],

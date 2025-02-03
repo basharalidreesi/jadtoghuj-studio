@@ -1,12 +1,7 @@
-import { useEffect, useState } from "react";
-import { ImageValue, useClient } from "sanity";
-import imageUrlBuilder from "@sanity/image-url";
 import { SanityAsset } from "@sanity/image-url/lib/types/types";
-
-export const requireAsset = (value: ImageValue | undefined) => {
-	if (!value || !value.asset) { return "Required"; };
-	return true;
-};
+import { useEffect, useState } from "react";
+import { useClient } from "sanity";
+import imageUrlBuilder from "@sanity/image-url";
 
 export const buildSanityImageUrl = (value: SanityAsset, width: number = 500) => {
 	const [data, setData] = useState("");

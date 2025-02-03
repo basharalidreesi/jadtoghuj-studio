@@ -14,7 +14,7 @@ export default defineType({
 			name: "recommendedItems",
 			type: "array",
 			title: "Recommended Items",
-			// description
+			// TODO description
 			of: [
 				defineArrayMember({
 					type: "reference",

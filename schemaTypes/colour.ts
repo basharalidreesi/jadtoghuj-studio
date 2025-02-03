@@ -4,8 +4,7 @@ import { ColourInput } from "../components";
 export default defineType({
 	name: "colour",
 	type: "string",
-	title: "Colour",
-	// description
+	// TODO description
 	validation: (Rule) => Rule.custom((value?: string) => {
 		if (!value) { return true; };
 		const s = new Option().style;

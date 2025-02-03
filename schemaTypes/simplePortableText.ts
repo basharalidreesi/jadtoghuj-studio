@@ -4,8 +4,6 @@ import { portableTextStyles, portableTextDecorators, portableTextAnnotations } f
 export default defineType({
 	name: "simplePortableText",
 	type: "array",
-	title: "Simple Portable Text",
-	// description
 	of: [
 		defineArrayMember({
 			type: "block",

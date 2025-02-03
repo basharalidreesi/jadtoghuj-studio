@@ -12,13 +12,13 @@ export default defineType({
 			name: "headline",
 			type: "string",
 			title: "Headline",
-			// description
+			description: "The title of this press item.",
 		}),
 		defineField({
 			name: "url",
 			type: "url",
 			title: "URL",
-			// description
+			description: "The URL linking to this press item.",
 		}),
 		defineField({
 			name: "isHiddenFromListings",
@@ -29,29 +29,25 @@ export default defineType({
 			name: "date",
 			type: "date",
 			title: "Date",
-			// description
+			description: "The date of this press item.",
 		}),
 		defineField({
 			name: "publisher",
 			type: "string",
 			title: "Publisher",
-			// description
+			description: "The publisher of this press item.",
 		}),
 		defineField({
 			name: "heroImage",
 			type: "heroImage",
 			title: "Hero Image",
-		}),
-		defineField({
-			name: "tags",
-			type: "tags",
-			title: "Tags",
+			// TODO description
 		}),
 		defineField({
 			name: "category",
 			type: "reference",
 			title: "Category",
-			// description
+			description: "The category under which this press item should be filed.",
 			to: [
 				{
 					type: "category",
@@ -112,9 +108,9 @@ export default defineType({
 				heroImage,
 			} = selection;
 			return {
-				title: headline,
-				subtitle: [categoryName, publisher, isoDateToReadableDate(date, { isAbbreviated: true, })]?.filter(Boolean)?.join(" · "),
-				media: heroImage,
+				title: headline || undefined,
+				subtitle: [categoryName, publisher, isoDateToReadableDate(date, { isAbbreviated: true, })]?.filter(Boolean)?.join(" · ") || undefined,
+				media: heroImage || undefined,
 			};
 		},
 	},

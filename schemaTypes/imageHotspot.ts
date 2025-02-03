@@ -4,7 +4,6 @@ import { ImageHotspotItem } from "../components";
 export default defineType({
 	name: "imageHotspot",
 	type: "object",
-	title: "Image Hotspot",
 	fieldsets: [
 		{
 			name: "position",
@@ -21,7 +20,7 @@ export default defineType({
 			name: "x",
 			type: "number",
 			title: "X Position",
-			// description
+			// TODO description
 			initialValue: 50,
 			validation: (Rule) => Rule.required().min(0).max(100),
 			fieldset: "position",
@@ -30,7 +29,7 @@ export default defineType({
 			name: "y",
 			type: "number",
 			title: "Y Position",
-			// description
+			// TODO description
 			initialValue: 50,
 			validation: (Rule) => Rule.required().min(0).max(100),
 			fieldset: "position",
@@ -39,7 +38,7 @@ export default defineType({
 			name: "details",
 			type: "simplePortableText",
 			title: "Details",
-			// description
+			// TODO description
 		}),
 	],
 	components: {

@@ -14,13 +14,13 @@ export default defineType({
 			name: "name",
 			type: "string",
 			title: "Name",
-			// description
+			// TODO description
 		}),
 		defineField({
 			name: "logo",
 			type: "image",
 			title: "Logo",
-			// description
+			// TODO description
 			options: {
 				accept: ".svg",
 				storeOriginalFilename: false,
@@ -30,26 +30,26 @@ export default defineType({
 			name: "email",
 			type: "string",
 			title: "Email",
-			// description
+			// TODO description
 		}),
 		defineField({
 			name: "instagramLink",
 			type: "url",
 			title: "Instagram Link",
-			// description
+			// TODO description
 		}),
 		defineField({
 			name: "shortDescription",
 			type: "text",
 			title: "Short Description",
-			// description
+			// TODO description
 			rows: 3,
 		}),
 		defineField({
 			name: "longDescription",
 			type: "text",
 			title: "Long Description",
-			// description
+			// TODO description
 			rows: 5,
 		}),
 	],

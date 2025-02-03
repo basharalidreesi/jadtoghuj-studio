@@ -63,7 +63,8 @@ export default defineType({
 					name: "selectMediaItems",
 					type: "array",
 					title: "Select Media",
-					// description
+					// TODO description
+					readOnly: true,
 					of: [
 						defineArrayMember({
 							type: "string",
@@ -99,7 +100,7 @@ export default defineType({
 						return missingItems?.length === 0 ? true : "One or more selected items are no longer available in the media field";
 					}).warning(),
 				}),
-				// defineField({
+				// defineField({ // TODO
 				// 	name: "isConstrainedIfSingleToBody",
 				// 	type: "boolean",
 				// 	title: "Constrain single to body?",

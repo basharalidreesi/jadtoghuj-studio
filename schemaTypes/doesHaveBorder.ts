@@ -3,8 +3,7 @@ import { defineType } from "sanity";
 export default defineType({
 	name: "doesHaveBorder",
 	type: "boolean",
-	title: "Add border around image?",
-	// description
+	// TODO description
 	options: {
 		layout: "checkbox",
 	},

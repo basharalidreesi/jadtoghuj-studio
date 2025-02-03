@@ -1,5 +1,5 @@
 import { defineField, defineType } from "sanity";
-import { BulbOutlineIcon } from "@sanity/icons";
+import { BookIcon } from "@sanity/icons";
 import { isoDateToReadableDate } from "../utils/dateUtils";
 import { portableTextToPlainText } from "../utils/portableTextUtils";
 
@@ -7,19 +7,19 @@ export default defineType({
 	name: "article",
 	type: "document",
 	title: "Article",
-	icon: BulbOutlineIcon,
+	icon: BookIcon,
 	fields: [
 		defineField({
 			name: "headline",
 			type: "string",
 			title: "Headline",
-			// description
+			description: "The title of this article.",
 		}),
 		defineField({
 			name: "slug",
 			type: "slug",
 			title: "Slug",
-			// description
+			description: "The URL-friendly identifier for this article, generated from its headline. Changing the slug after publication may cause broken links and affect accessibility.",
 			options: {
 				source: "headline",
 			},
@@ -33,24 +33,25 @@ export default defineType({
 			name: "date",
 			type: "date",
 			title: "Date",
-			// description
-		}),
-		defineField({
-			name: "heroImage",
-			type: "heroImage",
-			title: "Hero Image",
-		}),
-		defineField({
-			name: "heroImageCaption",
-			type: "simplePortableText",
-			title: "Hero Image Caption",
-			// description
+			description: "The date of this article, mainly used for sorting.",
 		}),
 		defineField({
 			name: "introduction",
 			type: "simplePortableText",
 			title: "Introduction",
-			// description
+			// TODO description
+		}),
+		defineField({
+			name: "heroImage",
+			type: "heroImage",
+			title: "Hero Image",
+			// TODO description
+		}),
+		defineField({
+			name: "heroImageCaption",
+			type: "simplePortableText",
+			title: "Hero Image Caption",
+			// TODO description
 		}),
 		defineField({
 			name: "metadata",
@@ -58,15 +59,10 @@ export default defineType({
 			title: "Metadata",
 		}),
 		defineField({
-			name: "tags",
-			type: "tags",
-			title: "Tags",
-		}),
-		defineField({
 			name: "category",
 			type: "reference",
 			title: "Category",
-			// description
+			description: "The category under which this article should be filed.",
 			to: [
 				{
 					type: "category",
@@ -77,11 +73,13 @@ export default defineType({
 			name: "mediaContent",
 			type: "mediaContent",
 			title: "Media",
+			description: "The media content of this article. Will not be displayed on the article's webpage unless they are added to the body field below.",
 		}),
 		defineField({
 			name: "bodyContent",
 			type: "bodyContent",
 			title: "Body",
+			description: "The body content of this article.",
 		}),
 	],
 	orderings: [
@@ -113,24 +111,28 @@ export default defineType({
 	preview: {
 		select: {
 			headline: "headline",
+			isHiddenFromListings: "isHiddenFromListings",
 			date: "date",
+			metadata: "metadata",
 			categoryName: "category.name",
-			heroImage: "heroImage",
 			introduction: "introduction",
+			heroImage: "heroImage",
 		},
 		prepare(selection) {
 			const {
 				headline,
+				isHiddenFromListings,
 				date,
+				metadata,
 				categoryName,
-				heroImage,
 				introduction,
+				heroImage,
 			} = selection;
 			return {
-				title: headline,
-				subtitle: [categoryName, isoDateToReadableDate(date, { isAbbreviated: true, })]?.filter(Boolean)?.join(" · "),
-				media: heroImage,
-				description: portableTextToPlainText(introduction),
+				title: [isHiddenFromListings ? "🔑" : null, headline ? headline : "Untitled", metadata?.title ? `(${metadata.title})` : null]?.filter(Boolean)?.join(" ") || undefined,
+				subtitle: [categoryName, isoDateToReadableDate(date, { isAbbreviated: true, })]?.filter(Boolean)?.join(" · ") || undefined,
+				description: portableTextToPlainText(introduction) || metadata?.description || undefined,
+				media: heroImage || metadata?.openGraphImage || metadata?.twitterImage || undefined,
 			};
 		},
 	},

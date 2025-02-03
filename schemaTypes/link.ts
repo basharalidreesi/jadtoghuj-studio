@@ -3,14 +3,12 @@ import { defineField, defineType } from "sanity";
 export default defineType({
 	name: "link",
 	type: "object",
-	title: "Link",
-	// description
 	fields: [
 		defineField({
 			name: "type",
 			type: "string",
 			title: "Type",
-			// description
+			// TODO description
 			options: {
 				list: [
 					{
@@ -31,7 +29,7 @@ export default defineType({
 			name: "internalTarget",
 			type: "reference",
 			title: "Internal Target",
-			// description
+			// TODO description
 			to: [
 				{
 					type: "article",
@@ -58,7 +56,7 @@ export default defineType({
 			name: "externalUrl",
 			type: "url",
 			title: "External URL",
-			// description
+			// TODO description
 			hidden: ({ parent }) => parent.type !== "external",
 		}),
 	],

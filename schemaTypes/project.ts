@@ -49,7 +49,7 @@ export default defineType({
 			name: "category",
 			type: "reference",
 			title: "Category",
-			description: "The category to which this project should be attributed.",
+			description: "The category under which this project should be filed.",
 			to: [
 				{
 					type: "category",
@@ -60,19 +60,19 @@ export default defineType({
 			name: "lookContent",
 			type: "lookContent",
 			title: "Looks",
-			description: "The looks attributed to this project.",
+			description: "The look(s) attributed to this project.",
 		}),
 		defineField({
 			name: "mediaContent",
 			type: "mediaContent",
 			title: "Media",
-			description: "The media content attributed to this project. Media items will not be displayed on the project's webpage unless they are added to the body field below.",
+			description: "The media content of this project. Will not be displayed on the project's webpage unless they are added to the body field below.",
 		}),
 		defineField({ // TODO consider horizontal?
 			name: "bodyContent",
 			type: "bodyContent",
 			title: "Body",
-			description: "The body content attributed to this project.",
+			description: "The body content of this project.",
 		}),
 	],
 	orderings: [
@@ -106,6 +106,7 @@ export default defineType({
 			title: "title",
 			isHiddenFromListings: "isHiddenFromListings",
 			date: "date",
+			client: "client",
 			categoryName: "category.name",
 			metadata: "metadata",
 		},
@@ -114,14 +115,15 @@ export default defineType({
 				title,
 				isHiddenFromListings,
 				date,
+				client,
 				categoryName,
 				metadata,
 			} = selection;
 			return {
-				title: title ? `${isHiddenFromListings ? "🔑 " : ""}${title}` : undefined,
-				subtitle: [categoryName, isoDateToReadableDate(date, { isAbbreviated: true, }) || null]?.filter(Boolean)?.join(" · "),
-				description: metadata?.description,
-				media: metadata?.openGraphImage || metadata?.twitterImage || null,
+				title: [isHiddenFromListings ? "🔑" : null, title ? title : "Untitled", metadata?.title ? `(${metadata.title})` : null]?.filter(Boolean)?.join(" ") || undefined,
+				subtitle: [categoryName, client, isoDateToReadableDate(date, { isAbbreviated: true, doesIncludeDay: false, doesIncludeMonth: false, }) || null]?.filter(Boolean)?.join(" · ") || undefined,
+				description: metadata?.description || undefined,
+				media: metadata?.openGraphImage || metadata?.twitterImage || undefined,
 			};
 		},
 	},

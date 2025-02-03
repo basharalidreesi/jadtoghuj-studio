@@ -3,7 +3,7 @@ import { defineArrayMember, defineField, defineType } from "sanity";
 export default defineType({
 	name: "mediaContent",
 	type: "array",
-	of: [
+	of: [ // TODO define media types
 		defineArrayMember({
 			name: "temp",
 			type: "object",

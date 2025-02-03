@@ -9,7 +9,7 @@ export default defineType({
 	title: "Homepage",
 	icon: homePageIcon,
 	__experimental_omnisearch_visibility: false,
-	fields: [
+	fields: [ // TODO define homepage fields
 		defineField({
 			name: "temp",
 			type: "string",

@@ -53,6 +53,9 @@ export default defineConfig({
 		actions: (input, context) => {
 			return singletonTypes.has(context.schemaType) ? input.filter(({ action }) => action && singletonActions.has(action)) : input;
 		},
+		comments: {
+			enabled: false,
+		},
 	},
 	form: {
 		image: {

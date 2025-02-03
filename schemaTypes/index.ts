@@ -21,7 +21,6 @@ import recommendedItems from "./recommendedItems";
 import referenceName from "./referenceName";
 import simplePortableText from "./simplePortableText";
 import studioInformation from "./studioInformation";
-import tags from "./tags";
 import websiteGlobals from "./websiteGlobals";
 
 export const schemaTypes = [
@@ -55,7 +54,6 @@ export const schemaTypes = [
 	mediaContent,
 	padding,
 	referenceName,
-	tags,
 
 	// PT instances
 	bodyContent,

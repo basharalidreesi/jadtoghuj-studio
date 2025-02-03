@@ -4,7 +4,6 @@ import { ImageHotspotPreview } from "../components";
 export default defineType({
 	name: "imageHotspots",
 	type: "array",
-	title: "Image Hotspots",
 	of: [
 		defineArrayMember({
 			type: "imageHotspot",

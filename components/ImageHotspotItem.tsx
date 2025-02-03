@@ -29,5 +29,5 @@ export const ImageHotspotItem = (props: ObjectItemProps & { value: any; }) => {
 	});
 };
 
-// Areas for improvement
+// TODO
 // - Update index number when re-ordering

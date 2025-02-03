@@ -6,7 +6,7 @@ export default defineType({
 	name: "lookContent",
 	type: "array",
 	of: [
-		defineArrayMember({
+		defineArrayMember({ // TODO consider other types
 			name: "look",
 			type: "image",
 			title: "Look",
