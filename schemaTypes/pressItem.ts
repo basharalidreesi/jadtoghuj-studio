@@ -21,9 +21,9 @@ export default defineType({
 			// description
 		}),
 		defineField({
-			name: "isHiddenFromHomePage",
-			type: "isHiddenFromHomePage",
-			title: "Hide from home page?",
+			name: "isHiddenFromListings",
+			type: "isHiddenFromListings",
+			title: "Hide from listings?",
 		}),
 		defineField({
 			name: "date",
@@ -113,7 +113,7 @@ export default defineType({
 			} = selection;
 			return {
 				title: headline,
-				subtitle: [categoryName, publisher, isoDateToReadableDate(date, true)]?.filter(Boolean)?.join(" · "),
+				subtitle: [categoryName, publisher, isoDateToReadableDate(date, { isAbbreviated: true, })]?.filter(Boolean)?.join(" · "),
 				media: heroImage,
 			};
 		},

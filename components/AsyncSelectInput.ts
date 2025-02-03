@@ -2,12 +2,12 @@ import { useState, useEffect } from "react";
 import { StringInputProps, useFormValue } from "sanity";
 
 export const AsyncSelectInput = (props: StringInputProps) => {
-	const { schemaType, renderDefault, path } = props;
+	const { schemaType, renderDefault, path, value } = props;
 	const { options } = schemaType;
 	// @ts-ignore
 	const { url, formatResponse, sourceField } = options;
 
-	const [listItems, setListItems] = useState([]);
+	const [listItems, setListItems] = useState<{ title: string; value: string }[]>([]);
 
 	// Compute the path to the source field
 	let sourceFieldPath = null;
@@ -55,8 +55,26 @@ export const AsyncSelectInput = (props: StringInputProps) => {
 		};
 	}, [sourceFieldValue, url, formatResponse]);
 
+	// Create a new list that includes a fallback option for a missing value
+	const finalListItems = listItems.slice();
+
+	if (value) {
+		// Check if the currently selected value exists in the listItems
+		const exists = listItems.some((item) => item.value === value);
+		if (!exists) {
+			let missingTitle = "Missing media item";
+			try {
+				const parsed = JSON.parse(value);
+				missingTitle += ` ${parsed.mediaItemKey}`;
+			} catch (error) {
+				missingTitle += ` ${value}`;
+			};
+			finalListItems.push({ title: missingTitle, value: value });
+		};
+	};
+
 	return renderDefault({
 		...props,
-		schemaType: { ...schemaType, options: { ...options, list: listItems } },
+		schemaType: { ...schemaType, options: { ...options, list: [{ title: "None", value: "" }, ...finalListItems] } },
 	});
 };

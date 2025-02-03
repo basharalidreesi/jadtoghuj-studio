@@ -4,7 +4,6 @@ import { portableTextToPlainText } from "../utils/portableTextUtils";
 
 export const ImageHotspotPreview = (props: HotspotTooltipProps & { value: any; }) => {
 	const details = props.value?.details;
-	
 	return (
 		<Box padding={2} style={{ minWidth: details && 200 || "unset", maxWidth: 400, }}>
 			<Text textOverflow={"ellipsis"} muted={details ? false : true} size={1} style={{ minHeight: "0.375lh", }}>

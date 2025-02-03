@@ -33,7 +33,7 @@ export default defineConfig({
 					S.documentTypeListItem("category").title("Categories"),
 					S.divider(),
 					singletonListItem(S, "studioInformation", "Studio").icon(studioInformationIcon),
-					singletonListItem(S, "homePage", "Home Page").icon(homePageIcon),
+					singletonListItem(S, "homePage", "Homepage").icon(homePageIcon),
 					singletonListItem(S, "recommendedItems", "Recommended Items").icon(recommendedItemsIcons),
 					singletonListItem(S, "websiteGlobals", "Website Globals").icon(websiteGlobalsIcon),
 				]);

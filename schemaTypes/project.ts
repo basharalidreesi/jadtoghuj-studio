@@ -1,7 +1,6 @@
 import { defineField, defineType } from "sanity";
 import { SparklesIcon } from "@sanity/icons";
 import { isoDateToReadableDate } from "../utils/dateUtils";
-import { portableTextToPlainText } from "../utils/portableTextUtils";
 
 export default defineType({
 	name: "project",
@@ -13,50 +12,27 @@ export default defineType({
 			name: "title",
 			type: "string",
 			title: "Title",
-			// description
+			description: "The title of this project.",
 		}),
 		defineField({
 			name: "slug",
 			type: "slug",
 			title: "Slug",
-			// description
+			description: "The URL-friendly identifier for this project, generated from its title. Changing the slug after publication may cause broken links and affect accessibility.",
 			options: {
 				source: "title",
 			},
 		}),
 		defineField({
-			name: "isHiddenFromHomePage",
-			type: "isHiddenFromHomePage",
-			title: "Hide from home page?",
+			name: "isHiddenFromListings",
+			type: "isHiddenFromListings",
+			title: "Hide from listings?",
 		}),
 		defineField({
-			name: "startDate",
+			name: "date",
 			type: "date",
-			title: "Start Date",
-			// description
-		}),
-		defineField({
-			name: "endDate",
-			type: "date",
-			title: "End Date",
-			// description
-		}),
-		defineField({
-			name: "heroImage",
-			type: "heroImage",
-			title: "Hero Image",
-		}),
-		defineField({
-			name: "heroImageCaption",
-			type: "simplePortableText",
-			title: "Hero Image Caption",
-			// description
-		}),
-		defineField({
-			name: "introduction",
-			type: "simplePortableText",
-			title: "Introduction",
-			// description
+			title: "Date",
+			description: "The date of this project, mainly used for sorting.",
 		}),
 		defineField({
 			name: "metadata",
@@ -64,15 +40,16 @@ export default defineType({
 			title: "Metadata",
 		}),
 		defineField({
-			name: "tags",
-			type: "tags",
-			title: "Tags",
+			name: "client",
+			type: "string",
+			title: "Client",
+			description: "The client(s) attributed to this project.",
 		}),
 		defineField({
 			name: "category",
 			type: "reference",
 			title: "Category",
-			// description
+			description: "The category to which this project should be attributed.",
 			to: [
 				{
 					type: "category",
@@ -80,14 +57,22 @@ export default defineType({
 			],
 		}),
 		defineField({
+			name: "lookContent",
+			type: "lookContent",
+			title: "Looks",
+			description: "The looks attributed to this project.",
+		}),
+		defineField({
 			name: "mediaContent",
 			type: "mediaContent",
 			title: "Media",
+			description: "The media content attributed to this project. Media items will not be displayed on the project's webpage unless they are added to the body field below.",
 		}),
-		defineField({
+		defineField({ // TODO consider horizontal?
 			name: "bodyContent",
 			type: "bodyContent",
 			title: "Body",
+			description: "The body content attributed to this project.",
 		}),
 	],
 	orderings: [
@@ -96,11 +81,7 @@ export default defineType({
 			name: "dateDesc",
 			by: [
 				{
-					field: "startDate",
-					direction: "desc",
-				},
-				{
-					field: "endDate",
+					field: "date",
 					direction: "desc",
 				},
 				{
@@ -123,26 +104,24 @@ export default defineType({
 	preview: {
 		select: {
 			title: "title",
-			startDate: "startDate",
-			endDate: "endDate",
+			isHiddenFromListings: "isHiddenFromListings",
+			date: "date",
 			categoryName: "category.name",
-			heroImage: "heroImage",
-			introduction: "introduction",
+			metadata: "metadata",
 		},
 		prepare(selection) {
 			const {
 				title,
-				startDate,
-				endDate,
+				isHiddenFromListings,
+				date,
 				categoryName,
-				heroImage,
-				introduction,
+				metadata,
 			} = selection;
 			return {
-				title: title,
-				subtitle: [categoryName, [isoDateToReadableDate(startDate, true), isoDateToReadableDate(endDate, true)]?.filter(Boolean)?.join(" – ") || null]?.filter(Boolean)?.join(" · "),
-				media: heroImage,
-				description: portableTextToPlainText(introduction),
+				title: title ? `${isHiddenFromListings ? "🔑 " : ""}${title}` : undefined,
+				subtitle: [categoryName, isoDateToReadableDate(date, { isAbbreviated: true, }) || null]?.filter(Boolean)?.join(" · "),
+				description: metadata?.description,
+				media: metadata?.openGraphImage || metadata?.twitterImage || null,
 			};
 		},
 	},

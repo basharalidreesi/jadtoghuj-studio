@@ -23,9 +23,9 @@ export default defineType({
 			},
 		}),
 		defineField({
-			name: "isHiddenFromHomePage",
-			type: "isHiddenFromHomePage",
-			title: "Hide from home page?",
+			name: "isHiddenFromListings",
+			type: "isHiddenFromListings",
+			title: "Hide from listings?",
 		}),
 		defineField({
 			name: "metadata",

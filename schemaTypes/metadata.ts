@@ -3,27 +3,26 @@ import { defineField, defineType } from "sanity";
 export default defineType({
 	name: "metadata",
 	type: "object",
-	title: "Metadata",
-	// description
+	description: "SEO and social media preview details.",
 	fields: [
 		defineField({
 			name: "title",
 			type: "string",
 			title: "Title",
-			// description
+			description: "The title that appears in search engine results and social media previews. Leave blank to use the item's default title.",
 		}),
 		defineField({
 			name: "description",
 			type: "text",
 			title: "Description",
-			// description
+			description: "The summary that appears in search engine results and social media previews. If left blank, the studio's short description will be used.",
 			rows: 3,
 		}),
 		defineField({
 			name: "openGraphImage",
 			type: "image",
-			title: "Open Graph Image",
-			description: "Recommended size: 1200 × 630 pixels",
+			title: "OpenGraph Image",
+			description: "The image that appears when this item is shared on Facebook, WhatsApp, and a number of other platforms. If left blank, the studio's logo will be used. Recommended size: 1200 × 630 pixels.",
 			options: {
 				storeOriginalFilename: false,
 			},
@@ -32,7 +31,7 @@ export default defineType({
 			name: "twitterImage",
 			type: "image",
 			title: "Twitter Image",
-			description: "Recommended size: 1200 × 600 pixels",
+			description: "The image that appears when this item is shared on Twitter. If left blank, the studio's logo will be used. Recommended size: 1200 × 600 pixels.",
 			options: {
 				storeOriginalFilename: false,
 			},

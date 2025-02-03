@@ -6,7 +6,7 @@ export const homePageIcon = HomeIcon;
 export default defineType({
 	name: "homePage",
 	type: "document",
-	title: "Home Page",
+	title: "Homepage",
 	icon: homePageIcon,
 	__experimental_omnisearch_visibility: false,
 	fields: [
@@ -18,7 +18,7 @@ export default defineType({
 	preview: {
 		prepare() {
 			return {
-				title: "Home Page",
+				title: "Homepage",
 			};
 		},
 	},

@@ -3,9 +3,10 @@ import { ColourInput } from "./ColourInput";
 import { ImageHotspotItem } from "./ImageHotspotItem";
 import { ImageHotspotPreview } from "./ImageHotspotPreview";
 import { JadToghujIcon } from "./JadToghujIcon";
-import { MediaContentItem } from "./MediaContentItem";
+import { LookContentPreview } from "./LookContentPreview";
+import { NoteField } from "./NoteField";
 import { NumberListInput } from "./NumberListInput";
-import { SelectedMediaContentPreview } from "./SelectedMediaContentPreview";
+import { SelectMediaPreview } from "./SelectMediaPreview";
 import { StringListInput } from "./StringListInput";
 
 export {
@@ -14,8 +15,9 @@ export {
 	ImageHotspotItem,
 	ImageHotspotPreview,
 	JadToghujIcon,
-	MediaContentItem,
+	LookContentPreview,
+	NoteField,
 	NumberListInput,
-	SelectedMediaContentPreview,
+	SelectMediaPreview,
 	StringListInput,
 };

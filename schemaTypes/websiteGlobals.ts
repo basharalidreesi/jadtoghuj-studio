@@ -11,9 +11,12 @@ export default defineType({
 	__experimental_omnisearch_visibility: false,
 	fields: [
 		defineField({
-			name: "temp",
+			name: "analyticsSnippet",
 			type: "string",
+			title: "Analytics Snippet",
+			// description
 		}),
+		// TODO
 	],
 	preview: {
 		prepare() {

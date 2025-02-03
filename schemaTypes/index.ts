@@ -9,9 +9,9 @@ import heroImage from "./heroImage";
 import homePage from "./homePage";
 import imageHotspot from "./imageHotspot";
 import imageHotspots from "./imageHotspots";
-import isHiddenFromHomePage from "./isHiddenFromHomePage";
-import isMarkedAsNewLook from "./isMarkedAsNewLook";
+import isHiddenFromListings from "./isHiddenFromListings";
 import link from "./link";
+import lookContent from "./lookContent";
 import mediaContent from "./mediaContent";
 import metadata from "./metadata";
 import padding from "./padding";
@@ -50,8 +50,8 @@ export const schemaTypes = [
 	headlineStyle,
 	heroImage,
 	imageHotspots,
-	isHiddenFromHomePage,
-	isMarkedAsNewLook,
+	isHiddenFromListings,
+	lookContent,
 	mediaContent,
 	padding,
 	referenceName,

@@ -1,13 +1,13 @@
 import { defineField, PortableTextBlock, PortableTextChild } from "sanity";
 
-export const styles = {
+export const portableTextStyles = {
 	normal: {
 		value: "normal",
 		title: "Normal",
 	},
 };
 
-export const lists = {
+export const portableTextLists = {
 	bullets: {
 		value: "bullet",
 		title: "Bullets",
@@ -18,7 +18,7 @@ export const lists = {
 	},
 };
 
-export const decorators = {
+export const portableTextDecorators = {
 	strong: {
 		value: "strong",
 		title: "Bold",
@@ -37,7 +37,7 @@ export const decorators = {
 	},
 };
 
-export const annotations = {
+export const portableTextAnnotations = {
 	link: defineField({
 		name: "link",
 		type: "link",

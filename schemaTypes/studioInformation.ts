@@ -50,7 +50,7 @@ export default defineType({
 			type: "text",
 			title: "Long Description",
 			// description
-			rows: 3,
+			rows: 5,
 		}),
 	],
 	preview: {

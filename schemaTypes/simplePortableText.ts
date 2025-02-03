@@ -1,5 +1,5 @@
 import { defineArrayMember, defineType } from "sanity";
-import { styles, decorators, annotations } from "../utils/portableTextUtils.js";
+import { portableTextStyles, portableTextDecorators, portableTextAnnotations } from "../utils/portableTextUtils";
 
 export default defineType({
 	name: "simplePortableText",
@@ -10,18 +10,18 @@ export default defineType({
 		defineArrayMember({
 			type: "block",
 			styles: [
-				styles.normal,
+				portableTextStyles.normal,
 			],
 			lists: [],
 			marks: {
 				decorators: [
-					decorators.strong,
-					decorators.em,
-					decorators.underline,
-					decorators.strikeThrough,
+					portableTextDecorators.strong,
+					portableTextDecorators.em,
+					portableTextDecorators.underline,
+					portableTextDecorators.strikeThrough,
 				],
 				annotations: [
-					annotations.link,
+					portableTextAnnotations.link,
 				],
 			},
 		}),
