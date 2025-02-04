@@ -12,7 +12,7 @@ export const LookContentPreview = (props: PreviewProps & { _key?: string; name?:
 		title: [`Look ${currentIndex + 1}`, props.name]?.filter(Boolean)?.join(" · "),
 		// @ts-ignore
 		media: thumbnail || SparkleIcon || undefined,
-		description: props._description,
+		description: props._description || undefined,
 		layout: "detail",
 	});
 };

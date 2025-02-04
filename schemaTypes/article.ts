@@ -17,9 +17,8 @@ export default defineType({
 		}),
 		defineField({
 			name: "slug",
-			type: "slug",
+			type: "commonSlug",
 			title: "Slug",
-			description: "The URL-friendly identifier for this article, generated from its headline. Changing the slug after publication may cause broken links and affect accessibility.",
 			options: {
 				source: "headline",
 			},
@@ -36,16 +35,15 @@ export default defineType({
 			description: "The date of this article, mainly used for sorting.",
 		}),
 		defineField({
-			name: "introduction",
+			name: "summary",
 			type: "simplePortableText",
-			title: "Introduction",
-			// TODO description
+			title: "Summary",
+			description: "A short summary introducing this article.",
 		}),
 		defineField({
 			name: "heroImage",
 			type: "heroImage",
 			title: "Hero Image",
-			// TODO description
 		}),
 		defineField({
 			name: "heroImageCaption",
@@ -73,7 +71,7 @@ export default defineType({
 			name: "mediaContent",
 			type: "mediaContent",
 			title: "Media",
-			description: "The media content of this article. Will not be displayed on the article's webpage unless they are added to the body field below.",
+			description: "The media content of this article. Will not be displayed on the article's webpage unless added to the body field below.",
 		}),
 		defineField({
 			name: "bodyContent",
@@ -115,7 +113,7 @@ export default defineType({
 			date: "date",
 			metadata: "metadata",
 			categoryName: "category.name",
-			introduction: "introduction",
+			summary: "summary",
 			heroImage: "heroImage",
 		},
 		prepare(selection) {
@@ -125,13 +123,13 @@ export default defineType({
 				date,
 				metadata,
 				categoryName,
-				introduction,
+				summary,
 				heroImage,
 			} = selection;
 			return {
 				title: [headline ? headline : "Untitled", metadata?.title ? `(${metadata.title})` : null]?.filter(Boolean)?.join(" ") || undefined,
 				subtitle: [categoryName, isoDateToReadableDate(date, { isAbbreviated: true, })]?.filter(Boolean)?.join(" · ") || undefined,
-				description: portableTextToPlainText(introduction) || metadata?.description || undefined,
+				description: portableTextToPlainText(summary) || metadata?.description || undefined,
 				media: isHiddenFromListings ? LockIcon : (heroImage || metadata?.openGraphImage || metadata?.twitterImage || undefined),
 			};
 		},

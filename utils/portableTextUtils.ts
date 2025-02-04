@@ -45,8 +45,8 @@ export const portableTextAnnotations = {
 	}),
 };
 
-export const portableTextToPlainText = (blocks = []) => {
-	return blocks.map((block: PortableTextBlock) => {
+export const portableTextToPlainText = (blocks: PortableTextBlock[] = []) => {
+	return blocks?.map((block) => {
 		if (block._type !== "block" || !block.children) {
 			return "";
 		};

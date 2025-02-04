@@ -64,7 +64,6 @@ export default defineType({
 					type: "array",
 					title: "Select Media",
 					// TODO description
-					readOnly: true,
 					of: [
 						defineArrayMember({
 							type: "string",

@@ -1,5 +1,5 @@
 import { defineField, defineType } from "sanity";
-import { ImageHotspotItem } from "../components";
+import { HotspotItem } from "../components";
 
 export default defineType({
 	name: "imageHotspot",
@@ -42,6 +42,6 @@ export default defineType({
 		}),
 	],
 	components: {
-		item: ImageHotspotItem,
+		item: HotspotItem,
 	},
 });

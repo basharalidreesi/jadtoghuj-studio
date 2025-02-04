@@ -3,5 +3,5 @@ import { defineType } from "sanity";
 export default defineType({
 	name: "referenceName",
 	type: "string",
-	// TODO description
+	description: "An internal name for this media item. Will not be displayed anywhere on the website.",
 });

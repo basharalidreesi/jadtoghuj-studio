@@ -2,6 +2,7 @@ import article from "./article";
 import bodyContent from "./bodyContent";
 import category from "./category";
 import colour from "./colour";
+import commonSlug from "./commonSlug";
 import doesHaveBorder from "./doesHaveBorder";
 import headlinePlacement from "./headlinePlacement";
 import headlineStyle from "./headlineStyle";
@@ -44,6 +45,7 @@ export const schemaTypes = [
 
 	// misc. instances
 	colour,
+	commonSlug,
 	doesHaveBorder,
 	headlinePlacement,
 	headlineStyle,

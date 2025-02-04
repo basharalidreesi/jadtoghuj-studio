@@ -1,5 +1,5 @@
 import { defineArrayMember, defineType } from "sanity";
-import { ImageHotspotPreview } from "../components";
+import { HotspotPreview } from "../components";
 
 export default defineType({
 	name: "imageHotspots",
@@ -13,7 +13,7 @@ export default defineType({
 		imageHotspot: {
 			pathRoot: "parent",
 			imagePath: "image",
-			tooltip: ImageHotspotPreview,
+			tooltip: HotspotPreview,
 		},
 	},
 });

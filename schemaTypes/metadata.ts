@@ -1,5 +1,5 @@
 import { defineField, defineType } from "sanity";
-import { CustomMetadataDescriptions } from "../components";
+import { MetadataDescriptions } from "../components";
 
 export default defineType({
 	name: "metadata",
@@ -11,7 +11,7 @@ export default defineType({
 			type: "string",
 			title: "Title",
 			components: {
-				field: CustomMetadataDescriptions,
+				field: MetadataDescriptions,
 			},
 		}),
 		defineField({
@@ -20,7 +20,7 @@ export default defineType({
 			title: "Description",
 			rows: 3,
 			components: {
-				field: CustomMetadataDescriptions,
+				field: MetadataDescriptions,
 			},
 		}),
 		defineField({
@@ -31,7 +31,7 @@ export default defineType({
 				storeOriginalFilename: false,
 			},
 			components: {
-				field: CustomMetadataDescriptions,
+				field: MetadataDescriptions,
 			},
 		}),
 		defineField({
@@ -42,7 +42,7 @@ export default defineType({
 				storeOriginalFilename: false,
 			},
 			components: {
-				field: CustomMetadataDescriptions,
+				field: MetadataDescriptions,
 			},
 		}),
 	],

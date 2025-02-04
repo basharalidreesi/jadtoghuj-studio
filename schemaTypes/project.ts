@@ -1,6 +1,7 @@
 import { defineField, defineType } from "sanity";
 import { LockIcon, SparklesIcon } from "@sanity/icons";
 import { isoDateToReadableDate } from "../utils/dateUtils";
+import { portableTextToPlainText } from "../utils/portableTextUtils";
 
 export default defineType({
 	name: "project",
@@ -16,9 +17,8 @@ export default defineType({
 		}),
 		defineField({
 			name: "slug",
-			type: "slug",
+			type: "commonSlug",
 			title: "Slug",
-			description: "The URL-friendly identifier for this project, generated from its title. Changing the slug after publication may cause broken links and affect accessibility.",
 			options: {
 				source: "title",
 			},
@@ -33,6 +33,12 @@ export default defineType({
 			type: "date",
 			title: "Date",
 			description: "The date of this project, mainly used for sorting.",
+		}),
+		defineField({
+			name: "summary",
+			type: "simplePortableText",
+			title: "Summary",
+			description: "A short summary introducing this project.",
 		}),
 		defineField({
 			name: "metadata",
@@ -66,7 +72,7 @@ export default defineType({
 			name: "mediaContent",
 			type: "mediaContent",
 			title: "Media",
-			description: "The media content of this project. Will not be displayed on the project's webpage unless they are added to the body field below.",
+			description: "The media content of this project. Will not be displayed on the project's webpage unless added to the body field below.",
 		}),
 		defineField({ // TODO consider horizontal?
 			name: "bodyContent",
@@ -108,6 +114,7 @@ export default defineType({
 			date: "date",
 			client: "client",
 			categoryName: "category.name",
+			summary: "summary",
 			metadata: "metadata",
 		},
 		prepare(selection) {
@@ -117,12 +124,13 @@ export default defineType({
 				date,
 				client,
 				categoryName,
+				summary,
 				metadata,
 			} = selection;
 			return {
 				title: [title ? title : "Untitled", metadata?.title ? `(${metadata.title})` : null]?.filter(Boolean)?.join(" ") || undefined,
 				subtitle: [categoryName, client, isoDateToReadableDate(date, { isAbbreviated: true, doesIncludeDay: false, doesIncludeMonth: false, }) || null]?.filter(Boolean)?.join(" · ") || undefined,
-				description: metadata?.description || undefined,
+				description: portableTextToPlainText(summary) || metadata?.description || undefined,
 				media: isHiddenFromListings ? LockIcon : (metadata?.openGraphImage || metadata?.twitterImage || undefined),
 			};
 		},

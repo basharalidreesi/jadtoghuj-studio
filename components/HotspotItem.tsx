@@ -2,7 +2,7 @@ import { DefaultPreview, ObjectItemProps } from "sanity";
 import { portableTextToPlainText } from "../utils/portableTextUtils";
 import { Text } from "@sanity/ui";
 
-export const ImageHotspotItem = (props: ObjectItemProps & { value: any; }) => {
+export const HotspotItem = (props: ObjectItemProps & { value: any; }) => {
 	const {
 		value,
 		renderDefault,
@@ -29,5 +29,4 @@ export const ImageHotspotItem = (props: ObjectItemProps & { value: any; }) => {
 	});
 };
 
-// TODO
-// - Update index number when re-ordering
+// TODO update index number when re-ordering

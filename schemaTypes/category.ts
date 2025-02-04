@@ -15,9 +15,8 @@ export default defineType({
 		}),
 		defineField({
 			name: "slug",
-			type: "slug",
+			type: "commonSlug",
 			title: "Slug",
-			description: "The URL-friendly identifier for this category, generated from its name. Changing the slug after publication may cause broken links and affect accessibility.",
 			options: {
 				source: "name",
 			},

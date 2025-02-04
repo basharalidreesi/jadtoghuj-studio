@@ -2,7 +2,7 @@ import { HotspotTooltipProps } from "sanity-plugin-hotspot-array";
 import { Box, Text } from "@sanity/ui";
 import { portableTextToPlainText } from "../utils/portableTextUtils";
 
-export const ImageHotspotPreview = (props: HotspotTooltipProps & { value: any; }) => {
+export const HotspotPreview = (props: HotspotTooltipProps & { value: any; }) => {
 	const details = props.value?.details;
 	return (
 		<Box padding={2} style={{ minWidth: details && 200 || "unset", maxWidth: 400, }}>

@@ -41,7 +41,6 @@ export default defineType({
 			name: "heroImage",
 			type: "heroImage",
 			title: "Hero Image",
-			// TODO description
 		}),
 		defineField({
 			name: "category",

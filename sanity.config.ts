@@ -64,4 +64,7 @@ export default defineConfig({
 			},
 		},
 	},
+	scheduledPublishing: {
+		enabled: false,
+	},
 });

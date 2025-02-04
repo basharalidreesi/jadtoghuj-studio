@@ -20,10 +20,9 @@ export default defineType({
 				}),
 				defineField({
 					name: "description",
-					type: "text", // TODO replace with portable text
+					type: "simplePortableText",
 					title: "Description",
 					description: "A brief description of this look.",
-					rows: 3,
 				}),
 			],
 			options: {
