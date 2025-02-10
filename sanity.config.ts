@@ -35,7 +35,7 @@ export default defineConfig({
 					singletonListItem(S, "studioInformation", "Studio").icon(studioInformationIcon),
 					singletonListItem(S, "homePage", "Homepage").icon(homePageIcon),
 					singletonListItem(S, "recommendedItems", "Recommended Items").icon(recommendedItemsIcons),
-					singletonListItem(S, "websiteGlobals", "Website Globals").icon(websiteGlobalsIcon),
+					singletonListItem(S, "websiteGlobals", "Website Settings").icon(websiteGlobalsIcon),
 				]);
 			},
 		}),

@@ -14,6 +14,7 @@ export default defineType({
 			name: "temp",
 			type: "string",
 		}),
+		// TODO splash
 	],
 	preview: {
 		prepare() {

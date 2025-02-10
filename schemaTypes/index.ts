@@ -33,6 +33,7 @@ export const schemaTypes = [
 	project,
 
 	// singletons
+	// TODO aboutPage?
 	homePage,
 	recommendedItems,
 	studioInformation,
